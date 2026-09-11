@@ -16,6 +16,7 @@
         "notice": "Refresh a visitor page after saving to apply your changes.",
         "sections": {
             "effect": "Appearance and movement",
+            "schedule": "Date and time scheduling",
             "scope": "Display scope and accessibility"
         },
         "options": {
@@ -27,7 +28,10 @@
             "petals": "Flower petals",
             "confetti": "Confetti",
             "bubbles": "Bubbles",
-            "fireflies": "Fireflies"
+            "fireflies": "Fireflies",
+            "days_all": "Every day",
+            "days_weekdays": "Weekdays",
+            "days_weekends": "Weekends"
         },
         "fields": {
             "enabled": {
@@ -56,6 +60,33 @@
             "color": {
                 "label": "Particle color",
                 "hint": "Enter a CSS color value, such as #ffffff."
+            },
+            "schedule_enabled": {
+                "label": "Enable scheduling",
+                "hint": "Allows effects only during the configured dates and times."
+            },
+            "schedule_start_date": {
+                "label": "Start date",
+                "hint": "Leave empty for no start-date limit."
+            },
+            "schedule_end_date": {
+                "label": "End date",
+                "hint": "The entire end date is included."
+            },
+            "schedule_start_time": {
+                "label": "Daily start time",
+                "hint": "Leave empty to start at the beginning of the day."
+            },
+            "schedule_end_time": {
+                "label": "Daily end time",
+                "hint": "An earlier end time is treated as ending the next day."
+            },
+            "schedule_days": {
+                "label": "Active days"
+            },
+            "schedule_timezone": {
+                "label": "Timezone",
+                "hint": "Enter an IANA timezone, such as Asia/Seoul."
             },
             "mobile_enabled": {
                 "label": "Enable on mobile",

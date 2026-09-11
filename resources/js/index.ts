@@ -6,6 +6,7 @@ import {
     readEffectsPreference,
     writeEffectsPreference,
 } from './preference';
+import { isScheduleActive } from './schedule';
 import {
     HeaderToggleMount,
     PREFERENCE_EVENT,
@@ -32,7 +33,7 @@ function boot(): void {
     let engine: EffectsEngine | null = null;
 
     const sync = (): void => {
-        const eligible = userEnabled && shouldStart(config, {
+        const eligible = userEnabled && isScheduleActive(config) && shouldStart(config, {
             pathname: window.location.pathname,
             mobile: mobileQuery.matches,
             reducedMotion: reducedMotionQuery.matches,
@@ -79,6 +80,8 @@ function boot(): void {
     reducedMotionQuery.addEventListener('change', sync);
     window.addEventListener('popstate', sync);
     window.addEventListener('storage', handleStorage);
+    document.addEventListener('visibilitychange', sync);
+    const scheduleTimer = window.setInterval(sync, 30_000);
 
     window.__g7CustomEffects = {
         stop: () => {
@@ -86,6 +89,8 @@ function boot(): void {
             reducedMotionQuery.removeEventListener('change', sync);
             window.removeEventListener('popstate', sync);
             window.removeEventListener('storage', handleStorage);
+            document.removeEventListener('visibilitychange', sync);
+            window.clearInterval(scheduleTimer);
             unregisterToggleAction();
             headerToggle?.stop();
             engine?.stop();

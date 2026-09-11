@@ -90,6 +90,8 @@ function boot(): void {
     };
 
     const isUserPage = !/^\/(?:[a-z]{2}\/)?admin(?:\/|$)/i.test(window.location.pathname);
+    const isPluginSettingsPage = /\/admin(?:\/[a-z]{2})?(?:\/|$).*plugins/i.test(window.location.pathname)
+        || /\/plugins\//i.test(window.location.pathname);
     const unregisterToggleAction = isUserPage && config.enabled
         ? registerToggleAction(window, toggle)
         : () => {};
@@ -97,7 +99,9 @@ function boot(): void {
         ? new HeaderToggleMount(window, currentEffect, () => userEnabled, toggle)
         : null;
     headerToggle?.start();
-    const stopSchedulePickers = isUserPage ? () => {} : enhanceSchedulePickers(window);
+    const stopSchedulePickers = !isUserPage && isPluginSettingsPage
+        ? enhanceSchedulePickers(window)
+        : () => {};
 
     mobileQuery.addEventListener('change', sync);
     reducedMotionQuery.addEventListener('change', sync);

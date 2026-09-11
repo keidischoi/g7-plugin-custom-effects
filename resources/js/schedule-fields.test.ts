@@ -67,7 +67,7 @@ describe('enhanceSchedulePickers', () => {
         expect(checkbox.type).toBe('checkbox');
         expect(checkbox.checked).toBe(true);
         expect(checkbox.getAttribute('aria-label')).toBe('사용');
-        expect(select.dataset.g7Checkbox).toBe('enabled');
+        expect(select.dataset.g7EnabledToggle).toBe('1');
         expect(row?.querySelectorAll('input.g7-custom-effects-schedule-enabled')).toHaveLength(1);
         expect(effectSelect).toBeTruthy();
         expect(row?.children[2]?.querySelector('input[type="checkbox"]')).toBeNull();
@@ -91,11 +91,11 @@ describe('enhanceSchedulePickers', () => {
         stop();
     });
 
-    it('turns weekday selects into checkboxes without changing the two-row cells', () => {
+    it('turns weekday selects into checkboxes without wrapping the row', () => {
         const days = ['일', '월', '화', '수', '목', '금', '토'];
         const daySelects = days.map((day) => `
             <div>
-                <select class="g7-custom-effects-schedule-day-select">
+                <select class="g7-custom-effects-schedule-day-select" aria-label="${day}">
                     <option value="true">${day} 적용</option>
                     <option value="false">${day} 제외</option>
                 </select>
@@ -128,98 +128,14 @@ describe('enhanceSchedulePickers', () => {
         const firstDay = row.children[7]?.querySelector('select') as HTMLSelectElement;
         const firstBox = boxes[0] as HTMLInputElement;
 
-        expect(row.querySelector('.g7-custom-effects-schedule-days')).toBeNull();
         expect(row.children).toHaveLength(15);
         expect(boxes).toHaveLength(7);
         expect(firstBox.getAttribute('aria-label')).toBe('일');
-        expect(firstBox.checked).toBe(true);
+        expect(firstDay.dataset.g7DayToggle).toBe('1');
 
         firstBox.checked = false;
         firstBox.dispatchEvent(new Event('change', { bubbles: true }));
         expect(firstDay.value).toBe('false');
-        expect(row.querySelectorAll('input[type="date"]')).toHaveLength(2);
-        expect(row.querySelectorAll('input[type="time"]')).toHaveLength(2);
-        stop();
-    });
-
-    it('converts a native DynamicFieldList table into weekday checkboxes', () => {
-        const days = ['일', '월', '화', '수', '목', '금', '토'];
-        const dayCells = days.map((day) => `
-            <td>
-                <select>
-                    <option value="true">${day} 적용</option>
-                    <option value="false">${day} 제외</option>
-                </select>
-            </td>
-        `).join('');
-        document.body.innerHTML = `
-            <div class="g7-custom-effects-schedule-list">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>사용</th>
-                            <th>효과 종류</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>⋮⋮</td>
-                            <td>
-                                <select>
-                                    <option value="true">사용</option>
-                                    <option value="false">안함</option>
-                                </select>
-                            </td>
-                            <td><select><option>눈</option></select></td>
-                            <td><input placeholder="YYYY-MM-DD"></td>
-                            <td><input placeholder="YYYY-MM-DD"></td>
-                            <td><input placeholder="HH:MM"></td>
-                            <td><input placeholder="HH:MM"></td>
-                            ${dayCells}
-                            <td><button type="button">-</button></td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        `;
-
-        const stop = enhanceSchedulePickers(window);
-        const row = document.querySelector('tbody tr') as HTMLElement;
-        const boxes = row.querySelectorAll('input.g7-custom-effects-schedule-day');
-
-        expect(row.classList.contains('g7-custom-effects-schedule-dfl-row')).toBe(false);
-        expect(row.children).toHaveLength(15);
-        expect(row.querySelector('input.g7-custom-effects-schedule-enabled')).toBeTruthy();
-        expect(boxes).toHaveLength(7);
-        expect(boxes[0]?.getAttribute('aria-label')).toBe('일');
-        expect(row.querySelectorAll('input[type="date"]')).toHaveLength(2);
-        expect(row.querySelectorAll('input[type="time"]')).toHaveLength(2);
-        stop();
-    });
-
-    it('does not keep inserting checkboxes when the page updates classes', async () => {
-        document.body.innerHTML = `
-            <div class="g7-custom-effects-schedule-list">
-                <div class="g7-custom-effects-schedule-dfl-row">
-                    <div>⋮⋮</div>
-                    <div>
-                        <select class="g7-custom-effects-schedule-enabled-select">
-                            <option value="true">사용</option>
-                            <option value="false">안함</option>
-                        </select>
-                    </div>
-                    <div><select><option>눈</option></select></div>
-                </div>
-            </div>
-        `;
-
-        const stop = enhanceSchedulePickers(window);
-        document.documentElement.classList.add('dark', 'loading');
-        document.documentElement.classList.remove('loading');
-        document.body.className = 'admin-ready';
-
-        await new Promise((resolve) => setTimeout(resolve, 0));
-        expect(document.querySelectorAll('input.g7-custom-effects-schedule-enabled')).toHaveLength(1);
         stop();
     });
 

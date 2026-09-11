@@ -1,5 +1,5 @@
 {
-    "version": "1.5.0",
+    "version": "1.5.1",
     "layout_name": "plugin_settings",
     "permissions": [
         "core.plugins.update"
@@ -671,7 +671,7 @@
                                 "type": "basic",
                                 "name": "Div",
                                 "props": {
-                                    "className": "p-6 grid grid-cols-1 md:grid-cols-2 gap-6"
+                                    "className": "p-6 mx-3 grid grid-cols-1 md:grid-cols-2 gap-6"
                                 },
                                 "children": [
                                     {

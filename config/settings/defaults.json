@@ -1,6 +1,6 @@
 {
     "_meta": {
-        "version": "1.2.0",
+        "version": "1.3.0",
         "description": "날씨 및 장식 화면 효과 플러그인 기본값과 프론트엔드 공개 설정"
     },
     "defaults": {
@@ -13,7 +13,14 @@
         "color": "#ffffff",
         "mobile_enabled": false,
         "admin_enabled": false,
-        "respect_reduced_motion": true
+        "respect_reduced_motion": true,
+        "schedule_enabled": false,
+        "schedule_start_date": "",
+        "schedule_end_date": "",
+        "schedule_start_time": "",
+        "schedule_end_time": "",
+        "schedule_days": "all",
+        "schedule_timezone": "Asia/Seoul"
     },
     "frontend_schema": {
         "enabled": { "type": "boolean", "expose": true },
@@ -25,6 +32,13 @@
         "color": { "type": "string", "expose": true },
         "mobile_enabled": { "type": "boolean", "expose": true },
         "admin_enabled": { "type": "boolean", "expose": true },
-        "respect_reduced_motion": { "type": "boolean", "expose": true }
+        "respect_reduced_motion": { "type": "boolean", "expose": true },
+        "schedule_enabled": { "type": "boolean", "expose": true },
+        "schedule_start_date": { "type": "string", "expose": true },
+        "schedule_end_date": { "type": "string", "expose": true },
+        "schedule_start_time": { "type": "string", "expose": true },
+        "schedule_end_time": { "type": "string", "expose": true },
+        "schedule_days": { "type": "string", "expose": true },
+        "schedule_timezone": { "type": "string", "expose": true }
     }
 }

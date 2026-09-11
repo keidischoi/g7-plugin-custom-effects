@@ -100,6 +100,73 @@ class Plugin extends AbstractPlugin
                 ],
                 'required' => true,
             ],
+            'schedule_enabled' => [
+                'type' => 'boolean',
+                'default' => false,
+                'label' => ['ko' => '예약 사용', 'en' => 'Enable scheduling'],
+                'hint' => [
+                    'ko' => '설정한 날짜와 시간 안에서만 효과를 허용합니다.',
+                    'en' => 'Allows effects only during the configured dates and times.',
+                ],
+                'required' => false,
+            ],
+            'schedule_start_date' => [
+                'type' => 'string',
+                'default' => '',
+                'label' => ['ko' => '시작 날짜', 'en' => 'Start date'],
+                'hint' => [
+                    'ko' => '비워두면 시작 날짜를 제한하지 않습니다.',
+                    'en' => 'Leave empty for no start-date limit.',
+                ],
+                'required' => false,
+            ],
+            'schedule_end_date' => [
+                'type' => 'string',
+                'default' => '',
+                'label' => ['ko' => '종료 날짜', 'en' => 'End date'],
+                'hint' => [
+                    'ko' => '종료 날짜 전체가 예약에 포함됩니다.',
+                    'en' => 'The entire end date is included.',
+                ],
+                'required' => false,
+            ],
+            'schedule_start_time' => [
+                'type' => 'string',
+                'default' => '',
+                'label' => ['ko' => '매일 시작 시간', 'en' => 'Daily start time'],
+                'hint' => [
+                    'ko' => '비워두면 하루의 시작부터 적용합니다.',
+                    'en' => 'Leave empty to start at the beginning of the day.',
+                ],
+                'required' => false,
+            ],
+            'schedule_end_time' => [
+                'type' => 'string',
+                'default' => '',
+                'label' => ['ko' => '매일 종료 시간', 'en' => 'Daily end time'],
+                'hint' => [
+                    'ko' => '시작 시간보다 이르면 다음 날 종료로 처리합니다.',
+                    'en' => 'An earlier end time is treated as ending the next day.',
+                ],
+                'required' => false,
+            ],
+            'schedule_days' => [
+                'type' => 'enum',
+                'options' => ['all', 'weekdays', 'weekends'],
+                'default' => 'all',
+                'label' => ['ko' => '적용 요일', 'en' => 'Active days'],
+                'required' => true,
+            ],
+            'schedule_timezone' => [
+                'type' => 'string',
+                'default' => 'Asia/Seoul',
+                'label' => ['ko' => '기준 타임존', 'en' => 'Timezone'],
+                'hint' => [
+                    'ko' => 'IANA 타임존을 입력합니다. 예: Asia/Seoul',
+                    'en' => 'Enter an IANA timezone, such as Asia/Seoul.',
+                ],
+                'required' => true,
+            ],
             'mobile_enabled' => [
                 'type' => 'boolean',
                 'default' => false,
@@ -149,6 +216,13 @@ class Plugin extends AbstractPlugin
             'mobile_enabled' => false,
             'admin_enabled' => false,
             'respect_reduced_motion' => true,
+            'schedule_enabled' => false,
+            'schedule_start_date' => '',
+            'schedule_end_date' => '',
+            'schedule_start_time' => '',
+            'schedule_end_time' => '',
+            'schedule_days' => 'all',
+            'schedule_timezone' => 'Asia/Seoul',
         ];
     }
 

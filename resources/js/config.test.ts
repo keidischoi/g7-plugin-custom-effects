@@ -42,6 +42,26 @@ describe('normalizeConfig', () => {
     it('falls back to snow for an unknown effect', () => {
         expect(normalizeConfig({ effect: 'unknown' }).effect).toBe('snow');
     });
+
+    it('normalizes scheduling fields and rejects malformed values', () => {
+        expect(normalizeConfig({
+            schedule_enabled: '1',
+            schedule_start_date: '2026-12-01',
+            schedule_end_date: '2026-99-99',
+            schedule_start_time: '22:30',
+            schedule_end_time: '27:00',
+            schedule_days: 'weekends',
+            schedule_timezone: 'America/New_York',
+        })).toMatchObject({
+            scheduleEnabled: true,
+            scheduleStartDate: '2026-12-01',
+            scheduleEndDate: '',
+            scheduleStartTime: '22:30',
+            scheduleEndTime: '',
+            scheduleDays: 'weekends',
+            scheduleTimezone: 'America/New_York',
+        });
+    });
 });
 
 describe('shouldStart', () => {

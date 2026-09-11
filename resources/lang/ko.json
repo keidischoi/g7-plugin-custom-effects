@@ -16,6 +16,7 @@
         "notice": "설정을 저장한 후 방문자 페이지를 새로고침하면 변경 사항이 적용됩니다.",
         "sections": {
             "effect": "효과 모양 및 움직임",
+            "schedule": "날짜 및 시간 예약",
             "scope": "표시 범위 및 접근성"
         },
         "options": {
@@ -27,7 +28,10 @@
             "petals": "꽃잎",
             "confetti": "색종이",
             "bubbles": "비눗방울",
-            "fireflies": "반딧불"
+            "fireflies": "반딧불",
+            "days_all": "매일",
+            "days_weekdays": "평일",
+            "days_weekends": "주말"
         },
         "fields": {
             "enabled": {
@@ -56,6 +60,33 @@
             "color": {
                 "label": "입자 색상",
                 "hint": "CSS 색상값을 입력합니다. 예: #ffffff"
+            },
+            "schedule_enabled": {
+                "label": "예약 사용",
+                "hint": "설정한 날짜와 시간 안에서만 효과를 허용합니다."
+            },
+            "schedule_start_date": {
+                "label": "시작 날짜",
+                "hint": "비워두면 시작 날짜를 제한하지 않습니다."
+            },
+            "schedule_end_date": {
+                "label": "종료 날짜",
+                "hint": "종료 날짜 전체가 예약에 포함됩니다."
+            },
+            "schedule_start_time": {
+                "label": "매일 시작 시간",
+                "hint": "비워두면 하루의 시작부터 적용합니다."
+            },
+            "schedule_end_time": {
+                "label": "매일 종료 시간",
+                "hint": "시작 시간보다 이르면 다음 날 종료로 처리합니다."
+            },
+            "schedule_days": {
+                "label": "적용 요일"
+            },
+            "schedule_timezone": {
+                "label": "기준 타임존",
+                "hint": "IANA 타임존을 입력합니다. 예: Asia/Seoul"
             },
             "mobile_enabled": {
                 "label": "모바일에서 사용",

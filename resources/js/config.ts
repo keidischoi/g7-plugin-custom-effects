@@ -13,6 +13,7 @@ export const EFFECT_KINDS = [
 ] as const;
 
 export type EffectKind = typeof EFFECT_KINDS[number];
+export type ScheduleDays = 'all' | 'weekdays' | 'weekends';
 
 export interface EffectConfig {
     enabled: boolean;
@@ -25,6 +26,13 @@ export interface EffectConfig {
     mobileEnabled: boolean;
     adminEnabled: boolean;
     respectReducedMotion: boolean;
+    scheduleEnabled: boolean;
+    scheduleStartDate: string;
+    scheduleEndDate: string;
+    scheduleStartTime: string;
+    scheduleEndTime: string;
+    scheduleDays: ScheduleDays;
+    scheduleTimezone: string;
 }
 
 export const DEFAULT_CONFIG: Readonly<EffectConfig> = {
@@ -38,6 +46,13 @@ export const DEFAULT_CONFIG: Readonly<EffectConfig> = {
     mobileEnabled: false,
     adminEnabled: false,
     respectReducedMotion: true,
+    scheduleEnabled: false,
+    scheduleStartDate: '',
+    scheduleEndDate: '',
+    scheduleStartTime: '',
+    scheduleEndTime: '',
+    scheduleDays: 'all',
+    scheduleTimezone: 'Asia/Seoul',
 };
 
 function booleanValue(value: unknown, fallback: boolean): boolean {
@@ -64,6 +79,22 @@ function colorValue(value: unknown): string {
     return color;
 }
 
+function formattedValue(value: unknown, pattern: RegExp): string {
+    if (typeof value !== 'string') return '';
+    const formatted = value.trim();
+    return pattern.test(formatted) ? formatted : '';
+}
+
+function dateValue(value: unknown): string {
+    const formatted = formattedValue(value, /^\d{4}-\d{2}-\d{2}$/);
+    if (!formatted) return '';
+
+    const date = new Date(`${formatted}T00:00:00Z`);
+    return Number.isNaN(date.getTime()) || date.toISOString().slice(0, 10) !== formatted
+        ? ''
+        : formatted;
+}
+
 export function normalizeConfig(raw: unknown): EffectConfig {
     const value = raw && typeof raw === 'object' ? raw as Record<string, unknown> : {};
     const effect = EFFECT_KINDS.includes(value.effect as EffectKind)
@@ -84,6 +115,19 @@ export function normalizeConfig(raw: unknown): EffectConfig {
             value.respect_reduced_motion,
             DEFAULT_CONFIG.respectReducedMotion,
         ),
+        scheduleEnabled: booleanValue(value.schedule_enabled, DEFAULT_CONFIG.scheduleEnabled),
+        scheduleStartDate: dateValue(value.schedule_start_date),
+        scheduleEndDate: dateValue(value.schedule_end_date),
+        scheduleStartTime: formattedValue(value.schedule_start_time, /^(?:[01]\d|2[0-3]):[0-5]\d$/),
+        scheduleEndTime: formattedValue(value.schedule_end_time, /^(?:[01]\d|2[0-3]):[0-5]\d$/),
+        scheduleDays: ['weekdays', 'weekends'].includes(String(value.schedule_days))
+            ? value.schedule_days as ScheduleDays
+            : 'all',
+        scheduleTimezone: typeof value.schedule_timezone === 'string'
+            && value.schedule_timezone.trim().length > 0
+            && value.schedule_timezone.length <= 64
+            ? value.schedule_timezone.trim()
+            : DEFAULT_CONFIG.scheduleTimezone,
     };
 }
 

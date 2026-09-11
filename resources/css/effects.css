@@ -53,6 +53,35 @@
     transform: rotate(-45deg);
 }
 
+.g7-custom-effects-schedule-grid {
+    box-sizing: border-box;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1.5rem;
+    width: 100%;
+    padding: 1rem 1.5rem;
+}
+
+.g7-custom-effects-schedule-grid > * {
+    min-width: 0;
+}
+
+.g7-custom-effects-schedule-grid input,
+.g7-custom-effects-schedule-grid select {
+    box-sizing: border-box;
+    max-width: 100%;
+}
+
+.g7-custom-effects-schedule-full {
+    grid-column: 1 / -1;
+}
+
+@media (min-width: 1024px) {
+    .g7-custom-effects-schedule-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
 .dark .g7-custom-effects-toggle {
     color: #9ca3af;
 }

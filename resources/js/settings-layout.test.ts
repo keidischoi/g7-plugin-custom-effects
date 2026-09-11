@@ -24,6 +24,7 @@ const layout = JSON.parse(readFileSync(
     data_sources: Array<{ initLocal?: string }>;
     slots: unknown;
 };
+const effectsCss = readFileSync(resolve(import.meta.dirname, '../css/effects.css'), 'utf8');
 
 function collectBoundControls(value: unknown, result = new Set<string>()): Set<string> {
     if (Array.isArray(value)) {
@@ -80,11 +81,12 @@ describe('plugin settings layout', () => {
         }
     });
 
-    it('keeps schedule controls within enforced equal left and right padding', () => {
+    it('keeps schedule controls within plugin-owned equal padding', () => {
         const slots = JSON.stringify(layout.slots);
-        expect(slots).toContain('"style":{"padding":"1rem 1.5rem"}');
-        expect(slots).not.toContain('"className":"p-6 mx-3 grid');
-        expect(slots.match(/"boxSizing":"border-box","maxWidth":"100%"/g)).toHaveLength(6);
+        expect(slots).toContain('"className":"g7-custom-effects-schedule-grid"');
+        expect(effectsCss).toContain('.g7-custom-effects-schedule-grid {');
+        expect(effectsCss).toContain('padding: 1rem 1.5rem;');
+        expect(effectsCss).toContain('grid-template-columns: repeat(2, minmax(0, 1fr));');
     });
 
     it('loads settings into the local form and provides a complete save flow', () => {

@@ -5,7 +5,7 @@
         }
     },
     "name": "사용자 화면 효과",
-    "description": "그누보드7 화면에 눈 또는 비 효과를 표시합니다.",
+    "description": "그누보드7 화면에 날씨와 장식 효과를 표시합니다.",
     "settings": {
         "title": "사용자 화면 효과 설정",
         "description": "눈·비 효과의 종류, 밀도와 동작 범위를 설정합니다.",
@@ -16,7 +16,14 @@
         },
         "options": {
             "snow": "눈",
-            "rain": "비"
+            "rain": "비",
+            "leaves": "낙엽",
+            "stars": "별",
+            "hearts": "하트",
+            "petals": "꽃잎",
+            "confetti": "색종이",
+            "bubbles": "비눗방울",
+            "fireflies": "반딧불"
         },
         "fields": {
             "enabled": {
@@ -25,7 +32,7 @@
             },
             "effect": {
                 "label": "효과 종류",
-                "hint": "snow는 눈, rain은 비를 표시합니다."
+                "hint": "눈·비·낙엽과 다양한 장식 효과 중 하나를 선택합니다."
             },
             "intensity": {
                 "label": "효과 밀도 (%)",

@@ -1,6 +1,18 @@
 export const PLUGIN_IDENTIFIER = 'g7-plugin-custom-effects';
 
-export type EffectKind = 'snow' | 'rain';
+export const EFFECT_KINDS = [
+    'snow',
+    'rain',
+    'leaves',
+    'stars',
+    'hearts',
+    'petals',
+    'confetti',
+    'bubbles',
+    'fireflies',
+] as const;
+
+export type EffectKind = typeof EFFECT_KINDS[number];
 
 export interface EffectConfig {
     enabled: boolean;
@@ -54,10 +66,13 @@ function colorValue(value: unknown): string {
 
 export function normalizeConfig(raw: unknown): EffectConfig {
     const value = raw && typeof raw === 'object' ? raw as Record<string, unknown> : {};
+    const effect = EFFECT_KINDS.includes(value.effect as EffectKind)
+        ? value.effect as EffectKind
+        : DEFAULT_CONFIG.effect;
 
     return {
         enabled: booleanValue(value.enabled, DEFAULT_CONFIG.enabled),
-        effect: value.effect === 'rain' ? 'rain' : 'snow',
+        effect,
         intensity: boundedInteger(value.intensity, DEFAULT_CONFIG.intensity, 10, 200),
         speed: boundedInteger(value.speed, DEFAULT_CONFIG.speed, 25, 300),
         opacity: boundedInteger(value.opacity, DEFAULT_CONFIG.opacity, 10, 100),

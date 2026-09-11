@@ -1,6 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
+import { EFFECT_KINDS } from './config';
 
 interface LayoutNode {
     name?: string;
@@ -14,7 +15,9 @@ const layout = JSON.parse(readFileSync(
     resolve(import.meta.dirname, '../layouts/admin/plugin_settings.json'),
     'utf8',
 )) as {
-    schema: Record<string, unknown>;
+    schema: Record<string, unknown> & {
+        effect: { options: string[] };
+    };
     data_sources: Array<{ initLocal?: string }>;
     slots: unknown;
 };
@@ -47,6 +50,15 @@ describe('plugin settings layout', () => {
 
         expect(boundControls).toEqual(schemaFields);
         expect(boundControls).toHaveLength(10);
+    });
+
+    it('offers every effect supported by the canvas engine', () => {
+        expect(layout.schema.effect.options).toEqual(EFFECT_KINDS);
+
+        const renderedOptions = EFFECT_KINDS.filter((effect) => (
+            JSON.stringify(layout.slots).includes(`"value":"${effect}"`)
+        ));
+        expect(renderedOptions).toEqual(EFFECT_KINDS);
     });
 
     it('loads settings into the local form and provides a complete save flow', () => {

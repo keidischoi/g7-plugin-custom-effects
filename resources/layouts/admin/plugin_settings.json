@@ -1,5 +1,5 @@
 {
-    "version": "1.0.1",
+    "version": "1.1.0",
     "layout_name": "plugin_settings",
     "permissions": [
         "core.plugins.update"
@@ -197,6 +197,62 @@
                                                             "value": "rain"
                                                         },
                                                         "text": "$t:g7-plugin-custom-effects.settings.options.rain"
+                                                    },
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "Option",
+                                                        "props": {
+                                                            "value": "leaves"
+                                                        },
+                                                        "text": "$t:g7-plugin-custom-effects.settings.options.leaves"
+                                                    },
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "Option",
+                                                        "props": {
+                                                            "value": "stars"
+                                                        },
+                                                        "text": "$t:g7-plugin-custom-effects.settings.options.stars"
+                                                    },
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "Option",
+                                                        "props": {
+                                                            "value": "hearts"
+                                                        },
+                                                        "text": "$t:g7-plugin-custom-effects.settings.options.hearts"
+                                                    },
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "Option",
+                                                        "props": {
+                                                            "value": "petals"
+                                                        },
+                                                        "text": "$t:g7-plugin-custom-effects.settings.options.petals"
+                                                    },
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "Option",
+                                                        "props": {
+                                                            "value": "confetti"
+                                                        },
+                                                        "text": "$t:g7-plugin-custom-effects.settings.options.confetti"
+                                                    },
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "Option",
+                                                        "props": {
+                                                            "value": "bubbles"
+                                                        },
+                                                        "text": "$t:g7-plugin-custom-effects.settings.options.bubbles"
+                                                    },
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "Option",
+                                                        "props": {
+                                                            "value": "fireflies"
+                                                        },
+                                                        "text": "$t:g7-plugin-custom-effects.settings.options.fireflies"
                                                     }
                                                 ]
                                             }
@@ -767,7 +823,17 @@
         },
         "effect": {
             "type": "enum",
-            "options": ["snow", "rain"],
+            "options": [
+                "snow",
+                "rain",
+                "leaves",
+                "stars",
+                "hearts",
+                "petals",
+                "confetti",
+                "bubbles",
+                "fireflies"
+            ],
             "default": "snow"
         },
         "intensity": {

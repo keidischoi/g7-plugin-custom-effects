@@ -5,7 +5,7 @@
         }
     },
     "name": "Custom Effects",
-    "description": "Displays snow or rain effects on Gnuboard7 pages.",
+    "description": "Displays weather and decorative effects on Gnuboard7 pages.",
     "settings": {
         "title": "Custom Effects Settings",
         "description": "Configure the weather effect, density, and where it runs.",
@@ -16,7 +16,14 @@
         },
         "options": {
             "snow": "Snow",
-            "rain": "Rain"
+            "rain": "Rain",
+            "leaves": "Falling leaves",
+            "stars": "Stars",
+            "hearts": "Hearts",
+            "petals": "Flower petals",
+            "confetti": "Confetti",
+            "bubbles": "Bubbles",
+            "fireflies": "Fireflies"
         },
         "fields": {
             "enabled": {
@@ -25,7 +32,7 @@
             },
             "effect": {
                 "label": "Effect",
-                "hint": "Choose snow or rain."
+                "hint": "Choose a weather or decorative effect."
             },
             "intensity": {
                 "label": "Effect density (%)",

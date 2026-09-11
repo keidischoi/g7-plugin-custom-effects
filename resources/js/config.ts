@@ -8,6 +8,8 @@ export const EFFECT_KINDS = [
     'stars_multicolor',
     'hearts',
     'petals',
+    'cherry_blossoms',
+    'sunflowers',
     'confetti',
     'bubbles',
     'bouncing_bubbles',

@@ -17,6 +17,8 @@ const EFFECT_SYMBOLS: Record<EffectKind, string> = {
     stars_multicolor: '★',
     hearts: '♥',
     petals: '✿',
+    cherry_blossoms: '🌸',
+    sunflowers: '🌻',
     confetti: '✦',
     bubbles: '○',
     bouncing_bubbles: '◉',

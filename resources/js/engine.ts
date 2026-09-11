@@ -33,7 +33,9 @@ const EFFECT_DENSITY: Record<EffectKind, number> = {
     stars: 0.55,
     stars_multicolor: 0.55,
     hearts: 0.4,
-    petals: 0.65,
+    petals: 0.5,
+    cherry_blossoms: 0.48,
+    sunflowers: 0.34,
     confetti: 0.75,
     bubbles: 0.4,
     bouncing_bubbles: 0.35,
@@ -52,6 +54,8 @@ const EFFECT_PALETTES: Partial<Record<EffectKind, readonly string[]>> = {
     stars_multicolor: ['#f87171', '#fb923c', '#fde047', '#86efac', '#38bdf8', '#c4b5fd', '#f9a8d4'],
     hearts: ['#fb7185', '#f43f5e', '#ec4899'],
     petals: ['#fbcfe8', '#f9a8d4', '#fda4af', '#ffffff'],
+    cherry_blossoms: ['#fbcfe8', '#f9a8d4', '#fb7185', '#ffe4e6', '#fda4af'],
+    sunflowers: ['#facc15', '#fde047', '#fbbf24', '#eab308'],
     confetti: ['#f43f5e', '#facc15', '#22c55e', '#38bdf8', '#a855f7'],
     bubbles: ['#bae6fd', '#ddd6fe', '#fbcfe8'],
     bouncing_bubbles: ['#bae6fd', '#ddd6fe', '#fbcfe8', '#86efac'],
@@ -247,11 +251,10 @@ export function burstStarOnHit(particle: StarBody): void {
     particle.sparkle = 1;
 }
 
+export const PILE_MAX_HEIGHT = 110;
 export const PILE_RECYCLE_AGE = 18;
-export const PILE_GRAVITY = 520;
-export const PILE_HIT = 0.88;
-export const PILE_SETTLE_GAP = 0.62;
-export const PILE_BOUNCE = 0.52;
+export const PILE_NEST = 0.55;
+export const PILE_UNSUPPORTED_SLACK = 1.5;
 export const RAIN_GRAVITY = 1700;
 export const RAIN_MAX_BOUNCES = 3;
 
@@ -265,51 +268,44 @@ export interface SettlingBody {
     settled: number;
 }
 
-export function bounceOffPile(
-    particle: CollisionBody,
-    other: CollisionBody,
-    otherFixed: boolean,
-): boolean {
-    const dx = particle.x - other.x;
-    const dy = particle.y - other.y;
-    const minimumDistance = (particle.size + other.size) * PILE_HIT;
-    const distanceSquared = dx * dx + dy * dy;
-    if (distanceSquared === 0) {
-        particle.x += 0.6;
-        return false;
+export function supportYFromSettled(
+    x: number,
+    size: number,
+    floorY: number,
+    restInset: number,
+    settled: readonly { x: number; y: number; size: number }[],
+    belowY?: number,
+): number {
+    let restY = floorY - restInset;
+    for (const other of settled) {
+        if (belowY !== undefined && other.y <= belowY) continue;
+        const dx = x - other.x;
+        const nested = (size + other.size) * PILE_NEST;
+        if (Math.abs(dx) >= nested) continue;
+        const rise = Math.sqrt(Math.max(0, nested * nested - dx * dx));
+        restY = Math.min(restY, other.y - rise);
     }
-    if (distanceSquared >= minimumDistance * minimumDistance) return false;
-
-    const distance = Math.sqrt(distanceSquared);
-    const normalX = dx / distance;
-    const normalY = dy / distance;
-    const overlap = minimumDistance - distance;
-    particle.x += normalX * overlap * (otherFixed ? 1 : 0.5);
-    particle.y += normalY * overlap * (otherFixed ? 1 : 0.5);
-    if (!otherFixed) {
-        other.x -= normalX * overlap * 0.5;
-        other.y -= normalY * overlap * 0.5;
-    }
-
-    const relativeVelocity = (particle.vx - other.vx) * normalX
-        + (particle.vy - other.vy) * normalY;
-    if (relativeVelocity >= 0) return true;
-
-    const impulse = -(1 + PILE_BOUNCE) * relativeVelocity;
-    particle.vx += impulse * normalX;
-    particle.vy += impulse * normalY;
-    if (!otherFixed) {
-        other.vx -= impulse * normalX;
-        other.vy -= impulse * normalY;
-    }
-    if (otherFixed && Math.abs(normalX) < 0.42) {
-        particle.vx += (normalX >= 0 ? 1 : -1) * 58;
-        particle.vy = -Math.abs(particle.vy) * 0.4 - 38;
-    }
-    return true;
+    return restY;
 }
 
-export function settleOnFloor(
+export function isUnsupported(
+    particle: { x: number; y: number; size: number },
+    floorY: number,
+    restInset: number,
+    settled: readonly { x: number; y: number; size: number }[],
+): boolean {
+    const restY = supportYFromSettled(
+        particle.x,
+        particle.size,
+        floorY,
+        restInset,
+        settled,
+        particle.y,
+    );
+    return particle.y + PILE_UNSUPPORTED_SLACK < restY;
+}
+
+export function settleWhereHit(
     particle: SettlingBody,
     floorY: number,
     restInset: number,
@@ -319,23 +315,11 @@ export function settleOnFloor(
         particle.vx = 0;
         particle.vy = 0;
         particle.rotationSpeed = 0;
-        particle.y = floorY - restInset;
         return false;
     }
-    if (particle.y < floorY - restInset) return false;
-    particle.y = floorY - restInset;
-
-    for (const other of settled) {
-        const dx = particle.x - other.x;
-        const minimumDistance = (particle.size + other.size) * PILE_SETTLE_GAP;
-        if (dx * dx >= minimumDistance * minimumDistance) continue;
-        const sign = dx === 0 ? 1 : Math.sign(dx);
-        particle.vx = sign * (48 + particle.size * 6);
-        particle.vy = -55;
-        particle.y -= 1.2;
-        return false;
-    }
-
+    const restY = supportYFromSettled(particle.x, particle.size, floorY, restInset, settled);
+    if (particle.y < restY) return false;
+    particle.y = restY;
     particle.vx = 0;
     particle.vy = 0;
     particle.rotationSpeed = 0;
@@ -464,6 +448,7 @@ export class EffectsEngine {
         const bubbles = effect === 'bubbles';
         const bouncingBubbles = effect === 'bouncing_bubbles';
         const fireflies = effect === 'fireflies';
+        const sunflower = effect === 'sunflowers';
         const speedRange = this.speedRange(effect);
         const wind = signedWind(this.config.wind, this.config.windDirection);
         const size = this.sizeRange(effect);
@@ -488,7 +473,9 @@ export class EffectsEngine {
             phase: Math.random() * Math.PI * 2,
             phaseSpeed: 0.6 + Math.random() * 1.8,
             rotation: Math.random() * Math.PI * 2,
-            rotationSpeed: (Math.random() - 0.5) * 3,
+            rotationSpeed: sunflower
+                ? (Math.random() < 0.5 ? -1 : 1) * (2.4 + Math.random() * 2.8)
+                : (Math.random() - 0.5) * 3,
             colorIndex: Math.floor(Math.random() * 8),
             alpha: 0.55 + Math.random() * 0.45,
         };
@@ -503,6 +490,8 @@ export class EffectsEngine {
             stars_multicolor: [24, 58],
             hearts: [26, 62],
             petals: [24, 58],
+            cherry_blossoms: [22, 52],
+            sunflowers: [26, 58],
             confetti: [70, 145],
             bubbles: [22, 55],
             bouncing_bubbles: [28, 65],
@@ -526,7 +515,9 @@ export class EffectsEngine {
             stars: [3.5, 7],
             stars_multicolor: [3.5, 7],
             hearts: [5, 10],
-            petals: [5, 10],
+            petals: [14, 26],
+            cherry_blossoms: [9, 16],
+            sunflowers: [12, 22],
             confetti: [4, 9],
             bubbles: [5, 14],
             bouncing_bubbles: [5, 14],
@@ -577,6 +568,8 @@ export class EffectsEngine {
             case 'stars_multicolor': this.drawStars(delta); break;
             case 'hearts': this.drawHearts(delta); break;
             case 'petals': this.drawPetals(delta); break;
+            case 'cherry_blossoms': this.drawCherryBlossoms(delta); break;
+            case 'sunflowers': this.drawSunflowers(delta); break;
             case 'confetti': this.drawConfetti(delta); break;
             case 'bubbles': this.drawBubbles(delta); break;
             case 'bouncing_bubbles': this.drawBouncingBubbles(delta); break;
@@ -606,9 +599,6 @@ export class EffectsEngine {
     }
 
     private pileRestInset(particle: Particle): number {
-        if (this.config.effect === 'leaves') return particle.size * 0.58;
-        if (this.config.effect === 'maple_leaves') return particle.size * 0.82;
-        if (this.config.effect === 'petals') return particle.size;
         return particle.size;
     }
 
@@ -622,6 +612,25 @@ export class EffectsEngine {
             if (particle.settled >= PILE_RECYCLE_AGE) this.resetParticle(particle);
         }
         this.pilingSettled = this.particles.filter((particle) => particle.settled > 0);
+        this.releaseUnsupportedPiles();
+    }
+
+    private releaseUnsupportedPiles(): void {
+        const stacked = [...this.pilingSettled].sort((first, second) => second.y - first.y);
+        for (const particle of stacked) {
+            if (particle.settled <= 0) continue;
+            const others = this.pilingSettled.filter((other) => other !== particle && other.settled > 0);
+            if (!isUnsupported(particle, this.height, this.pileRestInset(particle), others)) continue;
+            particle.settled = 0;
+            this.releaseFallSpeed(particle);
+        }
+        this.pilingSettled = this.particles.filter((particle) => particle.settled > 0);
+    }
+
+    private releaseFallSpeed(particle: Particle): void {
+        const [min, max] = this.speedRange(this.config.effect);
+        particle.vy = (min + (max - min) * 0.45) * (this.config.speed / 100);
+        particle.rotationSpeed = (Math.random() - 0.5) * 2.4;
     }
 
     private advancePiling(particle: Particle, delta: number, sway: number): void {
@@ -629,27 +638,28 @@ export class EffectsEngine {
 
         particle.phase += particle.phaseSpeed * delta;
         particle.rotation += particle.rotationSpeed * delta;
-        particle.vy += PILE_GRAVITY * delta;
         particle.x += (particle.vx + Math.sin(particle.phase) * sway) * delta;
         particle.y += particle.vy * delta;
         this.wrapHorizontally(particle);
 
-        for (const other of this.pilingSettled) {
-            bounceOffPile(particle, other, true);
-        }
-
         const restInset = this.pileRestInset(particle);
+        const restY = supportYFromSettled(
+            particle.x,
+            particle.size,
+            this.height,
+            restInset,
+            this.pilingSettled,
+        );
+        if (particle.y < restY) return;
+
         const maxSettled = Math.max(4, Math.floor(this.particles.length * 0.72));
-        if (this.pilingSettled.length >= maxSettled && particle.y >= this.height - restInset) {
+        if (restY < this.height - PILE_MAX_HEIGHT || this.pilingSettled.length >= maxSettled) {
             this.resetParticle(particle);
             return;
         }
 
-        if (!settleOnFloor(particle, this.height, restInset, this.pilingSettled)) return;
+        if (!settleWhereHit(particle, this.height, restInset, this.pilingSettled)) return;
         this.pilingSettled.push(particle);
-        if (this.config.effect !== 'snow') {
-            particle.rotation = (Math.random() - 0.5) * 1.35;
-        }
     }
 
     private wrapHorizontally(particle: Particle): void {
@@ -713,9 +723,8 @@ export class EffectsEngine {
     }
 
     private drawLeaves(delta: number): void {
-        this.beginPilingFrame(delta);
         for (const particle of this.particles) {
-            this.advancePiling(particle, delta, 32);
+            this.advanceFalling(particle, delta, 32);
             this.prepareParticle(particle);
             this.withTransform(particle, () => {
                 const size = particle.size;
@@ -888,22 +897,95 @@ export class EffectsEngine {
     }
 
     private drawPetals(delta: number): void {
-        this.beginPilingFrame(delta);
         for (const particle of this.particles) {
-            this.advancePiling(particle, delta, 25);
-            this.prepareParticle(particle);
+            this.advanceFalling(particle, delta, 25);
             this.withTransform(particle, () => {
-                this.context.beginPath();
-                this.context.ellipse(
-                    0,
-                    0,
-                    particle.size * 0.55,
-                    particle.size,
-                    0,
-                    0,
-                    Math.PI * 2,
-                );
+                const size = particle.size;
+                this.context.globalAlpha = (this.config.opacity / 100) * particle.alpha;
+                this.context.translate(0, size * 0.46);
+                this.drawCherryPetalPath(size);
+                this.context.fillStyle = this.colorFor(particle);
                 this.context.fill();
+                this.context.strokeStyle = 'rgba(244, 114, 182, 0.42)';
+                this.context.lineWidth = Math.max(0.55, size * 0.05);
+                this.context.stroke();
+                this.context.beginPath();
+                this.context.moveTo(0, -size * 0.14);
+                this.context.quadraticCurveTo(0, -size * 0.48, 0, -size * 0.82);
+                this.context.stroke();
+            });
+        }
+    }
+
+    private drawCherryBlossoms(delta: number): void {
+        for (const particle of this.particles) {
+            this.advanceFalling(particle, delta, 22);
+            this.withTransform(particle, () => {
+                const size = particle.size;
+                const body = this.fixedPaletteColor(particle, '#f9a8d4');
+                this.context.globalAlpha = (this.config.opacity / 100) * particle.alpha;
+                for (let index = 0; index < 5; index += 1) {
+                    this.context.save();
+                    this.context.rotate((Math.PI * 2 * index) / 5);
+                    this.drawCherryPetalPath(size);
+                    this.context.fillStyle = body;
+                    this.context.fill();
+                    this.context.strokeStyle = 'rgba(244, 114, 182, 0.38)';
+                    this.context.lineWidth = Math.max(0.55, size * 0.045);
+                    this.context.stroke();
+                    this.context.beginPath();
+                    this.context.moveTo(0, -size * 0.14);
+                    this.context.quadraticCurveTo(0, -size * 0.48, 0, -size * 0.82);
+                    this.context.stroke();
+                    this.context.restore();
+                }
+                this.context.fillStyle = '#fde047';
+                this.fillCircle(0, 0, size * 0.13);
+                this.context.fillStyle = '#a3e635';
+                for (let index = 0; index < 5; index += 1) {
+                    const angle = (Math.PI * 2 * index) / 5 + 0.22;
+                    this.fillCircle(
+                        Math.cos(angle) * size * 0.12,
+                        Math.sin(angle) * size * 0.12,
+                        size * 0.045,
+                    );
+                }
+            });
+        }
+    }
+
+    private drawSunflowers(delta: number): void {
+        for (const particle of this.particles) {
+            this.advanceFalling(particle, delta, 16);
+            this.withTransform(particle, () => {
+                const size = particle.size;
+                const petal = this.fixedPaletteColor(particle, '#facc15');
+                this.context.globalAlpha = (this.config.opacity / 100) * particle.alpha;
+                for (let index = 0; index < 16; index += 1) {
+                    this.context.save();
+                    this.context.rotate((Math.PI * 2 * index) / 16);
+                    this.context.fillStyle = petal;
+                    this.context.beginPath();
+                    this.context.ellipse(0, -size * 0.62, size * 0.18, size * 0.44, 0, 0, Math.PI * 2);
+                    this.context.fill();
+                    this.context.restore();
+                }
+                this.context.fillStyle = '#78350f';
+                this.fillCircle(0, 0, size * 0.4);
+                this.context.fillStyle = '#451a03';
+                this.fillCircle(0, 0, size * 0.3);
+                this.context.fillStyle = '#a16207';
+                for (let ring = 0.08; ring < 0.28; ring += 0.07) {
+                    const count = Math.round(7 + ring * 42);
+                    for (let index = 0; index < count; index += 1) {
+                        const angle = (Math.PI * 2 * index) / count + ring * 3.2;
+                        this.fillCircle(
+                            Math.cos(angle) * size * ring,
+                            Math.sin(angle) * size * ring,
+                            size * 0.03,
+                        );
+                    }
+                }
             });
         }
     }
@@ -1382,9 +1464,8 @@ export class EffectsEngine {
     }
 
     private drawMapleLeaves(delta: number): void {
-        this.beginPilingFrame(delta);
         for (const particle of this.particles) {
-            this.advancePiling(particle, delta, 28);
+            this.advanceFalling(particle, delta, 28);
             this.withTransform(particle, () => {
                 const size = particle.size;
                 const body = this.fixedPaletteColor(particle, '#dc2626');
@@ -1415,6 +1496,29 @@ export class EffectsEngine {
                 this.context.stroke();
             });
         }
+    }
+
+    private drawCherryPetalPath(size: number): void {
+        this.context.beginPath();
+        this.context.moveTo(0, -size * 0.08);
+        this.context.bezierCurveTo(
+            size * 0.4,
+            -size * 0.16,
+            size * 0.52,
+            -size * 0.62,
+            size * 0.14,
+            -size,
+        );
+        this.context.quadraticCurveTo(0, -size * 0.78, -size * 0.14, -size);
+        this.context.bezierCurveTo(
+            -size * 0.52,
+            -size * 0.62,
+            -size * 0.4,
+            -size * 0.16,
+            0,
+            -size * 0.08,
+        );
+        this.context.closePath();
     }
 
     private drawMapleLeafPath(size: number): void {

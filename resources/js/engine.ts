@@ -6,6 +6,8 @@ interface Particle {
     vx: number;
     vy: number;
     size: number;
+    baseSize: number;
+    sparkle: number;
     phase: number;
     phaseSpeed: number;
     rotation: number;
@@ -35,7 +37,7 @@ const EFFECT_DENSITY: Record<EffectKind, number> = {
     bouncing_bubbles: 0.35,
     fireflies: 0.3,
     cheese: 0.4,
-    poop: 0.38,
+    poop: 0.5,
     ice_cream: 0.36,
     bills: 0.42,
     coins: 0.45,
@@ -103,6 +105,52 @@ export function resolveBubbleCollision(
     }
 
     return true;
+}
+
+export const POOP_GROWTH = 1.22;
+export const POOP_MAX_SCALE = 2.6;
+export const POOP_HIT_RADIUS = 0.88;
+
+export interface PoopBody extends CollisionBody {
+    baseSize: number;
+    sparkle: number;
+}
+
+export function resolvePoopCollision(
+    first: PoopBody,
+    second: PoopBody,
+): boolean {
+    const dx = second.x - first.x;
+    const dy = second.y - first.y;
+    const minimumDistance = (first.size + second.size) * POOP_HIT_RADIUS;
+    const distanceSquared = dx * dx + dy * dy;
+    if (distanceSquared >= minimumDistance * minimumDistance) return false;
+
+    const distance = Math.sqrt(distanceSquared);
+    const normalX = distance > 0 ? dx / distance : 1;
+    const normalY = distance > 0 ? dy / distance : 0;
+    const overlap = minimumDistance - distance;
+
+    first.x -= normalX * overlap * 0.5;
+    first.y -= normalY * overlap * 0.5;
+    second.x += normalX * overlap * 0.5;
+    second.y += normalY * overlap * 0.5;
+
+    const relativeVelocity = (second.vx - first.vx) * normalX
+        + (second.vy - first.vy) * normalY;
+    if (relativeVelocity >= 0) return false;
+
+    first.vx += relativeVelocity * normalX * 0.7;
+    first.vy += relativeVelocity * normalY * 0.35;
+    second.vx -= relativeVelocity * normalX * 0.7;
+    second.vy -= relativeVelocity * normalY * 0.35;
+    return true;
+}
+
+export function growPoopOnHit(particle: PoopBody): void {
+    if (particle.sparkle > 0.45) return;
+    particle.size = Math.min(particle.baseSize * POOP_MAX_SCALE, particle.size * POOP_GROWTH);
+    particle.sparkle = 1;
 }
 
 export function particleCount(
@@ -194,6 +242,7 @@ export class EffectsEngine {
         const fireflies = effect === 'fireflies';
         const speedRange = this.speedRange(effect);
         const wind = signedWind(this.config.wind, this.config.windDirection);
+        const size = this.sizeRange(effect);
 
         return {
             x: Math.random() * this.width,
@@ -207,7 +256,9 @@ export class EffectsEngine {
             vy: (bubbles ? -1 : bouncingBubbles && Math.random() < 0.5 ? -1 : 1)
                 * (speedRange[0] + Math.random() * (speedRange[1] - speedRange[0]))
                 * speed,
-            size: this.sizeRange(effect),
+            size,
+            baseSize: size,
+            sparkle: 0,
             phase: Math.random() * Math.PI * 2,
             phaseSpeed: 0.6 + Math.random() * 1.8,
             rotation: Math.random() * Math.PI * 2,
@@ -634,46 +685,113 @@ export class EffectsEngine {
     private drawPoop(delta: number): void {
         for (const particle of this.particles) {
             this.advanceFalling(particle, delta, 14);
-            this.withTransform(particle, () => {
-                const size = particle.size;
-                const body = this.fixedPaletteColor(particle, '#92400e');
-                const shade = '#78350f';
-                this.context.globalAlpha = (this.config.opacity / 100) * particle.alpha;
+            particle.sparkle = Math.max(0, particle.sparkle - delta * 2.6);
+        }
+        this.resolvePoopCollisions();
+        for (const particle of this.particles) {
+            this.drawPoopParticle(particle);
+        }
+    }
 
-                this.context.fillStyle = shade;
-                this.fillEllipse(size * 0.08, size * 0.5, size * 0.92, size * 0.42);
-                this.context.fillStyle = body;
-                this.fillEllipse(0, size * 0.42, size * 0.95, size * 0.48);
+    private drawPoopParticle(particle: Particle): void {
+        this.withTransform(particle, () => {
+            const size = particle.size;
+            const body = this.fixedPaletteColor(particle, '#92400e');
+            const shade = '#78350f';
+            const flash = particle.sparkle;
+            this.context.globalAlpha = (this.config.opacity / 100) * particle.alpha;
 
-                this.context.fillStyle = shade;
-                this.fillEllipse(size * 0.06, size * 0.02, size * 0.68, size * 0.34);
-                this.context.fillStyle = body;
-                this.fillEllipse(-size * 0.04, -size * 0.08, size * 0.72, size * 0.4);
+            this.context.fillStyle = shade;
+            this.fillEllipse(size * 0.08, size * 0.5, size * 0.92, size * 0.42);
+            this.context.fillStyle = body;
+            this.fillEllipse(0, size * 0.42, size * 0.95, size * 0.48);
 
-                this.context.fillStyle = shade;
-                this.fillEllipse(size * 0.18, -size * 0.5, size * 0.4, size * 0.24);
-                this.context.fillStyle = body;
-                this.fillEllipse(size * 0.06, -size * 0.58, size * 0.46, size * 0.3);
-                this.fillEllipse(size * 0.28, -size * 0.82, size * 0.18, size * 0.14);
+            this.context.fillStyle = shade;
+            this.fillEllipse(size * 0.06, size * 0.02, size * 0.68, size * 0.34);
+            this.context.fillStyle = body;
+            this.fillEllipse(-size * 0.04, -size * 0.08, size * 0.72, size * 0.4);
 
-                this.context.fillStyle = 'rgba(254, 243, 199, 0.28)';
-                this.fillEllipse(-size * 0.28, size * 0.28, size * 0.22, size * 0.14);
-                this.fillEllipse(-size * 0.22, -size * 0.18, size * 0.16, size * 0.1);
+            this.context.fillStyle = shade;
+            this.fillEllipse(size * 0.18, -size * 0.5, size * 0.4, size * 0.24);
+            this.context.fillStyle = body;
+            this.fillEllipse(size * 0.06, -size * 0.58, size * 0.46, size * 0.3);
+            this.fillEllipse(size * 0.28, -size * 0.82, size * 0.18, size * 0.14);
 
-                this.context.fillStyle = '#fff7ed';
-                this.fillCircle(-size * 0.18, -size * 0.16, size * 0.16);
-                this.fillCircle(size * 0.2, -size * 0.12, size * 0.16);
-                this.context.fillStyle = '#1f2937';
-                this.fillCircle(-size * 0.14, -size * 0.14, size * 0.075);
-                this.fillCircle(size * 0.24, -size * 0.1, size * 0.075);
+            this.context.fillStyle = 'rgba(254, 243, 199, 0.28)';
+            this.fillEllipse(-size * 0.28, size * 0.28, size * 0.22, size * 0.14);
+            this.fillEllipse(-size * 0.22, -size * 0.18, size * 0.16, size * 0.1);
 
-                this.context.strokeStyle = '#1f2937';
-                this.context.lineWidth = Math.max(0.8, size * 0.08);
-                this.context.lineCap = 'round';
-                this.context.beginPath();
-                this.context.arc(size * 0.02, size * 0.08, size * 0.22, 0.15 * Math.PI, 0.85 * Math.PI);
-                this.context.stroke();
-            });
+            if (flash > 0) {
+                this.context.fillStyle = `rgba(253, 224, 71, ${0.32 * flash})`;
+                this.fillEllipse(0, 0, size * 1.05, size * 1.15);
+            }
+
+            this.context.fillStyle = '#fff7ed';
+            this.fillCircle(-size * 0.18, -size * 0.16, size * 0.16);
+            this.fillCircle(size * 0.2, -size * 0.12, size * 0.16);
+            this.context.fillStyle = '#1f2937';
+            this.fillCircle(-size * 0.14, -size * 0.14, size * 0.075);
+            this.fillCircle(size * 0.24, -size * 0.1, size * 0.075);
+
+            this.context.strokeStyle = '#1f2937';
+            this.context.lineWidth = Math.max(0.8, size * 0.08);
+            this.context.lineCap = 'round';
+            this.context.beginPath();
+            this.context.arc(size * 0.02, size * 0.08, size * 0.22, 0.15 * Math.PI, 0.85 * Math.PI);
+            this.context.stroke();
+
+            if (flash > 0) {
+                this.drawPoopSparkles(size, particle.phase, flash);
+            }
+        });
+    }
+
+    private drawPoopSparkles(size: number, phase: number, flash: number): void {
+        const count = 7;
+        this.context.fillStyle = `rgba(254, 240, 138, ${0.35 + flash * 0.65})`;
+        for (let point = 0; point < count; point += 1) {
+            const angle = phase + point * (Math.PI * 2 / count);
+            const distance = size * (1.15 + (1 - flash) * 0.55);
+            const x = Math.cos(angle) * distance;
+            const y = Math.sin(angle) * distance;
+            const spark = size * (0.14 + flash * 0.12);
+            this.context.beginPath();
+            this.context.moveTo(x, y - spark);
+            this.context.lineTo(x + spark * 0.28, y);
+            this.context.lineTo(x, y + spark);
+            this.context.lineTo(x - spark * 0.28, y);
+            this.context.closePath();
+            this.context.fill();
+        }
+    }
+
+    private resolvePoopCollisions(): void {
+        const largestDiameter = Math.max(
+            1,
+            ...this.particles.map((particle) => particle.size * 2),
+        );
+        const grid = new Map<string, Particle[]>();
+
+        for (const particle of this.particles) {
+            const cellX = Math.floor(particle.x / largestDiameter);
+            const cellY = Math.floor(particle.y / largestDiameter);
+
+            for (let offsetY = -1; offsetY <= 1; offsetY += 1) {
+                for (let offsetX = -1; offsetX <= 1; offsetX += 1) {
+                    const nearby = grid.get(`${cellX + offsetX}:${cellY + offsetY}`);
+                    if (!nearby) continue;
+                    for (const other of nearby) {
+                        if (!resolvePoopCollision(other, particle)) continue;
+                        growPoopOnHit(other);
+                        growPoopOnHit(particle);
+                    }
+                }
+            }
+
+            const key = `${cellX}:${cellY}`;
+            const bucket = grid.get(key);
+            if (bucket) bucket.push(particle);
+            else grid.set(key, [particle]);
         }
     }
 

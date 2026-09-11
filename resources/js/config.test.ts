@@ -9,7 +9,7 @@ import {
     readSiteTimezone,
     shouldStart,
 } from './config';
-import { particleCount, resolveBubbleCollision, signedWind } from './engine';
+import { particleCount, resolveBubbleCollision, signedWind, growPoopOnHit, resolvePoopCollision } from './engine';
 
 describe('normalizeConfig', () => {
     it('uses safe defaults for a missing payload', () => {
@@ -271,5 +271,39 @@ describe('resolveBubbleCollision', () => {
         expect(resolveBubbleCollision(first, second)).toBe(false);
         expect(first).toEqual({ x: 0, y: 0, vx: 1, vy: 0, size: 5 });
         expect(second).toEqual({ x: 12, y: 0, vx: -1, vy: 0, size: 5 });
+    });
+});
+
+describe('poop collisions', () => {
+    it('grows and sparkles on a first hit, then ignores overlapping flashes', () => {
+        const particle = { x: 0, y: 0, vx: 0, vy: 0, size: 10, baseSize: 10, sparkle: 0 };
+        growPoopOnHit(particle);
+        expect(particle.sparkle).toBe(1);
+        expect(particle.size).toBe(12.2);
+
+        growPoopOnHit(particle);
+        expect(particle.size).toBe(12.2);
+    });
+
+    it('caps growth at a multiple of the original size', () => {
+        const particle = { x: 0, y: 0, vx: 0, vy: 0, size: 10, baseSize: 10, sparkle: 0 };
+        for (let hit = 0; hit < 12; hit += 1) {
+            particle.sparkle = 0;
+            growPoopOnHit(particle);
+        }
+        expect(particle.size).toBe(26);
+    });
+
+    it('sparkles after two approaching poops collide', () => {
+        const first = { x: 0, y: 0, vx: 12, vy: 0, size: 10, baseSize: 10, sparkle: 0 };
+        const second = { x: 16, y: 0, vx: -12, vy: 0, size: 10, baseSize: 10, sparkle: 0 };
+
+        expect(resolvePoopCollision(first, second)).toBe(true);
+        growPoopOnHit(first);
+        growPoopOnHit(second);
+        expect(first.sparkle).toBe(1);
+        expect(second.sparkle).toBe(1);
+        expect(first.size).toBeGreaterThan(10);
+        expect(second.x - first.x).toBeCloseTo(17.6);
     });
 });

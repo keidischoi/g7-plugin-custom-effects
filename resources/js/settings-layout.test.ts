@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { COLOR_OPTIONS, EFFECT_KINDS, TIMEZONE_OPTIONS } from './config';
+import { COLOR_OPTIONS, EFFECT_KINDS } from './config';
 
 interface LayoutNode {
     name?: string;
@@ -80,9 +80,10 @@ describe('plugin settings layout', () => {
         expect(slots).toContain('"name":"schedules"');
         expect(slots).toContain('"placeholder":"YYYY-MM-DD"');
         expect(slots).toContain('"placeholder":"HH:MM"');
-        for (const value of [...COLOR_OPTIONS, ...TIMEZONE_OPTIONS]) {
+        for (const value of COLOR_OPTIONS) {
             expect(slots).toContain(`"value":"${value}"`);
         }
+        expect(slots).not.toContain('"key":"timezone"');
         for (const day of ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat']) {
             expect(slots).toContain(`"key":"${day}"`);
         }
@@ -100,9 +101,9 @@ describe('plugin settings layout', () => {
         expect(effectsCss).toContain('.g7-custom-effects-schedule-dfl-row {');
         expect(effectsCss).toContain('grid-template-columns: 1.5rem 2rem repeat(7, minmax(3.2rem, 0.55fr))');
         expect(effectsCss).toContain('.g7-custom-effects-schedule-full {');
-        expect(effectsCss).toContain('grid-column: 5 / 10');
         expect(effectsCss).toContain('> :nth-child(9) { grid-column: 3; grid-row: 2; }');
         expect(effectsCss).toContain('> :nth-child(15) { grid-column: 9; grid-row: 2; }');
+        expect(effectsCss).toContain('> :nth-child(16) {');
         expect(effectsCss).toContain('input[type="date"]');
         expect(effectsCss).toContain('input[type="time"]');
         expect(effectsCss).toContain('content: "시작 시간"');

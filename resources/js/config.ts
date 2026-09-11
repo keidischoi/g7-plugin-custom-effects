@@ -119,15 +119,54 @@ function presetValue<const T extends readonly string[]>(
         : fallback;
 }
 
-function formattedValue(value: unknown, pattern: RegExp): string {
+function timeValue(value: unknown): string {
     if (typeof value !== 'string') return '';
-    const formatted = value.trim();
-    return pattern.test(formatted) ? formatted : '';
+    const match = value.trim().match(/^([01]?\d|2[0-3]):([0-5]\d)(?::[0-5]\d)?$/);
+    if (!match) return '';
+    return `${match[1].padStart(2, '0')}:${match[2]}`;
+}
+
+function timezoneValue(value: unknown, fallback: string): string {
+    if (typeof value !== 'string') return fallback;
+    const timezone = value.trim();
+    if (!timezone) return fallback;
+
+    try {
+        Intl.DateTimeFormat('en-CA', { timeZone: timezone });
+        return timezone;
+    } catch {
+        return fallback;
+    }
+}
+
+export function readSiteTimezone(target: Window = window): string {
+    const g7Config = (target as Window & {
+        G7Config?: {
+            timezone?: unknown;
+            settings?: {
+                timezone?: unknown;
+                general?: {
+                    timezone?: unknown;
+                };
+            };
+        };
+    }).G7Config;
+
+    return timezoneValue(
+        g7Config?.settings?.general?.timezone
+            ?? g7Config?.settings?.timezone
+            ?? g7Config?.timezone,
+        timezoneValue(
+            typeof Intl === 'undefined' ? '' : Intl.DateTimeFormat().resolvedOptions().timeZone,
+            DEFAULT_CONFIG.scheduleTimezone,
+        ),
+    );
 }
 
 function dateValue(value: unknown): string {
-    const formatted = formattedValue(value, /^\d{4}-\d{2}-\d{2}$/);
-    if (!formatted) return '';
+    if (typeof value !== 'string') return '';
+    const formatted = value.trim();
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(formatted)) return '';
 
     const date = new Date(`${formatted}T00:00:00Z`);
     return Number.isNaN(date.getTime()) || date.toISOString().slice(0, 10) !== formatted
@@ -170,14 +209,10 @@ function scheduleValue(
         effect,
         startDate: dateValue(value.start_date),
         endDate: dateValue(value.end_date),
-        startTime: formattedValue(value.start_time, /^(?:[01]\d|2[0-3]):[0-5]\d$/),
-        endTime: formattedValue(value.end_time, /^(?:[01]\d|2[0-3]):[0-5]\d$/),
+        startTime: timeValue(value.start_time),
+        endTime: timeValue(value.end_time),
         days,
-        timezone: presetValue(
-            value.timezone,
-            TIMEZONE_OPTIONS,
-            DEFAULT_CONFIG.scheduleTimezone,
-        ),
+        timezone: timezoneValue(value.timezone, DEFAULT_CONFIG.scheduleTimezone),
     };
 }
 
@@ -241,12 +276,11 @@ export function normalizeConfig(raw: unknown): EffectConfig {
         scheduleEnabled: booleanValue(value.schedule_enabled, DEFAULT_CONFIG.scheduleEnabled),
         scheduleStartDate: dateValue(value.schedule_start_date),
         scheduleEndDate: dateValue(value.schedule_end_date),
-        scheduleStartTime: formattedValue(value.schedule_start_time, /^(?:[01]\d|2[0-3]):[0-5]\d$/),
-        scheduleEndTime: formattedValue(value.schedule_end_time, /^(?:[01]\d|2[0-3]):[0-5]\d$/),
+        scheduleStartTime: timeValue(value.schedule_start_time),
+        scheduleEndTime: timeValue(value.schedule_end_time),
         scheduleDays: legacyDays,
-        scheduleTimezone: presetValue(
+        scheduleTimezone: timezoneValue(
             value.schedule_timezone,
-            TIMEZONE_OPTIONS,
             DEFAULT_CONFIG.scheduleTimezone,
         ),
         schedules,
@@ -257,8 +291,12 @@ export function readInlineConfig(target: Window = window): EffectConfig {
     const g7Config = (target as Window & {
         G7Config?: { plugins?: Record<string, unknown> };
     }).G7Config;
+    const config = normalizeConfig(g7Config?.plugins?.[PLUGIN_IDENTIFIER]);
 
-    return normalizeConfig(g7Config?.plugins?.[PLUGIN_IDENTIFIER]);
+    return {
+        ...config,
+        scheduleTimezone: readSiteTimezone(target),
+    };
 }
 
 export function shouldStart(

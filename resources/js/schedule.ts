@@ -72,10 +72,14 @@ function previousDate(date: string): string {
     return previous.toISOString().slice(0, 10);
 }
 
-function matchesSchedule(schedule: EffectSchedule, now: Date): boolean {
+function matchesSchedule(
+    schedule: EffectSchedule,
+    now: Date,
+    timezone: string,
+): boolean {
     if (!schedule.enabled) return false;
 
-    const clock = getZonedClock(now, schedule.timezone);
+    const clock = getZonedClock(now, timezone);
     const overnightCarry = Boolean(
         schedule.startTime
         && schedule.endTime
@@ -100,8 +104,10 @@ export function activeScheduledEffect(
     config: EffectConfig,
     now: Date = new Date(),
 ): EffectKind | null {
-    if (!config.scheduleEnabled) return config.effect;
-    return config.schedules.find((schedule) => matchesSchedule(schedule, now))?.effect ?? null;
+    if (!config.scheduleEnabled || config.schedules.length === 0) return config.effect;
+    return config.schedules.find((schedule) => (
+        matchesSchedule(schedule, now, config.scheduleTimezone)
+    ))?.effect ?? null;
 }
 
 export function isScheduleActive(

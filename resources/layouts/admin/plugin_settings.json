@@ -1,5 +1,5 @@
 {
-    "version": "1.7.4",
+    "version": "1.7.5",
     "layout_name": "plugin_settings",
     "permissions": [
         "core.plugins.update"
@@ -945,49 +945,6 @@
                                                                 {
                                                                     "value": "false",
                                                                     "label": "$t:g7-plugin-custom-effects.settings.options.day_off"
-                                                                }
-                                                            ]
-                                                        },
-                                                        {
-                                                            "key": "timezone",
-                                                            "type": "select",
-                                                            "label": "$t:g7-plugin-custom-effects.settings.fields.schedule_timezone.label",
-                                                            "options": [
-                                                                {
-                                                                    "value": "Asia/Seoul",
-                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.timezone_seoul"
-                                                                },
-                                                                {
-                                                                    "value": "UTC",
-                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.timezone_utc"
-                                                                },
-                                                                {
-                                                                    "value": "Asia/Tokyo",
-                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.timezone_tokyo"
-                                                                },
-                                                                {
-                                                                    "value": "Asia/Shanghai",
-                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.timezone_shanghai"
-                                                                },
-                                                                {
-                                                                    "value": "America/New_York",
-                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.timezone_new_york"
-                                                                },
-                                                                {
-                                                                    "value": "America/Los_Angeles",
-                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.timezone_los_angeles"
-                                                                },
-                                                                {
-                                                                    "value": "Europe/London",
-                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.timezone_london"
-                                                                },
-                                                                {
-                                                                    "value": "Europe/Paris",
-                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.timezone_paris"
-                                                                },
-                                                                {
-                                                                    "value": "Australia/Sydney",
-                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.timezone_sydney"
                                                                 }
                                                             ]
                                                         }

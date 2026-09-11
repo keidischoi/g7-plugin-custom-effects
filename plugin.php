@@ -195,8 +195,8 @@ class Plugin extends AbstractPlugin
                 'default' => 'Asia/Seoul',
                 'label' => ['ko' => '기준 타임존', 'en' => 'Timezone'],
                 'hint' => [
-                    'ko' => '예약 시간을 계산할 기준 지역을 선택합니다.',
-                    'en' => 'Choose the region used to calculate scheduled times.',
+                    'ko' => '예약 시간은 환경설정의 기본 시간대로 계산합니다.',
+                    'en' => 'Scheduled times use the site default timezone.',
                 ],
                 'required' => true,
             ],

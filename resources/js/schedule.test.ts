@@ -2,13 +2,13 @@ import { describe, expect, it } from 'vitest';
 import { normalizeConfig } from './config';
 import { getZonedClock, isScheduleActive, activeScheduledEffect } from './schedule';
 
-function scheduled(overrides: Record<string, unknown> = {}) {
+function scheduled(overrides: Record<string, unknown> = {}, timezone = 'Asia/Seoul') {
     return normalizeConfig({
         schedule_enabled: true,
+        schedule_timezone: timezone,
         schedules: [{
             enabled: true,
             effect: 'snow',
-            timezone: 'Asia/Seoul',
             sun: true,
             mon: true,
             tue: true,
@@ -111,19 +111,18 @@ describe('effect scheduling', () => {
     it('uses the first matching schedule effect', () => {
         const config = normalizeConfig({
             schedule_enabled: true,
+            schedule_timezone: 'Asia/Seoul',
             effect: 'snow',
             schedules: [
                 {
                     enabled: true,
                     effect: 'rain',
-                    timezone: 'Asia/Seoul',
                     start_time: '09:00',
                     end_time: '18:00',
                 },
                 {
                     enabled: true,
                     effect: 'hearts',
-                    timezone: 'Asia/Seoul',
                     start_time: '18:00',
                     end_time: '23:00',
                 },
@@ -133,6 +132,24 @@ describe('effect scheduling', () => {
         expect(activeScheduledEffect(config, new Date('2026-09-11T01:00:00Z'))).toBe('rain');
         expect(activeScheduledEffect(config, new Date('2026-09-11T10:00:00Z'))).toBe('hearts');
         expect(activeScheduledEffect(config, new Date('2026-09-11T15:00:00Z'))).toBeNull();
+    });
+
+    it('keeps the default effect when scheduling is on but no rows exist', () => {
+        expect(activeScheduledEffect(normalizeConfig({
+            schedule_enabled: true,
+            effect: 'rain',
+            schedules: [],
+        }))).toBe('rain');
+    });
+
+    it('uses the site timezone instead of a per-schedule zone', () => {
+        const config = scheduled({
+            start_time: '22:00',
+            end_time: '23:00',
+            timezone: 'America/New_York',
+        }, 'Asia/Seoul');
+
+        expect(isScheduleActive(config, new Date('2026-09-11T13:30:00Z'))).toBe(true);
     });
 
     it('falls back to Asia/Seoul for an invalid timezone', () => {

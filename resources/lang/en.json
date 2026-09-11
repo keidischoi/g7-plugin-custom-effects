@@ -101,7 +101,7 @@
             },
             "schedule_enabled": {
                 "label": "Enable scheduling",
-                "hint": "When scheduling is on, only a matching schedule effect is shown."
+                "hint": "When scheduling is on, only a matching schedule effect is shown. Times use the site default timezone."
             },
             "schedules": {
                 "add": "Add schedule",
@@ -130,7 +130,7 @@
             },
             "schedule_timezone": {
                 "label": "Timezone",
-                "hint": "Choose the region used to calculate scheduled times."
+                "hint": "Scheduled times use the site default timezone."
             },
             "mobile_enabled": {
                 "label": "Enable on mobile",

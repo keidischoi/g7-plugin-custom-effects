@@ -169,7 +169,9 @@ describe('plugin settings layout', () => {
         expect(slots).toContain('g7-custom-effects-schedule-day-select');
         expect(slots).toContain('"key":"intensity"');
         expect(slots).toContain('"key":"wind_direction"');
-        expect(slots).toContain('"event":"onAddItem"');
+        expect(slots).not.toContain('"event":"onAddItem"');
+        expect(slots).toContain('($args[0])');
+        expect(slots).toContain('_local.form.intensity');
     });
 
     it('loads settings into the local form and provides a complete save flow', () => {

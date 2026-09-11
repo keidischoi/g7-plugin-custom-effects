@@ -259,30 +259,23 @@ export function enhanceSchedulePickers(target: Window = window): () => void {
     };
 
     const watch = (root: Element): void => {
+        const observe = (): void => {
+            observer?.observe(root, {
+                childList: true,
+                subtree: true,
+                attributes: true,
+                attributeFilter: ['type', 'placeholder'],
+            });
+        };
+
         apply();
         observer?.disconnect();
-        observer = new MutationObserver((mutations) => {
+        observer = new MutationObserver(() => {
+            observer?.disconnect();
             apply();
-            const addedRow = mutations.some((mutation) => (
-                [...mutation.addedNodes].some((node) => (
-                    node instanceof HTMLElement
-                    && (
-                        node.classList.contains('g7-custom-effects-schedule-dfl-row')
-                        || Boolean(node.querySelector('.g7-custom-effects-schedule-dfl-row'))
-                    )
-                ))
-            ));
-            if (!addedRow) return;
-            const rows = root.querySelectorAll('.g7-custom-effects-schedule-dfl-row');
-            const last = rows[rows.length - 1];
-            if (last instanceof HTMLElement) fillEmptyScheduleRow(last, target);
+            observe();
         });
-        observer.observe(root, {
-            childList: true,
-            subtree: true,
-            attributes: true,
-            attributeFilter: ['type', 'placeholder'],
-        });
+        observe();
         root.addEventListener('click', onAddClick);
     };
 
@@ -292,15 +285,14 @@ export function enhanceSchedulePickers(target: Window = window): () => void {
         const button = clicked.closest('button');
         if (!button || !isAddScheduleButton(button)) return;
         const fillLast = (): void => {
-            const root = target.document.querySelector('.g7-custom-effects-schedule-list');
-            const rows = root?.querySelectorAll('.g7-custom-effects-schedule-dfl-row');
+            const list = target.document.querySelector('.g7-custom-effects-schedule-list');
+            const rows = list?.querySelectorAll('.g7-custom-effects-schedule-dfl-row');
             const last = rows?.[rows.length - 1];
             if (last instanceof HTMLElement) fillEmptyScheduleRow(last, target);
         };
         target.setTimeout(fillLast, 0);
-        target.setTimeout(fillLast, 50);
-        target.setTimeout(fillLast, 150);
-        target.setTimeout(fillLast, 400);
+        target.setTimeout(fillLast, 80);
+        target.setTimeout(fillLast, 250);
     };
 
     const finder = new MutationObserver(() => {

@@ -80,13 +80,11 @@ describe('plugin settings layout', () => {
         }
     });
 
-    it('keeps schedule controls within equal left and right padding', () => {
+    it('keeps schedule controls within enforced equal left and right padding', () => {
         const slots = JSON.stringify(layout.slots);
-        expect(slots).toContain(
-            '"className":"px-6 py-4 grid grid-cols-1 lg:grid-cols-2 gap-6"',
-        );
+        expect(slots).toContain('"style":{"padding":"1rem 1.5rem"}');
         expect(slots).not.toContain('"className":"p-6 mx-3 grid');
-        expect(slots.match(/box-border max-w-full w-full mt-2/g)).toHaveLength(6);
+        expect(slots.match(/"boxSizing":"border-box","maxWidth":"100%"/g)).toHaveLength(6);
     });
 
     it('loads settings into the local form and provides a complete save flow', () => {

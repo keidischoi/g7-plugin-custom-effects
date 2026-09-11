@@ -1,5 +1,5 @@
 {
-    "version": "1.6.1",
+    "version": "1.6.2",
     "layout_name": "plugin_settings",
     "permissions": [
         "core.plugins.update"
@@ -671,7 +671,10 @@
                                 "type": "basic",
                                 "name": "Div",
                                 "props": {
-                                    "className": "px-6 py-4 grid grid-cols-1 lg:grid-cols-2 gap-6"
+                                    "className": "grid grid-cols-1 lg:grid-cols-2 gap-6",
+                                    "style": {
+                                        "padding": "1rem 1.5rem"
+                                    }
                                 },
                                 "children": [
                                     {
@@ -745,7 +748,11 @@
                                                     "id": "schedule_start_date",
                                                     "type": "date",
                                                     "name": "schedule_start_date",
-                                                    "className": "box-border max-w-full w-full mt-2"
+                                                    "className": "w-full mt-2",
+                                                    "style": {
+                                                        "boxSizing": "border-box",
+                                                        "maxWidth": "100%"
+                                                    }
                                                 }
                                             }
                                         ]
@@ -782,7 +789,11 @@
                                                     "id": "schedule_end_date",
                                                     "type": "date",
                                                     "name": "schedule_end_date",
-                                                    "className": "box-border max-w-full w-full mt-2"
+                                                    "className": "w-full mt-2",
+                                                    "style": {
+                                                        "boxSizing": "border-box",
+                                                        "maxWidth": "100%"
+                                                    }
                                                 }
                                             }
                                         ]
@@ -819,7 +830,11 @@
                                                     "id": "schedule_start_time",
                                                     "type": "time",
                                                     "name": "schedule_start_time",
-                                                    "className": "box-border max-w-full w-full mt-2"
+                                                    "className": "w-full mt-2",
+                                                    "style": {
+                                                        "boxSizing": "border-box",
+                                                        "maxWidth": "100%"
+                                                    }
                                                 }
                                             }
                                         ]
@@ -856,7 +871,11 @@
                                                     "id": "schedule_end_time",
                                                     "type": "time",
                                                     "name": "schedule_end_time",
-                                                    "className": "box-border max-w-full w-full mt-2"
+                                                    "className": "w-full mt-2",
+                                                    "style": {
+                                                        "boxSizing": "border-box",
+                                                        "maxWidth": "100%"
+                                                    }
                                                 }
                                             }
                                         ]
@@ -884,7 +903,11 @@
                                                 "props": {
                                                     "id": "schedule_days",
                                                     "name": "schedule_days",
-                                                    "className": "box-border max-w-full w-full mt-2"
+                                                    "className": "w-full mt-2",
+                                                    "style": {
+                                                        "boxSizing": "border-box",
+                                                        "maxWidth": "100%"
+                                                    }
                                                 },
                                                 "children": [
                                                     {
@@ -946,7 +969,11 @@
                                                 "props": {
                                                     "id": "schedule_timezone",
                                                     "name": "schedule_timezone",
-                                                    "className": "box-border max-w-full w-full mt-2"
+                                                    "className": "w-full mt-2",
+                                                    "style": {
+                                                        "boxSizing": "border-box",
+                                                        "maxWidth": "100%"
+                                                    }
                                                 },
                                                 "children": [
                                                     {

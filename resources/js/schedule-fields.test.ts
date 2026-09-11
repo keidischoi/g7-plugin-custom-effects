@@ -2,6 +2,7 @@
 
 import { afterEach, describe, expect, it } from 'vitest';
 import { enhanceSchedulePickers, fillEmptyScheduleRow } from './schedule-fields';
+import { shiftClock } from './schedule';
 
 afterEach(() => {
     document.body.replaceChildren();
@@ -322,9 +323,11 @@ describe('enhanceSchedulePickers', () => {
 
         expect(effectSelect.value).toBe('rain');
         expect(dates[0]).toMatch(/^\d{4}-\d{2}-\d{2}$/);
-        expect(dates[1]).toBe(dates[0]);
         expect(times[0]).toMatch(/^\d{2}:\d{2}$/);
-        expect(times[1]).toBe(times[0]);
+        expect(shiftClock({ date: dates[0], time: times[0] }, 1)).toEqual({
+            date: dates[1],
+            time: times[1],
+        });
         expect(numbers).toEqual(['160', '75', '50', '30']);
         expect((row.querySelectorAll('select')[2] as HTMLSelectElement).value).toBe('left');
         expect((row.querySelectorAll('select')[3] as HTMLSelectElement).value).toBe('#bae6fd');
@@ -399,11 +402,15 @@ describe('enhanceSchedulePickers', () => {
         fillEmptyScheduleRow(row, window);
 
         expect(effectSelect.value).toBe('rain');
-        expect((row.querySelectorAll('input[type="date"]')[1] as HTMLInputElement).value)
-            .toMatch(/^\d{4}-\d{2}-\d{2}$/);
-        expect([...row.querySelectorAll('input[type="time"]')].map((input) => (
+        const startDate = (row.querySelectorAll('input[type="date"]')[0] as HTMLInputElement).value;
+        const endDate = (row.querySelectorAll('input[type="date"]')[1] as HTMLInputElement).value;
+        const times = [...row.querySelectorAll('input[type="time"]')].map((input) => (
             (input as HTMLInputElement).value
-        )).every((value) => /^\d{2}:\d{2}$/.test(value))).toBe(true);
+        ));
+        expect(shiftClock({ date: startDate, time: times[0] }, 1)).toEqual({
+            date: endDate,
+            time: times[1],
+        });
         expect([...row.querySelectorAll('input[type="number"]')].map((input) => (
             (input as HTMLInputElement).value
         ))).toEqual(['160', '75', '50', '30']);

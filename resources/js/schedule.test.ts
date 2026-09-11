@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { normalizeConfig } from './config';
-import { getZonedClock, isScheduleActive, activeScheduledEffect, resolveActiveConfig } from './schedule';
+import { getZonedClock, isScheduleActive, activeScheduledEffect, resolveActiveConfig, shiftClock } from './schedule';
 
 function scheduled(overrides: Record<string, unknown> = {}, timezone = 'Asia/Seoul') {
     return normalizeConfig({
@@ -183,6 +183,17 @@ describe('effect scheduling', () => {
         )).toMatchObject({
             date: '2026-09-11',
             time: '22:30',
+        });
+    });
+
+    it('moves a clock one hour forward and into the next day', () => {
+        expect(shiftClock({ date: '2026-09-11', time: '14:30' }, 1)).toEqual({
+            date: '2026-09-11',
+            time: '15:30',
+        });
+        expect(shiftClock({ date: '2026-09-11', time: '23:30' }, 1)).toEqual({
+            date: '2026-09-12',
+            time: '00:30',
         });
     });
 });

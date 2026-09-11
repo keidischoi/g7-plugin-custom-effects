@@ -1,5 +1,5 @@
 import { readSiteTimezone } from './config';
-import { getZonedClock } from './schedule';
+import { getZonedClock, shiftClock } from './schedule';
 
 const DAY_LABELS = {
     ko: ['일', '월', '화', '수', '목', '금', '토'],
@@ -186,17 +186,28 @@ export function fillEmptyScheduleRow(row: HTMLElement, target: Window = window):
 
     assignValue(effect, defaults.effect, true);
 
+    const dateInputs: HTMLInputElement[] = [];
+    const timeInputs: HTMLInputElement[] = [];
     [...row.querySelectorAll('input')].forEach((input) => {
         if (!(input instanceof HTMLInputElement)) return;
         const placeholder = input.getAttribute('placeholder') ?? '';
         if (input.type === 'date' || placeholder.includes('YYYY-MM-DD')) {
-            assignValue(input, clock.date);
+            dateInputs.push(input);
             return;
         }
         if (input.type === 'time' || placeholder.includes('HH:MM')) {
-            assignValue(input, clock.time);
+            timeInputs.push(input);
         }
     });
+
+    if (dateInputs[0]) assignValue(dateInputs[0], clock.date);
+    if (timeInputs[0]) assignValue(timeInputs[0], clock.time);
+    const end = shiftClock({
+        date: dateInputs[0]?.value || clock.date,
+        time: timeInputs[0]?.value || clock.time,
+    }, 1);
+    if (dateInputs[1]) assignValue(dateInputs[1], end.date);
+    if (timeInputs[1]) assignValue(timeInputs[1], end.time);
 
     const numbers = [...row.querySelectorAll('input[type="number"]')];
     (['intensity', 'speed', 'opacity', 'wind'] as const).forEach((key, index) => {

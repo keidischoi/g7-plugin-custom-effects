@@ -57,6 +57,20 @@ export function getZonedClock(
     };
 }
 
+export function shiftClock(
+    clock: Pick<ZonedClock, 'date' | 'time'>,
+    hours: number,
+): Pick<ZonedClock, 'date' | 'time'> {
+    const [year, month, day] = clock.date.split('-').map(Number);
+    const [hour, minute] = clock.time.split(':').map(Number);
+    const next = new Date(Date.UTC(year, (month || 1) - 1, day || 1, hour || 0, minute || 0));
+    next.setUTCHours(next.getUTCHours() + hours);
+    return {
+        date: next.toISOString().slice(0, 10),
+        time: next.toISOString().slice(11, 16),
+    };
+}
+
 function matchesTimeRange(current: string, start: string, end: string): boolean {
     if (!start && !end) return true;
     if (start && !end) return current >= start;

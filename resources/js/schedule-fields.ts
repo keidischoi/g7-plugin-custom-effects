@@ -11,6 +11,7 @@ export function enhanceSchedulePickers(target: Window = window): () => void {
             }
             if (placeholder.includes('HH:MM') && element.type !== 'time') {
                 element.type = 'time';
+                element.step = '60';
             }
         });
     };

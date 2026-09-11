@@ -5,6 +5,8 @@ import {
     EFFECT_KINDS,
     TIMEZONE_OPTIONS,
     normalizeConfig,
+    readInlineConfig,
+    readSiteTimezone,
     shouldStart,
 } from './config';
 import { particleCount, resolveBubbleCollision, signedWind } from './engine';
@@ -147,13 +149,44 @@ describe('normalizeConfig', () => {
         });
     });
 
-    it('accepts preset timezones and rejects values outside the dropdown', () => {
+    it('keeps native time-picker values that include seconds', () => {
+        expect(normalizeConfig({
+            schedules: [{ start_time: '09:00:00', end_time: '18:30:59' }],
+        }).schedules[0]).toMatchObject({
+            startTime: '09:00',
+            endTime: '18:30',
+        });
+    });
+
+    it('accepts IANA timezones and rejects invalid zones', () => {
         for (const timezone of TIMEZONE_OPTIONS) {
             expect(normalizeConfig({ schedule_timezone: timezone }).scheduleTimezone)
                 .toBe(timezone);
         }
+        expect(normalizeConfig({ schedule_timezone: 'Pacific/Auckland' }).scheduleTimezone)
+            .toBe('Pacific/Auckland');
         expect(normalizeConfig({ schedule_timezone: 'Invalid/Zone' }).scheduleTimezone)
             .toBe('Asia/Seoul');
+    });
+});
+
+describe('readSiteTimezone', () => {
+    it('uses the environment general timezone from G7Config', () => {
+        const target = {
+            G7Config: {
+                settings: {
+                    general: {
+                        timezone: 'Europe/Paris',
+                    },
+                },
+                plugins: {
+                    'g7-plugin-custom-effects': { effect: 'rain' },
+                },
+            },
+        } as unknown as Window;
+
+        expect(readSiteTimezone(target)).toBe('Europe/Paris');
+        expect(readInlineConfig(target).scheduleTimezone).toBe('Europe/Paris');
     });
 });
 

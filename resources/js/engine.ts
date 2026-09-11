@@ -256,11 +256,11 @@ export class EffectsEngine {
             fireflies: [1.5, 3.5],
             cheese: [11, 20],
             poop: [11, 19],
-            ice_cream: [9, 16],
+            ice_cream: [11, 20],
             bills: [8, 14],
             coins: [6, 12],
             alarm_clock: [8, 15],
-            maple_leaves: [8, 15],
+            maple_leaves: [11, 20],
         };
         const [min, max] = ranges[effect];
         return min + Math.random() * (max - min);
@@ -692,22 +692,135 @@ export class EffectsEngine {
     private drawIceCream(delta: number): void {
         for (const particle of this.particles) {
             this.advanceFalling(particle, delta, 18);
-            this.prepareParticle(particle);
             this.withTransform(particle, () => {
                 const size = particle.size;
-                this.context.fillStyle = '#d97706';
+                const scoop = this.fixedPaletteColor(particle, '#fda4af');
+                this.context.globalAlpha = (this.config.opacity / 100) * particle.alpha;
+
+                this.context.fillStyle = '#b45309';
                 this.context.beginPath();
-                this.context.moveTo(-size * 0.42, size * 0.05);
-                this.context.lineTo(size * 0.42, size * 0.05);
-                this.context.lineTo(0, size);
+                this.context.moveTo(-size * 0.5, size * 0.08);
+                this.context.lineTo(size * 0.5, size * 0.08);
+                this.context.lineTo(size * 0.08, size * 1.08);
+                this.context.lineTo(-size * 0.08, size * 1.08);
                 this.context.closePath();
                 this.context.fill();
-                this.context.fillStyle = this.colorFor(particle);
-                this.fillCircle(0, -size * 0.28, size * 0.52);
+
+                this.context.fillStyle = '#d97706';
+                this.context.beginPath();
+                this.context.moveTo(-size * 0.44, size * 0.04);
+                this.context.lineTo(size * 0.44, size * 0.04);
+                this.context.lineTo(size * 0.05, size);
+                this.context.lineTo(-size * 0.05, size);
+                this.context.closePath();
+                this.context.fill();
+
+                this.context.save();
+                this.context.beginPath();
+                this.context.moveTo(-size * 0.44, size * 0.04);
+                this.context.lineTo(size * 0.44, size * 0.04);
+                this.context.lineTo(size * 0.05, size);
+                this.context.lineTo(-size * 0.05, size);
+                this.context.closePath();
+                this.context.clip();
+                this.context.strokeStyle = 'rgba(120, 53, 15, 0.55)';
+                this.context.lineWidth = Math.max(0.7, size * 0.06);
+                for (let line = -4; line <= 6; line += 1) {
+                    this.context.beginPath();
+                    this.context.moveTo(-size * 0.55 + line * size * 0.18, size * 0.02);
+                    this.context.lineTo(-size * 0.1 + line * size * 0.18, size * 1.05);
+                    this.context.stroke();
+                    this.context.beginPath();
+                    this.context.moveTo(size * 0.55 - line * size * 0.18, size * 0.02);
+                    this.context.lineTo(size * 0.1 - line * size * 0.18, size * 1.05);
+                    this.context.stroke();
+                }
+                this.context.restore();
+
+                this.context.fillStyle = scoop;
+                this.fillCircle(0, -size * 0.28, size * 0.58);
+                this.fillCircle(-size * 0.28, -size * 0.12, size * 0.28);
+                this.fillCircle(size * 0.28, -size * 0.1, size * 0.26);
+                this.context.fillStyle = 'rgba(255, 255, 255, 0.38)';
+                this.fillEllipse(-size * 0.16, -size * 0.42, size * 0.18, size * 0.12);
+                this.context.fillStyle = scoop;
+                this.fillEllipse(size * 0.12, size * 0.08, size * 0.1, size * 0.16);
+
+                this.context.strokeStyle = '#b91c1c';
+                this.context.lineWidth = Math.max(0.8, size * 0.07);
+                this.context.lineCap = 'round';
+                this.context.beginPath();
+                this.context.moveTo(size * 0.02, -size * 0.92);
+                this.context.quadraticCurveTo(size * 0.12, -size * 1.12, size * 0.22, -size * 1.05);
+                this.context.stroke();
                 this.context.fillStyle = '#ef4444';
-                this.fillCircle(0, -size * 0.78, size * 0.14);
+                this.fillCircle(0, -size * 0.82, size * 0.16);
+                this.context.fillStyle = 'rgba(254, 226, 226, 0.7)';
+                this.fillCircle(-size * 0.05, -size * 0.88, size * 0.055);
             });
         }
+    }
+
+    private drawMapleLeaves(delta: number): void {
+        for (const particle of this.particles) {
+            this.advanceFalling(particle, delta, 28);
+            this.withTransform(particle, () => {
+                const size = particle.size;
+                const body = this.fixedPaletteColor(particle, '#dc2626');
+                this.context.globalAlpha = (this.config.opacity / 100) * particle.alpha;
+                this.drawMapleLeafPath(size);
+                this.context.fillStyle = body;
+                this.context.fill();
+                this.context.fillStyle = '#78350f';
+                this.context.fillRect(-size * 0.055, size * 0.46, size * 0.11, size * 0.58);
+                this.context.strokeStyle = 'rgba(69, 26, 3, 0.45)';
+                this.context.lineWidth = Math.max(0.7, size * 0.05);
+                this.context.stroke();
+
+                this.context.strokeStyle = 'rgba(69, 26, 3, 0.7)';
+                this.context.lineWidth = Math.max(0.8, size * 0.07);
+                this.context.lineCap = 'round';
+                this.context.beginPath();
+                this.context.moveTo(0, -size * 0.62);
+                this.context.lineTo(0, size * 1.12);
+                this.context.moveTo(0, -size * 0.18);
+                this.context.quadraticCurveTo(size * 0.22, -size * 0.05, size * 0.62, -size * 0.28);
+                this.context.moveTo(0, -size * 0.18);
+                this.context.quadraticCurveTo(-size * 0.22, -size * 0.05, -size * 0.62, -size * 0.28);
+                this.context.moveTo(0, size * 0.12);
+                this.context.quadraticCurveTo(size * 0.18, size * 0.28, size * 0.42, size * 0.48);
+                this.context.moveTo(0, size * 0.12);
+                this.context.quadraticCurveTo(-size * 0.18, size * 0.28, -size * 0.42, size * 0.48);
+                this.context.stroke();
+            });
+        }
+    }
+
+    private drawMapleLeafPath(size: number): void {
+        const s = size;
+        this.context.beginPath();
+        this.context.moveTo(0, -s);
+        this.context.quadraticCurveTo(s * 0.12, -s * 0.72, s * 0.22, -s * 0.58);
+        this.context.lineTo(s * 0.38, -s * 0.92);
+        this.context.quadraticCurveTo(s * 0.52, -s * 0.48, s * 0.4, -s * 0.22);
+        this.context.lineTo(s * 0.92, -s * 0.42);
+        this.context.quadraticCurveTo(s * 0.7, -s * 0.02, s * 0.48, s * 0.06);
+        this.context.lineTo(s * 0.82, s * 0.38);
+        this.context.quadraticCurveTo(s * 0.42, s * 0.32, s * 0.22, s * 0.2);
+        this.context.lineTo(s * 0.34, s * 0.62);
+        this.context.quadraticCurveTo(s * 0.1, s * 0.42, s * 0.06, s * 0.28);
+        this.context.lineTo(0, s * 0.52);
+        this.context.lineTo(-s * 0.06, s * 0.28);
+        this.context.quadraticCurveTo(-s * 0.1, s * 0.42, -s * 0.34, s * 0.62);
+        this.context.lineTo(-s * 0.22, s * 0.2);
+        this.context.quadraticCurveTo(-s * 0.42, s * 0.32, -s * 0.82, s * 0.38);
+        this.context.lineTo(-s * 0.48, s * 0.06);
+        this.context.quadraticCurveTo(-s * 0.7, -s * 0.02, -s * 0.92, -s * 0.42);
+        this.context.lineTo(-s * 0.4, -s * 0.22);
+        this.context.quadraticCurveTo(-s * 0.52, -s * 0.48, -s * 0.38, -s * 0.92);
+        this.context.lineTo(-s * 0.22, -s * 0.58);
+        this.context.quadraticCurveTo(-s * 0.12, -s * 0.72, 0, -s);
+        this.context.closePath();
     }
 
     private drawBills(delta: number): void {
@@ -782,40 +895,6 @@ export class EffectsEngine {
                 this.context.lineTo(-size * 0.38, size * 0.92);
                 this.context.moveTo(size * 0.22, size * 0.62);
                 this.context.lineTo(size * 0.38, size * 0.92);
-                this.context.stroke();
-            });
-        }
-    }
-
-    private drawMapleLeaves(delta: number): void {
-        for (const particle of this.particles) {
-            this.advanceFalling(particle, delta, 28);
-            this.prepareParticle(particle);
-            this.withTransform(particle, () => {
-                const size = particle.size;
-                this.context.beginPath();
-                this.context.moveTo(0, -size);
-                this.context.lineTo(size * 0.22, -size * 0.38);
-                this.context.lineTo(size * 0.72, -size * 0.62);
-                this.context.lineTo(size * 0.42, -size * 0.12);
-                this.context.lineTo(size, size * 0.02);
-                this.context.lineTo(size * 0.38, size * 0.22);
-                this.context.lineTo(size * 0.52, size * 0.62);
-                this.context.lineTo(size * 0.12, size * 0.38);
-                this.context.lineTo(0, size * 0.82);
-                this.context.lineTo(-size * 0.12, size * 0.38);
-                this.context.lineTo(-size * 0.52, size * 0.62);
-                this.context.lineTo(-size * 0.38, size * 0.22);
-                this.context.lineTo(-size, size * 0.02);
-                this.context.lineTo(-size * 0.42, -size * 0.12);
-                this.context.lineTo(-size * 0.72, -size * 0.62);
-                this.context.lineTo(-size * 0.22, -size * 0.38);
-                this.context.closePath();
-                this.context.fill();
-                this.context.lineWidth = 0.8;
-                this.context.beginPath();
-                this.context.moveTo(0, -size * 0.35);
-                this.context.lineTo(0, size * 1.15);
                 this.context.stroke();
             });
         }

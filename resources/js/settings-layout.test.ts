@@ -99,8 +99,10 @@ describe('plugin settings layout', () => {
         expect(slots).toContain('g7-custom-effects-schedule-dfl-row');
         expect(effectsCss).toContain('grid-row: 2');
         expect(effectsCss).toContain('.g7-custom-effects-schedule-dfl-row {');
-        expect(effectsCss).toContain('grid-template-columns: 1.5rem 2.25rem repeat(7, minmax(3.2rem, 0.55fr)) minmax(1.75rem, auto)');
+        expect(effectsCss).toContain('grid-template-columns: 1.5rem 2.25rem repeat(8, minmax(3.2rem, 0.55fr)) minmax(1.75rem, auto)');
         expect(effectsCss).toContain('.g7-custom-effects-schedule-full {');
+        expect(effectsCss).toContain('> :nth-child(6) { grid-column: 7 / 9; grid-row: 1; }');
+        expect(effectsCss).toContain('> :nth-child(7) { grid-column: 9 / 11; grid-row: 1; }');
         expect(effectsCss).toContain('> :nth-child(8) { grid-column: 3; grid-row: 2; }');
         expect(effectsCss).toContain('> :nth-child(14) { grid-column: 9; grid-row: 2; }');
         expect(effectsCss).toContain('> :nth-child(15) {');
@@ -110,8 +112,10 @@ describe('plugin settings layout', () => {
         expect(effectsCss).toContain('input[type="date"]');
         expect(effectsCss).toContain('input[type="time"]');
         expect(effectsCss).toContain('content: "시작 시간"');
+        expect(effectsCss).not.toContain('content: "일"');
         expect(effectsCss).toContain('.g7-custom-effects-schedule-enabled,');
         expect(effectsCss).toContain('.g7-custom-effects-schedule-day {');
+        expect(effectsCss).toContain('nth-child(-n+14) label');
         expect(effectsCss).not.toContain('content: "사용"');
         expect(slots).toContain('"showIndex":false');
         expect(slots).toContain('g7-custom-effects-schedule-enabled-select');

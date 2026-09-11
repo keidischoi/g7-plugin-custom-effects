@@ -130,12 +130,46 @@ describe('enhanceSchedulePickers', () => {
 
         expect(row.children).toHaveLength(15);
         expect(boxes).toHaveLength(7);
-        expect(firstBox.getAttribute('aria-label')).toBe('일');
+        expect(firstBox.closest('label')?.textContent?.trim()).toBe('일');
         expect(firstDay.dataset.g7DayToggle).toBe('1');
 
         firstBox.checked = false;
         firstBox.dispatchEvent(new Event('change', { bubbles: true }));
         expect(firstDay.value).toBe('false');
+        stop();
+    });
+
+    it('reuses an existing weekday label instead of drawing a second caption', () => {
+        document.body.innerHTML = `
+            <div class="g7-custom-effects-schedule-list">
+                <div class="g7-custom-effects-schedule-dfl-row">
+                    <div>⋮⋮</div>
+                    <div>
+                        <select class="g7-custom-effects-schedule-enabled-select">
+                            <option value="true">사용</option>
+                            <option value="false">안함</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label>월</label>
+                        <select class="g7-custom-effects-schedule-day-select">
+                            <option value="true">월 적용</option>
+                            <option value="false">월 제외</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        const stop = enhanceSchedulePickers(window);
+        const cell = document.querySelectorAll('.g7-custom-effects-schedule-dfl-row > *')[2] as HTMLElement;
+        const labels = cell.querySelectorAll('label');
+        const checkbox = cell.querySelector('input.g7-custom-effects-schedule-day') as HTMLInputElement;
+
+        expect(labels).toHaveLength(1);
+        expect(labels[0]?.textContent?.trim()).toBe('월');
+        expect(labels[0]?.htmlFor).toBe(checkbox.id);
+        expect(checkbox.nextElementSibling?.tagName).toBe('SELECT');
         stop();
     });
 

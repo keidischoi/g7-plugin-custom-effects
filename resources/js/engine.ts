@@ -8,6 +8,7 @@ interface Particle {
     size: number;
     baseSize: number;
     sparkle: number;
+    explode: number;
     phase: number;
     phaseSpeed: number;
     rotation: number;
@@ -153,6 +154,98 @@ export function growPoopOnHit(particle: PoopBody): void {
     particle.sparkle = 1;
 }
 
+export const CHEESE_HIT_RADIUS = 0.9;
+export const CHEESE_EXPLODE_DECAY = 2.15;
+
+export interface CheeseBody extends CollisionBody {
+    explode: number;
+}
+
+export function resolveCheeseCollision(
+    first: CheeseBody,
+    second: CheeseBody,
+): boolean {
+    if (first.explode > 0 || second.explode > 0) return false;
+
+    const dx = second.x - first.x;
+    const dy = second.y - first.y;
+    const minimumDistance = (first.size + second.size) * CHEESE_HIT_RADIUS;
+    const distanceSquared = dx * dx + dy * dy;
+    if (distanceSquared >= minimumDistance * minimumDistance) return false;
+
+    const distance = Math.sqrt(distanceSquared);
+    const normalX = distance > 0 ? dx / distance : 1;
+    const normalY = distance > 0 ? dy / distance : 0;
+    const overlap = minimumDistance - distance;
+
+    first.x -= normalX * overlap * 0.5;
+    first.y -= normalY * overlap * 0.5;
+    second.x += normalX * overlap * 0.5;
+    second.y += normalY * overlap * 0.5;
+
+    const relativeVelocity = (second.vx - first.vx) * normalX
+        + (second.vy - first.vy) * normalY;
+    if (relativeVelocity >= 0) return false;
+
+    first.vx += relativeVelocity * normalX * 0.45;
+    first.vy += relativeVelocity * normalY * 0.45;
+    second.vx -= relativeVelocity * normalX * 0.45;
+    second.vy -= relativeVelocity * normalY * 0.45;
+    return true;
+}
+
+export function explodeCheeseOnHit(particle: CheeseBody): void {
+    if (particle.explode > 0) return;
+    particle.explode = 1;
+    particle.vx *= 0.18;
+    particle.vy *= 0.12;
+}
+
+export const STAR_HIT_RADIUS = 2.85;
+export const STAR_BURST_DECAY = 1.15;
+
+export interface StarBody extends CollisionBody {
+    sparkle: number;
+}
+
+export function resolveStarCollision(
+    first: StarBody,
+    second: StarBody,
+): boolean {
+    if (first.sparkle > 0.4 || second.sparkle > 0.4) return false;
+
+    const dx = second.x - first.x;
+    const dy = second.y - first.y;
+    const minimumDistance = (first.size + second.size) * STAR_HIT_RADIUS;
+    const distanceSquared = dx * dx + dy * dy;
+    if (distanceSquared >= minimumDistance * minimumDistance) return false;
+
+    const distance = Math.sqrt(distanceSquared);
+    const normalX = distance > 0 ? dx / distance : 1;
+    const normalY = distance > 0 ? dy / distance : 0;
+    const overlap = minimumDistance - distance;
+
+    first.x -= normalX * overlap * 0.5;
+    first.y -= normalY * overlap * 0.5;
+    second.x += normalX * overlap * 0.5;
+    second.y += normalY * overlap * 0.5;
+
+    const relativeVelocity = (second.vx - first.vx) * normalX
+        + (second.vy - first.vy) * normalY;
+    if (relativeVelocity >= 0) return false;
+
+    first.vx += relativeVelocity * normalX * 0.55;
+    first.vy += relativeVelocity * normalY * 0.55;
+    second.vx -= relativeVelocity * normalX * 0.55;
+    second.vy -= relativeVelocity * normalY * 0.55;
+    return true;
+}
+
+export function burstStarOnHit(particle: StarBody): void {
+    if (particle.sparkle > 0.4) return;
+    particle.sparkle = 1;
+}
+
 export function particleCount(
     width: number,
     height: number,
@@ -259,6 +352,7 @@ export class EffectsEngine {
             size,
             baseSize: size,
             sparkle: 0,
+            explode: 0,
             phase: Math.random() * Math.PI * 2,
             phaseSpeed: 0.6 + Math.random() * 1.8,
             rotation: Math.random() * Math.PI * 2,
@@ -440,9 +534,23 @@ export class EffectsEngine {
     }
 
     private drawStars(delta: number): void {
+        const fireworks = this.config.effect === 'stars_multicolor';
         for (const particle of this.particles) {
             this.advanceFalling(particle, delta, 14);
+            if (fireworks) {
+                particle.sparkle = Math.max(0, particle.sparkle - delta * STAR_BURST_DECAY);
+            }
+        }
+        if (fireworks) this.resolveStarCollisions();
+        for (const particle of this.particles) {
+            if (fireworks && particle.sparkle > 0) this.drawStarFirework(particle);
             this.prepareParticle(particle);
+            if (fireworks && particle.sparkle > 0) {
+                this.context.globalAlpha = Math.min(
+                    1,
+                    this.context.globalAlpha * (1 + particle.sparkle * 0.5),
+                );
+            }
             this.withTransform(particle, () => {
                 this.context.beginPath();
                 for (let point = 0; point < 10; point += 1) {
@@ -457,6 +565,110 @@ export class EffectsEngine {
                 this.context.fill();
             });
         }
+    }
+
+    private drawStarFirework(particle: Particle): void {
+        const palette = EFFECT_PALETTES.stars_multicolor ?? [];
+        if (palette.length === 0) return;
+
+        const fade = particle.sparkle;
+        const progress = 1 - fade;
+        const size = particle.size;
+        const opacity = (this.config.opacity / 100) * particle.alpha;
+        const rays = 14;
+        const burst = size * (2.4 + progress * 8.2);
+
+        this.context.save();
+        this.context.translate(particle.x, particle.y);
+        this.context.globalAlpha = opacity;
+
+        const flashRadius = size * (2.1 + progress * 3.4);
+        const flash = this.context.createRadialGradient(0, 0, 0, 0, 0, flashRadius);
+        flash.addColorStop(0, `rgba(255, 255, 255, ${0.9 * fade})`);
+        flash.addColorStop(0.22, this.hexAlpha(palette[particle.colorIndex % palette.length], 0.5 * fade));
+        flash.addColorStop(1, 'rgba(255, 255, 255, 0)');
+        this.context.fillStyle = flash;
+        this.context.beginPath();
+        this.context.arc(0, 0, flashRadius, 0, Math.PI * 2);
+        this.context.fill();
+
+        this.context.lineCap = 'round';
+        for (let ray = 0; ray < rays; ray += 1) {
+            const angle = particle.phase + ray * (Math.PI * 2 / rays);
+            const inner = size * (0.45 + progress * 1.1);
+            const length = burst * (0.7 + (ray % 3) * 0.12);
+            const color = palette[(particle.colorIndex + ray) % palette.length];
+            this.context.strokeStyle = color;
+            this.context.lineWidth = Math.max(1.15, size * (0.26 + fade * 0.28));
+            this.context.globalAlpha = opacity * (0.45 + fade * 0.55);
+            this.context.beginPath();
+            this.context.moveTo(Math.cos(angle) * inner, Math.sin(angle) * inner);
+            this.context.lineTo(Math.cos(angle) * length, Math.sin(angle) * length);
+            this.context.stroke();
+
+            this.context.fillStyle = ray % 2 === 0 ? '#fff7ed' : color;
+            this.fillCircle(
+                Math.cos(angle) * length,
+                Math.sin(angle) * length,
+                size * (0.2 + fade * 0.18),
+            );
+
+            const sparkAngle = angle + Math.PI / rays;
+            const sparkLength = burst * 0.48;
+            this.context.strokeStyle = palette[(particle.colorIndex + ray + 3) % palette.length];
+            this.context.lineWidth = Math.max(0.8, size * 0.18);
+            this.context.globalAlpha = opacity * fade * 0.75;
+            this.context.beginPath();
+            this.context.moveTo(Math.cos(sparkAngle) * inner * 0.7, Math.sin(sparkAngle) * inner * 0.7);
+            this.context.lineTo(Math.cos(sparkAngle) * sparkLength, Math.sin(sparkAngle) * sparkLength);
+            this.context.stroke();
+            this.context.fillStyle = '#fffbeb';
+            this.fillCircle(
+                Math.cos(sparkAngle) * sparkLength,
+                Math.sin(sparkAngle) * sparkLength,
+                size * 0.14 * fade,
+            );
+        }
+
+        this.context.restore();
+    }
+
+    private resolveStarCollisions(): void {
+        const largestDiameter = Math.max(
+            1,
+            ...this.particles.map((particle) => particle.size * 2 * STAR_HIT_RADIUS),
+        );
+        const grid = new Map<string, Particle[]>();
+
+        for (const particle of this.particles) {
+            const cellX = Math.floor(particle.x / largestDiameter);
+            const cellY = Math.floor(particle.y / largestDiameter);
+
+            for (let offsetY = -1; offsetY <= 1; offsetY += 1) {
+                for (let offsetX = -1; offsetX <= 1; offsetX += 1) {
+                    const nearby = grid.get(`${cellX + offsetX}:${cellY + offsetY}`);
+                    if (!nearby) continue;
+                    for (const other of nearby) {
+                        if (!resolveStarCollision(other, particle)) continue;
+                        burstStarOnHit(other);
+                        burstStarOnHit(particle);
+                    }
+                }
+            }
+
+            const key = `${cellX}:${cellY}`;
+            const bucket = grid.get(key);
+            if (bucket) bucket.push(particle);
+            else grid.set(key, [particle]);
+        }
+    }
+
+    private hexAlpha(hex: string, alpha: number): string {
+        const value = hex.replace('#', '');
+        const red = Number.parseInt(value.slice(0, 2), 16);
+        const green = Number.parseInt(value.slice(2, 4), 16);
+        const blue = Number.parseInt(value.slice(4, 6), 16);
+        return `rgba(${red}, ${green}, ${blue}, ${alpha})`;
     }
 
     private drawHearts(delta: number): void {
@@ -624,46 +836,135 @@ export class EffectsEngine {
 
     private drawCheese(delta: number): void {
         for (const particle of this.particles) {
+            if (particle.explode > 0) {
+                particle.explode = Math.max(0, particle.explode - delta * CHEESE_EXPLODE_DECAY);
+                particle.x += particle.vx * delta * 0.4;
+                particle.y += particle.vy * delta * 0.4;
+                particle.rotation += particle.rotationSpeed * delta * 2.4;
+                if (particle.explode === 0) this.resetParticle(particle);
+                continue;
+            }
             this.advanceFalling(particle, delta, 16);
-            this.withTransform(particle, () => {
-                const size = particle.size;
-                const body = this.fixedPaletteColor(particle, '#facc15');
-                const crust = '#d97706';
-                const side = '#f59e0b';
-                const hole = '#b45309';
-                const holeInner = '#78350f';
-                this.context.globalAlpha = (this.config.opacity / 100) * particle.alpha;
+        }
+        this.resolveCheeseCollisions();
+        for (const particle of this.particles) {
+            if (particle.explode > 0) this.drawCheeseExplosion(particle);
+            else this.drawCheeseWedge(particle);
+        }
+    }
 
-                this.context.fillStyle = crust;
+    private drawCheeseWedge(particle: Particle): void {
+        this.withTransform(particle, () => {
+            const size = particle.size;
+            const body = this.fixedPaletteColor(particle, '#facc15');
+            const crust = '#d97706';
+            const side = '#f59e0b';
+            const hole = '#b45309';
+            const holeInner = '#78350f';
+            this.context.globalAlpha = (this.config.opacity / 100) * particle.alpha;
+
+            this.context.fillStyle = crust;
+            this.context.beginPath();
+            this.context.moveTo(-size * 1.05, size * 0.78);
+            this.context.lineTo(size * 0.98, size * 0.78);
+            this.context.lineTo(size * 0.18, -size * 1.05);
+            this.context.closePath();
+            this.context.fill();
+
+            this.context.fillStyle = side;
+            this.context.beginPath();
+            this.context.moveTo(size * 0.82, size * 0.62);
+            this.context.lineTo(size * 1.08, size * 0.38);
+            this.context.lineTo(size * 0.32, -size * 0.92);
+            this.context.lineTo(size * 0.12, -size * 0.78);
+            this.context.closePath();
+            this.context.fill();
+
+            this.context.fillStyle = body;
+            this.context.beginPath();
+            this.context.moveTo(-size * 0.92, size * 0.62);
+            this.context.lineTo(size * 0.82, size * 0.62);
+            this.context.lineTo(size * 0.12, -size * 0.78);
+            this.context.closePath();
+            this.context.fill();
+
+            this.drawCheeseHole(-size * 0.28, size * 0.22, size * 0.2, hole, holeInner);
+            this.drawCheeseHole(size * 0.22, size * 0.28, size * 0.16, hole, holeInner);
+            this.drawCheeseHole(size * 0.02, -size * 0.18, size * 0.14, hole, holeInner);
+            this.drawCheeseHole(-size * 0.08, size * 0.48, size * 0.1, hole, holeInner);
+        });
+    }
+
+    private drawCheeseExplosion(particle: Particle): void {
+        const progress = 1 - particle.explode;
+        this.withTransform(particle, () => {
+            const size = particle.size;
+            const fade = Math.max(0, particle.explode);
+            this.context.globalAlpha = (this.config.opacity / 100) * particle.alpha * fade;
+
+            const flashRadius = size * (1.15 + progress * 2.35);
+            const flash = this.context.createRadialGradient(0, 0, 0, 0, 0, flashRadius);
+            flash.addColorStop(0, `rgba(255, 248, 180, ${0.62 * fade})`);
+            flash.addColorStop(0.45, `rgba(250, 204, 21, ${0.28 * fade})`);
+            flash.addColorStop(1, 'rgba(217, 119, 6, 0)');
+            this.context.fillStyle = flash;
+            this.context.beginPath();
+            this.context.arc(0, 0, flashRadius, 0, Math.PI * 2);
+            this.context.fill();
+
+            const crumbs = 11;
+            for (let crumb = 0; crumb < crumbs; crumb += 1) {
+                const angle = particle.phase + crumb * 0.73;
+                const distance = size * (0.22 + progress * (1.55 + (crumb % 3) * 0.38));
+                const crumbSize = size * (0.16 + (crumb % 4) * 0.035) * (1 - progress * 0.42);
+                const x = Math.cos(angle) * distance;
+                const y = Math.sin(angle) * distance;
+                this.context.fillStyle = crumb % 2 === 0 ? '#facc15' : '#eab308';
                 this.context.beginPath();
-                this.context.moveTo(-size * 1.05, size * 0.78);
-                this.context.lineTo(size * 0.98, size * 0.78);
-                this.context.lineTo(size * 0.18, -size * 1.05);
+                this.context.moveTo(x, y - crumbSize);
+                this.context.lineTo(x + crumbSize * 0.92, y + crumbSize * 0.52);
+                this.context.lineTo(x - crumbSize * 0.72, y + crumbSize * 0.58);
                 this.context.closePath();
                 this.context.fill();
 
-                this.context.fillStyle = side;
-                this.context.beginPath();
-                this.context.moveTo(size * 0.82, size * 0.62);
-                this.context.lineTo(size * 1.08, size * 0.38);
-                this.context.lineTo(size * 0.32, -size * 0.92);
-                this.context.lineTo(size * 0.12, -size * 0.78);
-                this.context.closePath();
-                this.context.fill();
+                if (crumb % 3 === 0) {
+                    this.context.fillStyle = '#d97706';
+                    this.context.beginPath();
+                    this.context.arc(x, y + crumbSize * 0.12, crumbSize * 0.22, 0, Math.PI * 2);
+                    this.context.fill();
+                }
+            }
+        });
+    }
 
-                this.context.fillStyle = body;
-                this.context.beginPath();
-                this.context.moveTo(-size * 0.92, size * 0.62);
-                this.context.lineTo(size * 0.82, size * 0.62);
-                this.context.lineTo(size * 0.12, -size * 0.78);
-                this.context.closePath();
-                this.context.fill();
+    private resolveCheeseCollisions(): void {
+        const largestDiameter = Math.max(
+            1,
+            ...this.particles.map((particle) => particle.size * 2),
+        );
+        const grid = new Map<string, Particle[]>();
 
-                this.drawCheeseHole(-size * 0.28, size * 0.22, size * 0.2, hole, holeInner);
-                this.drawCheeseHole(size * 0.22, size * 0.28, size * 0.16, hole, holeInner);
-                this.drawCheeseHole(size * 0.02, -size * 0.18, size * 0.14, hole, holeInner);
-                this.drawCheeseHole(-size * 0.08, size * 0.48, size * 0.1, hole, holeInner);
-            });
+        for (const particle of this.particles) {
+            if (particle.explode > 0) continue;
+            const cellX = Math.floor(particle.x / largestDiameter);
+            const cellY = Math.floor(particle.y / largestDiameter);
+
+            for (let offsetY = -1; offsetY <= 1; offsetY += 1) {
+                for (let offsetX = -1; offsetX <= 1; offsetX += 1) {
+                    const nearby = grid.get(`${cellX + offsetX}:${cellY + offsetY}`);
+                    if (!nearby) continue;
+                    for (const other of nearby) {
+                        if (!resolveCheeseCollision(other, particle)) continue;
+                        explodeCheeseOnHit(other);
+                        explodeCheeseOnHit(particle);
+                    }
+                }
+            }
+
+            const key = `${cellX}:${cellY}`;
+            const bucket = grid.get(key);
+            if (bucket) bucket.push(particle);
+            else grid.set(key, [particle]);
         }
     }
 

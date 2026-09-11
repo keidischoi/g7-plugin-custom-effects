@@ -89,7 +89,7 @@ export class HeaderToggleMount {
 
     constructor(
         private readonly target: Window,
-        private readonly effect: EffectKind,
+        private readonly effect: EffectKind | (() => EffectKind),
         private readonly getEnabled: () => boolean,
         private readonly onToggle: ToggleCallback,
     ) {}
@@ -112,6 +112,10 @@ export class HeaderToggleMount {
             .forEach((button) => button.remove());
     }
 
+    refresh(): void {
+        this.updateButtons();
+    }
+
     private readonly handlePreferenceChange = (): void => {
         this.updateButtons();
     };
@@ -120,7 +124,16 @@ export class HeaderToggleMount {
         const enabled = this.getEnabled();
         this.target.document
             .querySelectorAll<HTMLButtonElement>('[data-g7-custom-effects-toggle="true"]')
-            .forEach((button) => updateToggleButton(button, enabled, this.effect, this.target));
+            .forEach((button) => updateToggleButton(
+                button,
+                enabled,
+                this.currentEffect(),
+                this.target,
+            ));
+    }
+
+    private currentEffect(): EffectKind {
+        return typeof this.effect === 'function' ? this.effect() : this.effect;
     }
 
     private mountButtons(): void {
@@ -147,7 +160,7 @@ export class HeaderToggleMount {
             host.insertBefore(
                 createToggleButton(
                     this.getEnabled(),
-                    this.effect,
+                    this.currentEffect(),
                     this.onToggle,
                     this.target,
                 ),

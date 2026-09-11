@@ -18,8 +18,8 @@ const layout = JSON.parse(readFileSync(
     schema: Record<string, unknown> & {
         effect: { options: string[] };
         color: { options: string[] };
-        schedule_timezone: { options: string[] };
         wind_direction: { options: string[] };
+        schedules?: { type: string };
     };
     data_sources: Array<{ initLocal?: string }>;
     slots: unknown;
@@ -37,7 +37,7 @@ function collectBoundControls(value: unknown, result = new Set<string>()): Set<s
     const node = value as LayoutNode;
     if (
         node.name
-        && ['Input', 'Select', 'Toggle'].includes(node.name)
+        && ['Input', 'Select', 'Toggle', 'DynamicFieldList'].includes(node.name)
         && typeof node.props?.name === 'string'
     ) {
         result.add(node.props.name);
@@ -53,7 +53,7 @@ describe('plugin settings layout', () => {
         const boundControls = [...collectBoundControls(layout.slots)].sort();
 
         expect(boundControls).toEqual(schemaFields);
-        expect(boundControls).toHaveLength(18);
+        expect(boundControls).toHaveLength(13);
     });
 
     it('offers every effect supported by the canvas engine', () => {
@@ -67,23 +67,29 @@ describe('plugin settings layout', () => {
 
     it('keeps preset dropdowns aligned with runtime normalization', () => {
         expect(layout.schema.color.options).toEqual(COLOR_OPTIONS);
-        expect(layout.schema.schedule_timezone.options).toEqual(TIMEZONE_OPTIONS);
         expect(layout.schema.wind_direction.options).toEqual([
             'none',
             'left',
             'right',
             'random',
         ]);
+        expect(layout.schema.schedules?.type).toBe('array');
 
         const slots = JSON.stringify(layout.slots);
+        expect(slots).toContain('"name":"DynamicFieldList"');
+        expect(slots).toContain('"name":"schedules"');
         for (const value of [...COLOR_OPTIONS, ...TIMEZONE_OPTIONS]) {
             expect(slots).toContain(`"value":"${value}"`);
+        }
+        for (const day of ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat']) {
+            expect(slots).toContain(`"key":"${day}"`);
         }
     });
 
     it('keeps schedule controls within plugin-owned equal padding', () => {
         const slots = JSON.stringify(layout.slots);
         expect(slots).toContain('"className":"g7-custom-effects-schedule-grid"');
+        expect(slots).toContain('g7-custom-effects-schedule-list');
         expect(effectsCss).toContain('.g7-custom-effects-schedule-grid {');
         expect(effectsCss).toContain('padding: 1rem 1.5rem;');
         expect(effectsCss).toContain('grid-template-columns: repeat(2, minmax(0, 1fr));');

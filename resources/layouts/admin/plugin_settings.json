@@ -1,5 +1,5 @@
 {
-    "version": "1.6.3",
+    "version": "1.7.0",
     "layout_name": "plugin_settings",
     "permissions": [
         "core.plugins.update"
@@ -587,49 +587,65 @@
                                                     {
                                                         "type": "basic",
                                                         "name": "Option",
-                                                        "props": { "value": "#ffffff" },
+                                                        "props": {
+                                                            "value": "#ffffff"
+                                                        },
                                                         "text": "$t:g7-plugin-custom-effects.settings.options.color_white"
                                                     },
                                                     {
                                                         "type": "basic",
                                                         "name": "Option",
-                                                        "props": { "value": "#bae6fd" },
+                                                        "props": {
+                                                            "value": "#bae6fd"
+                                                        },
                                                         "text": "$t:g7-plugin-custom-effects.settings.options.color_sky"
                                                     },
                                                     {
                                                         "type": "basic",
                                                         "name": "Option",
-                                                        "props": { "value": "#f9a8d4" },
+                                                        "props": {
+                                                            "value": "#f9a8d4"
+                                                        },
                                                         "text": "$t:g7-plugin-custom-effects.settings.options.color_pink"
                                                     },
                                                     {
                                                         "type": "basic",
                                                         "name": "Option",
-                                                        "props": { "value": "#fde047" },
+                                                        "props": {
+                                                            "value": "#fde047"
+                                                        },
                                                         "text": "$t:g7-plugin-custom-effects.settings.options.color_yellow"
                                                     },
                                                     {
                                                         "type": "basic",
                                                         "name": "Option",
-                                                        "props": { "value": "#86efac" },
+                                                        "props": {
+                                                            "value": "#86efac"
+                                                        },
                                                         "text": "$t:g7-plugin-custom-effects.settings.options.color_green"
                                                     },
                                                     {
                                                         "type": "basic",
                                                         "name": "Option",
-                                                        "props": { "value": "#c4b5fd" },
+                                                        "props": {
+                                                            "value": "#c4b5fd"
+                                                        },
                                                         "text": "$t:g7-plugin-custom-effects.settings.options.color_purple"
                                                     },
                                                     {
                                                         "type": "basic",
                                                         "name": "Option",
-                                                        "props": { "value": "#fb923c" },
+                                                        "props": {
+                                                            "value": "#fb923c"
+                                                        },
                                                         "text": "$t:g7-plugin-custom-effects.settings.options.color_orange"
                                                     },
                                                     {
                                                         "type": "basic",
                                                         "name": "Option",
-                                                        "props": { "value": "#f87171" },
+                                                        "props": {
+                                                            "value": "#f87171"
+                                                        },
                                                         "text": "$t:g7-plugin-custom-effects.settings.options.color_red"
                                                     }
                                                 ]
@@ -714,276 +730,275 @@
                                         ]
                                     },
                                     {
-                                        "id": "field_schedule_start_date",
+                                        "id": "field_schedules",
                                         "type": "basic",
                                         "name": "Div",
+                                        "props": {
+                                            "className": "g7-custom-effects-schedule-full g7-custom-effects-schedule-list"
+                                        },
                                         "children": [
                                             {
-                                                "type": "basic",
-                                                "name": "Label",
+                                                "type": "composite",
+                                                "name": "DynamicFieldList",
                                                 "props": {
-                                                    "className": "form-label",
-                                                    "htmlFor": "schedule_start_date"
-                                                },
-                                                "text": "$t:g7-plugin-custom-effects.settings.fields.schedule_start_date.label"
-                                            },
-                                            {
-                                                "type": "basic",
-                                                "name": "P",
-                                                "props": {
-                                                    "className": "form-hint"
-                                                },
-                                                "text": "$t:g7-plugin-custom-effects.settings.fields.schedule_start_date.hint"
-                                            },
-                                            {
-                                                "type": "basic",
-                                                "name": "Input",
-                                                "props": {
-                                                    "id": "schedule_start_date",
-                                                    "type": "date",
-                                                    "name": "schedule_start_date",
-                                                    "className": "w-full mt-2"
-                                                }
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "id": "field_schedule_end_date",
-                                        "type": "basic",
-                                        "name": "Div",
-                                        "children": [
-                                            {
-                                                "type": "basic",
-                                                "name": "Label",
-                                                "props": {
-                                                    "className": "form-label",
-                                                    "htmlFor": "schedule_end_date"
-                                                },
-                                                "text": "$t:g7-plugin-custom-effects.settings.fields.schedule_end_date.label"
-                                            },
-                                            {
-                                                "type": "basic",
-                                                "name": "P",
-                                                "props": {
-                                                    "className": "form-hint"
-                                                },
-                                                "text": "$t:g7-plugin-custom-effects.settings.fields.schedule_end_date.hint"
-                                            },
-                                            {
-                                                "type": "basic",
-                                                "name": "Input",
-                                                "props": {
-                                                    "id": "schedule_end_date",
-                                                    "type": "date",
-                                                    "name": "schedule_end_date",
-                                                    "className": "w-full mt-2"
-                                                }
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "id": "field_schedule_start_time",
-                                        "type": "basic",
-                                        "name": "Div",
-                                        "children": [
-                                            {
-                                                "type": "basic",
-                                                "name": "Label",
-                                                "props": {
-                                                    "className": "form-label",
-                                                    "htmlFor": "schedule_start_time"
-                                                },
-                                                "text": "$t:g7-plugin-custom-effects.settings.fields.schedule_start_time.label"
-                                            },
-                                            {
-                                                "type": "basic",
-                                                "name": "P",
-                                                "props": {
-                                                    "className": "form-hint"
-                                                },
-                                                "text": "$t:g7-plugin-custom-effects.settings.fields.schedule_start_time.hint"
-                                            },
-                                            {
-                                                "type": "basic",
-                                                "name": "Input",
-                                                "props": {
-                                                    "id": "schedule_start_time",
-                                                    "type": "time",
-                                                    "name": "schedule_start_time",
-                                                    "className": "w-full mt-2"
-                                                }
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "id": "field_schedule_end_time",
-                                        "type": "basic",
-                                        "name": "Div",
-                                        "children": [
-                                            {
-                                                "type": "basic",
-                                                "name": "Label",
-                                                "props": {
-                                                    "className": "form-label",
-                                                    "htmlFor": "schedule_end_time"
-                                                },
-                                                "text": "$t:g7-plugin-custom-effects.settings.fields.schedule_end_time.label"
-                                            },
-                                            {
-                                                "type": "basic",
-                                                "name": "P",
-                                                "props": {
-                                                    "className": "form-hint"
-                                                },
-                                                "text": "$t:g7-plugin-custom-effects.settings.fields.schedule_end_time.hint"
-                                            },
-                                            {
-                                                "type": "basic",
-                                                "name": "Input",
-                                                "props": {
-                                                    "id": "schedule_end_time",
-                                                    "type": "time",
-                                                    "name": "schedule_end_time",
-                                                    "className": "w-full mt-2"
-                                                }
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "id": "field_schedule_days",
-                                        "type": "basic",
-                                        "name": "Div",
-                                        "children": [
-                                            {
-                                                "type": "basic",
-                                                "name": "Label",
-                                                "props": {
-                                                    "className": "form-label",
-                                                    "htmlFor": "schedule_days"
-                                                },
-                                                "text": "$t:g7-plugin-custom-effects.settings.fields.schedule_days.label"
-                                            },
-                                            {
-                                                "type": "basic",
-                                                "name": "Select",
-                                                "props": {
-                                                    "id": "schedule_days",
-                                                    "name": "schedule_days",
-                                                    "className": "w-full mt-2"
-                                                },
-                                                "children": [
-                                                    {
-                                                        "type": "basic",
-                                                        "name": "Option",
-                                                        "props": {
-                                                            "value": "all"
+                                                    "name": "schedules",
+                                                    "items": "{{_local.form.schedules ?? []}}",
+                                                    "addLabel": "$t:g7-plugin-custom-effects.settings.fields.schedules.add",
+                                                    "emptyMessage": "$t:g7-plugin-custom-effects.settings.fields.schedules.empty",
+                                                    "enableDrag": true,
+                                                    "showIndex": true,
+                                                    "minItems": 0,
+                                                    "maxItems": 20,
+                                                    "columns": [
+                                                        {
+                                                            "key": "enabled",
+                                                            "type": "select",
+                                                            "label": "$t:g7-plugin-custom-effects.settings.fields.schedules.enabled",
+                                                            "options": [
+                                                                {
+                                                                    "value": "true",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.schedule_on"
+                                                                },
+                                                                {
+                                                                    "value": "false",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.schedule_off"
+                                                                }
+                                                            ]
                                                         },
-                                                        "text": "$t:g7-plugin-custom-effects.settings.options.days_all"
-                                                    },
-                                                    {
-                                                        "type": "basic",
-                                                        "name": "Option",
-                                                        "props": {
-                                                            "value": "weekdays"
+                                                        {
+                                                            "key": "effect",
+                                                            "type": "select",
+                                                            "label": "$t:g7-plugin-custom-effects.settings.fields.effect.label",
+                                                            "options": [
+                                                                {
+                                                                    "value": "snow",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.snow"
+                                                                },
+                                                                {
+                                                                    "value": "rain",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.rain"
+                                                                },
+                                                                {
+                                                                    "value": "leaves",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.leaves"
+                                                                },
+                                                                {
+                                                                    "value": "stars",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.stars"
+                                                                },
+                                                                {
+                                                                    "value": "stars_multicolor",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.stars_multicolor"
+                                                                },
+                                                                {
+                                                                    "value": "hearts",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.hearts"
+                                                                },
+                                                                {
+                                                                    "value": "petals",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.petals"
+                                                                },
+                                                                {
+                                                                    "value": "confetti",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.confetti"
+                                                                },
+                                                                {
+                                                                    "value": "bubbles",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.bubbles"
+                                                                },
+                                                                {
+                                                                    "value": "bouncing_bubbles",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.bouncing_bubbles"
+                                                                },
+                                                                {
+                                                                    "value": "fireflies",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.fireflies"
+                                                                }
+                                                            ],
+                                                            "required": true
                                                         },
-                                                        "text": "$t:g7-plugin-custom-effects.settings.options.days_weekdays"
-                                                    },
-                                                    {
-                                                        "type": "basic",
-                                                        "name": "Option",
-                                                        "props": {
-                                                            "value": "weekends"
+                                                        {
+                                                            "key": "start_date",
+                                                            "type": "input",
+                                                            "label": "$t:g7-plugin-custom-effects.settings.fields.schedule_start_date.label",
+                                                            "placeholder": "YYYY-MM-DD"
                                                         },
-                                                        "text": "$t:g7-plugin-custom-effects.settings.options.days_weekends"
-                                                    }
-                                                ]
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "id": "field_schedule_timezone",
-                                        "type": "basic",
-                                        "name": "Div",
-                                        "children": [
-                                            {
-                                                "type": "basic",
-                                                "name": "Label",
-                                                "props": {
-                                                    "className": "form-label",
-                                                    "htmlFor": "schedule_timezone"
+                                                        {
+                                                            "key": "end_date",
+                                                            "type": "input",
+                                                            "label": "$t:g7-plugin-custom-effects.settings.fields.schedule_end_date.label",
+                                                            "placeholder": "YYYY-MM-DD"
+                                                        },
+                                                        {
+                                                            "key": "start_time",
+                                                            "type": "input",
+                                                            "label": "$t:g7-plugin-custom-effects.settings.fields.schedule_start_time.label",
+                                                            "placeholder": "HH:MM"
+                                                        },
+                                                        {
+                                                            "key": "end_time",
+                                                            "type": "input",
+                                                            "label": "$t:g7-plugin-custom-effects.settings.fields.schedule_end_time.label",
+                                                            "placeholder": "HH:MM"
+                                                        },
+                                                        {
+                                                            "key": "sun",
+                                                            "type": "select",
+                                                            "label": "$t:g7-plugin-custom-effects.settings.options.day_sun",
+                                                            "options": [
+                                                                {
+                                                                    "value": "true",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.day_on"
+                                                                },
+                                                                {
+                                                                    "value": "false",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.day_off"
+                                                                }
+                                                            ]
+                                                        },
+                                                        {
+                                                            "key": "mon",
+                                                            "type": "select",
+                                                            "label": "$t:g7-plugin-custom-effects.settings.options.day_mon",
+                                                            "options": [
+                                                                {
+                                                                    "value": "true",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.day_on"
+                                                                },
+                                                                {
+                                                                    "value": "false",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.day_off"
+                                                                }
+                                                            ]
+                                                        },
+                                                        {
+                                                            "key": "tue",
+                                                            "type": "select",
+                                                            "label": "$t:g7-plugin-custom-effects.settings.options.day_tue",
+                                                            "options": [
+                                                                {
+                                                                    "value": "true",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.day_on"
+                                                                },
+                                                                {
+                                                                    "value": "false",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.day_off"
+                                                                }
+                                                            ]
+                                                        },
+                                                        {
+                                                            "key": "wed",
+                                                            "type": "select",
+                                                            "label": "$t:g7-plugin-custom-effects.settings.options.day_wed",
+                                                            "options": [
+                                                                {
+                                                                    "value": "true",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.day_on"
+                                                                },
+                                                                {
+                                                                    "value": "false",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.day_off"
+                                                                }
+                                                            ]
+                                                        },
+                                                        {
+                                                            "key": "thu",
+                                                            "type": "select",
+                                                            "label": "$t:g7-plugin-custom-effects.settings.options.day_thu",
+                                                            "options": [
+                                                                {
+                                                                    "value": "true",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.day_on"
+                                                                },
+                                                                {
+                                                                    "value": "false",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.day_off"
+                                                                }
+                                                            ]
+                                                        },
+                                                        {
+                                                            "key": "fri",
+                                                            "type": "select",
+                                                            "label": "$t:g7-plugin-custom-effects.settings.options.day_fri",
+                                                            "options": [
+                                                                {
+                                                                    "value": "true",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.day_on"
+                                                                },
+                                                                {
+                                                                    "value": "false",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.day_off"
+                                                                }
+                                                            ]
+                                                        },
+                                                        {
+                                                            "key": "sat",
+                                                            "type": "select",
+                                                            "label": "$t:g7-plugin-custom-effects.settings.options.day_sat",
+                                                            "options": [
+                                                                {
+                                                                    "value": "true",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.day_on"
+                                                                },
+                                                                {
+                                                                    "value": "false",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.day_off"
+                                                                }
+                                                            ]
+                                                        },
+                                                        {
+                                                            "key": "timezone",
+                                                            "type": "select",
+                                                            "label": "$t:g7-plugin-custom-effects.settings.fields.schedule_timezone.label",
+                                                            "options": [
+                                                                {
+                                                                    "value": "Asia/Seoul",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.timezone_seoul"
+                                                                },
+                                                                {
+                                                                    "value": "UTC",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.timezone_utc"
+                                                                },
+                                                                {
+                                                                    "value": "Asia/Tokyo",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.timezone_tokyo"
+                                                                },
+                                                                {
+                                                                    "value": "Asia/Shanghai",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.timezone_shanghai"
+                                                                },
+                                                                {
+                                                                    "value": "America/New_York",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.timezone_new_york"
+                                                                },
+                                                                {
+                                                                    "value": "America/Los_Angeles",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.timezone_los_angeles"
+                                                                },
+                                                                {
+                                                                    "value": "Europe/London",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.timezone_london"
+                                                                },
+                                                                {
+                                                                    "value": "Europe/Paris",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.timezone_paris"
+                                                                },
+                                                                {
+                                                                    "value": "Australia/Sydney",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.timezone_sydney"
+                                                                }
+                                                            ]
+                                                        }
+                                                    ]
                                                 },
-                                                "text": "$t:g7-plugin-custom-effects.settings.fields.schedule_timezone.label"
-                                            },
-                                            {
-                                                "type": "basic",
-                                                "name": "P",
-                                                "props": {
-                                                    "className": "form-hint"
-                                                },
-                                                "text": "$t:g7-plugin-custom-effects.settings.fields.schedule_timezone.hint"
-                                            },
-                                            {
-                                                "type": "basic",
-                                                "name": "Select",
-                                                "props": {
-                                                    "id": "schedule_timezone",
-                                                    "name": "schedule_timezone",
-                                                    "className": "w-full mt-2"
-                                                },
-                                                "children": [
+                                                "actions": [
                                                     {
-                                                        "type": "basic",
-                                                        "name": "Option",
-                                                        "props": { "value": "Asia/Seoul" },
-                                                        "text": "$t:g7-plugin-custom-effects.settings.options.timezone_seoul"
-                                                    },
-                                                    {
-                                                        "type": "basic",
-                                                        "name": "Option",
-                                                        "props": { "value": "UTC" },
-                                                        "text": "$t:g7-plugin-custom-effects.settings.options.timezone_utc"
-                                                    },
-                                                    {
-                                                        "type": "basic",
-                                                        "name": "Option",
-                                                        "props": { "value": "Asia/Tokyo" },
-                                                        "text": "$t:g7-plugin-custom-effects.settings.options.timezone_tokyo"
-                                                    },
-                                                    {
-                                                        "type": "basic",
-                                                        "name": "Option",
-                                                        "props": { "value": "Asia/Shanghai" },
-                                                        "text": "$t:g7-plugin-custom-effects.settings.options.timezone_shanghai"
-                                                    },
-                                                    {
-                                                        "type": "basic",
-                                                        "name": "Option",
-                                                        "props": { "value": "America/New_York" },
-                                                        "text": "$t:g7-plugin-custom-effects.settings.options.timezone_new_york"
-                                                    },
-                                                    {
-                                                        "type": "basic",
-                                                        "name": "Option",
-                                                        "props": { "value": "America/Los_Angeles" },
-                                                        "text": "$t:g7-plugin-custom-effects.settings.options.timezone_los_angeles"
-                                                    },
-                                                    {
-                                                        "type": "basic",
-                                                        "name": "Option",
-                                                        "props": { "value": "Europe/London" },
-                                                        "text": "$t:g7-plugin-custom-effects.settings.options.timezone_london"
-                                                    },
-                                                    {
-                                                        "type": "basic",
-                                                        "name": "Option",
-                                                        "props": { "value": "Europe/Paris" },
-                                                        "text": "$t:g7-plugin-custom-effects.settings.options.timezone_paris"
-                                                    },
-                                                    {
-                                                        "type": "basic",
-                                                        "name": "Option",
-                                                        "props": { "value": "Australia/Sydney" },
-                                                        "text": "$t:g7-plugin-custom-effects.settings.options.timezone_sydney"
+                                                        "event": "onChange",
+                                                        "handler": "setState",
+                                                        "params": {
+                                                            "target": "local",
+                                                            "form.schedules": "{{$args[0]}}"
+                                                        }
                                                     }
                                                 ]
                                             }
@@ -1360,7 +1375,12 @@
         },
         "wind_direction": {
             "type": "enum",
-            "options": ["none", "left", "right", "random"],
+            "options": [
+                "none",
+                "left",
+                "right",
+                "random"
+            ],
             "default": "none"
         },
         "color": {
@@ -1381,42 +1401,6 @@
             "type": "boolean",
             "default": false
         },
-        "schedule_start_date": {
-            "type": "string",
-            "default": ""
-        },
-        "schedule_end_date": {
-            "type": "string",
-            "default": ""
-        },
-        "schedule_start_time": {
-            "type": "string",
-            "default": ""
-        },
-        "schedule_end_time": {
-            "type": "string",
-            "default": ""
-        },
-        "schedule_days": {
-            "type": "enum",
-            "options": ["all", "weekdays", "weekends"],
-            "default": "all"
-        },
-        "schedule_timezone": {
-            "type": "enum",
-            "options": [
-                "Asia/Seoul",
-                "UTC",
-                "Asia/Tokyo",
-                "Asia/Shanghai",
-                "America/New_York",
-                "America/Los_Angeles",
-                "Europe/London",
-                "Europe/Paris",
-                "Australia/Sydney"
-            ],
-            "default": "Asia/Seoul"
-        },
         "mobile_enabled": {
             "type": "boolean",
             "default": false
@@ -1428,6 +1412,19 @@
         "respect_reduced_motion": {
             "type": "boolean",
             "default": true
+        },
+        "schedules": {
+            "type": "array",
+            "default": []
         }
-    }
+    },
+    "init_actions": [
+        {
+            "handler": "setState",
+            "params": {
+                "target": "local",
+                "form.schedules": "{{Array.isArray(_local.form.schedules) ? _local.form.schedules : [{enabled:true,effect:(_local.form.effect ?? \"snow\"),start_date:(_local.form.schedule_start_date ?? \"\"),end_date:(_local.form.schedule_end_date ?? \"\"),start_time:(_local.form.schedule_start_time ?? \"\"),end_time:(_local.form.schedule_end_time ?? \"\"),timezone:(_local.form.schedule_timezone ?? \"Asia/Seoul\"),sun:(_local.form.schedule_days !== \"weekdays\"),mon:(_local.form.schedule_days !== \"weekends\"),tue:(_local.form.schedule_days !== \"weekends\"),wed:(_local.form.schedule_days !== \"weekends\"),thu:(_local.form.schedule_days !== \"weekends\"),fri:(_local.form.schedule_days !== \"weekends\"),sat:(_local.form.schedule_days !== \"weekdays\")}]}}"
+            }
+        }
+    ]
 }

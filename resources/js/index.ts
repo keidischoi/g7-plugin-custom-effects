@@ -1,12 +1,12 @@
 import '../css/effects.css';
-import { readInlineConfig, shouldStart } from './config';
+import { readInlineConfig, shouldStart, type EffectKind } from './config';
 import { EffectsEngine } from './engine';
 import {
     EFFECTS_PREFERENCE_KEY,
     readEffectsPreference,
     writeEffectsPreference,
 } from './preference';
-import { isScheduleActive } from './schedule';
+import { activeScheduledEffect } from './schedule';
 import {
     HeaderToggleMount,
     PREFERENCE_EVENT,
@@ -31,19 +31,40 @@ function boot(): void {
     const reducedMotionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
     let userEnabled = readEffectsPreference(window.localStorage);
     let engine: EffectsEngine | null = null;
+    let runningEffect: EffectKind | null = null;
+    let headerToggle: HeaderToggleMount | null = null;
+
+    const currentEffect = (): EffectKind => activeScheduledEffect(config) ?? config.effect;
 
     const sync = (): void => {
-        const eligible = userEnabled && isScheduleActive(config) && shouldStart(config, {
-            pathname: window.location.pathname,
-            mobile: mobileQuery.matches,
-            reducedMotion: reducedMotionQuery.matches,
-        });
+        const scheduledEffect = activeScheduledEffect(config);
+        const eligible = userEnabled
+            && scheduledEffect !== null
+            && shouldStart(config, {
+                pathname: window.location.pathname,
+                mobile: mobileQuery.matches,
+                reducedMotion: reducedMotionQuery.matches,
+            });
 
-        if (eligible && !engine) engine = EffectsEngine.start(config, window);
-        if (!eligible && engine) {
+        if (!eligible) {
+            engine?.stop();
+            engine = null;
+            runningEffect = null;
+            headerToggle?.refresh();
+            return;
+        }
+
+        if (engine && runningEffect !== scheduledEffect) {
             engine.stop();
             engine = null;
         }
+
+        if (!engine) {
+            engine = EffectsEngine.start({ ...config, effect: scheduledEffect }, window);
+            runningEffect = scheduledEffect;
+        }
+
+        headerToggle?.refresh();
     };
 
     const notifyPreferenceChange = (): void => {
@@ -71,8 +92,8 @@ function boot(): void {
     const unregisterToggleAction = isUserPage && config.enabled
         ? registerToggleAction(window, toggle)
         : () => {};
-    const headerToggle = isUserPage && config.enabled
-        ? new HeaderToggleMount(window, config.effect, () => userEnabled, toggle)
+    headerToggle = isUserPage && config.enabled
+        ? new HeaderToggleMount(window, currentEffect, () => userEnabled, toggle)
         : null;
     headerToggle?.start();
 

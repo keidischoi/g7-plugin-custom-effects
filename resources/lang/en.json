@@ -35,6 +35,17 @@
             "wind_left": "Left",
             "wind_right": "Right",
             "wind_random": "Random",
+            "schedule_on": "On",
+            "schedule_off": "Off",
+            "day_on": "On",
+            "day_off": "Off",
+            "day_sun": "Sun",
+            "day_mon": "Mon",
+            "day_tue": "Tue",
+            "day_wed": "Wed",
+            "day_thu": "Thu",
+            "day_fri": "Fri",
+            "day_sat": "Sat",
             "color_white": "White (#ffffff)",
             "color_sky": "Sky blue (#bae6fd)",
             "color_pink": "Pink (#f9a8d4)",
@@ -90,7 +101,12 @@
             },
             "schedule_enabled": {
                 "label": "Enable scheduling",
-                "hint": "Allows effects only during the configured dates and times."
+                "hint": "When scheduling is on, only a matching schedule effect is shown."
+            },
+            "schedules": {
+                "add": "Add schedule",
+                "empty": "No schedules yet. Add a schedule to begin.",
+                "enabled": "Active"
             },
             "schedule_start_date": {
                 "label": "Start date",

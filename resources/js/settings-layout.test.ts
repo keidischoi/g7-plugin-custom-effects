@@ -142,10 +142,12 @@ describe('plugin settings layout', () => {
         expect(slots).toContain('g7-custom-effects-schedule-dfl-row');
         expect(effectsCss).toContain('grid-row: 2');
         expect(effectsCss).toContain('.g7-custom-effects-schedule-dfl-row {');
-        expect(effectsCss).toContain('grid-template-columns: 1.5rem 2.25rem repeat(8, minmax(3.2rem, 0.55fr)) minmax(1.75rem, auto)');
+        expect(effectsCss).toContain('grid-template-columns: 1.5rem 2.25rem repeat(2, minmax(3.2rem, 0.7fr)) repeat(4, minmax(3.6rem, 1.1fr)) repeat(2, minmax(6.5rem, 0.5fr)) minmax(1.75rem, auto)');
         expect(effectsCss).toContain('.g7-custom-effects-schedule-full {');
-        expect(effectsCss).toContain('> :nth-child(6) { grid-column: 7 / 9; grid-row: 1; }');
-        expect(effectsCss).toContain('> :nth-child(7) { grid-column: 9 / 11; grid-row: 1; }');
+        expect(effectsCss).toContain('> :nth-child(4) { grid-column: 5 / 7; grid-row: 1; }');
+        expect(effectsCss).toContain('> :nth-child(5) { grid-column: 7 / 9; grid-row: 1; }');
+        expect(effectsCss).toContain('> :nth-child(6) { grid-column: 9; grid-row: 1; }');
+        expect(effectsCss).toContain('> :nth-child(7) { grid-column: 10; grid-row: 1; }');
         expect(effectsCss).toContain('> :nth-child(8) { grid-column: 3; grid-row: 2; }');
         expect(effectsCss).toContain('> :nth-child(14) { grid-column: 9; grid-row: 2; }');
         expect(effectsCss).toContain('> :nth-child(15) {');

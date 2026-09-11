@@ -13,7 +13,7 @@
     "settings": {
         "title": "Custom Effects Settings",
         "description": "Configure the weather effect, density, and where it runs.",
-        "notice": "Refresh a visitor page after saving to apply your changes.",
+        "notice": "Refresh an already open visitor page once after saving. After that, scheduled effects change without a refresh.",
         "sections": {
             "effect": "Appearance and movement",
             "schedule": "Date and time scheduling",

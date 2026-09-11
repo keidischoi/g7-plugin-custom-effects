@@ -2,7 +2,7 @@
     "name": "plugins/g7-plugin-custom-effects",
     "description": "Snow and rain effects plugin for Gnuboard7",
     "type": "library",
-    "version": "1.6.3",
+    "version": "1.7.0",
     "license": "MIT",
     "autoload": {
         "psr-4": {

@@ -1,6 +1,6 @@
 {
     "_meta": {
-        "version": "1.6.3",
+        "version": "1.7.0",
         "description": "날씨 및 장식 화면 효과 플러그인 기본값과 프론트엔드 공개 설정"
     },
     "defaults": {
@@ -16,6 +16,7 @@
         "admin_enabled": false,
         "respect_reduced_motion": true,
         "schedule_enabled": false,
+        "schedules": [],
         "schedule_start_date": "",
         "schedule_end_date": "",
         "schedule_start_time": "",
@@ -36,6 +37,7 @@
         "admin_enabled": { "type": "boolean", "expose": true },
         "respect_reduced_motion": { "type": "boolean", "expose": true },
         "schedule_enabled": { "type": "boolean", "expose": true },
+        "schedules": { "type": "array", "expose": true },
         "schedule_start_date": { "type": "string", "expose": true },
         "schedule_end_date": { "type": "string", "expose": true },
         "schedule_start_time": { "type": "string", "expose": true },

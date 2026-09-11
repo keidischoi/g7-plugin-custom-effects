@@ -35,6 +35,17 @@
             "wind_left": "왼쪽",
             "wind_right": "오른쪽",
             "wind_random": "무작위",
+            "schedule_on": "사용",
+            "schedule_off": "중지",
+            "day_on": "적용",
+            "day_off": "제외",
+            "day_sun": "일",
+            "day_mon": "월",
+            "day_tue": "화",
+            "day_wed": "수",
+            "day_thu": "목",
+            "day_fri": "금",
+            "day_sat": "토",
             "color_white": "흰색 (#ffffff)",
             "color_sky": "하늘색 (#bae6fd)",
             "color_pink": "분홍색 (#f9a8d4)",
@@ -90,7 +101,12 @@
             },
             "schedule_enabled": {
                 "label": "예약 사용",
-                "hint": "설정한 날짜와 시간 안에서만 효과를 허용합니다."
+                "hint": "예약을 켜면 아래 일정 중 현재 시각에 해당하는 효과만 표시합니다."
+            },
+            "schedules": {
+                "add": "예약 추가",
+                "empty": "예약이 없습니다. 예약을 추가하세요.",
+                "enabled": "사용"
             },
             "schedule_start_date": {
                 "label": "시작 날짜",

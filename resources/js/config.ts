@@ -41,6 +41,17 @@ export type EffectKind = typeof EFFECT_KINDS[number];
 export type ScheduleDays = 'all' | 'weekdays' | 'weekends';
 export type WindDirection = 'none' | 'left' | 'right' | 'random';
 
+export interface EffectSchedule {
+    enabled: boolean;
+    effect: EffectKind;
+    startDate: string;
+    endDate: string;
+    startTime: string;
+    endTime: string;
+    days: readonly number[];
+    timezone: string;
+}
+
 export interface EffectConfig {
     enabled: boolean;
     effect: EffectKind;
@@ -60,6 +71,7 @@ export interface EffectConfig {
     scheduleEndTime: string;
     scheduleDays: ScheduleDays;
     scheduleTimezone: string;
+    schedules: EffectSchedule[];
 }
 
 export const DEFAULT_CONFIG: Readonly<EffectConfig> = {
@@ -81,6 +93,7 @@ export const DEFAULT_CONFIG: Readonly<EffectConfig> = {
     scheduleEndTime: '',
     scheduleDays: 'all',
     scheduleTimezone: 'Asia/Seoul',
+    schedules: [],
 };
 
 function booleanValue(value: unknown, fallback: boolean): boolean {
@@ -122,6 +135,52 @@ function dateValue(value: unknown): string {
         : formatted;
 }
 
+function weekdayFlags(value: Record<string, unknown>): readonly number[] {
+    if (Array.isArray(value.days)) {
+        return [...new Set(
+            value.days
+                .map((day) => typeof day === 'number' ? day : Number(day))
+                .filter((day) => Number.isInteger(day) && day >= 0 && day <= 6),
+        )].sort((left, right) => left - right);
+    }
+
+    return [
+        value.sun,
+        value.mon,
+        value.tue,
+        value.wed,
+        value.thu,
+        value.fri,
+        value.sat,
+    ].flatMap((enabled, day) => booleanValue(enabled, true) ? [day] : []);
+}
+
+function scheduleValue(
+    raw: unknown,
+    fallbackEffect: EffectKind,
+): EffectSchedule {
+    const value = raw && typeof raw === 'object' ? raw as Record<string, unknown> : {};
+    const effect = EFFECT_KINDS.includes(value.effect as EffectKind)
+        ? value.effect as EffectKind
+        : fallbackEffect;
+    const days = weekdayFlags(value);
+
+    return {
+        enabled: booleanValue(value.enabled, true),
+        effect,
+        startDate: dateValue(value.start_date),
+        endDate: dateValue(value.end_date),
+        startTime: formattedValue(value.start_time, /^(?:[01]\d|2[0-3]):[0-5]\d$/),
+        endTime: formattedValue(value.end_time, /^(?:[01]\d|2[0-3]):[0-5]\d$/),
+        days,
+        timezone: presetValue(
+            value.timezone,
+            TIMEZONE_OPTIONS,
+            DEFAULT_CONFIG.scheduleTimezone,
+        ),
+    };
+}
+
 export function normalizeConfig(raw: unknown): EffectConfig {
     const value = raw && typeof raw === 'object' ? raw as Record<string, unknown> : {};
     const effect = EFFECT_KINDS.includes(value.effect as EffectKind)
@@ -131,6 +190,38 @@ export function normalizeConfig(raw: unknown): EffectConfig {
     const windDirection = ['none', 'left', 'right', 'random'].includes(String(value.wind_direction))
         ? value.wind_direction as WindDirection
         : legacyWind < 0 ? 'left' : legacyWind > 0 ? 'right' : DEFAULT_CONFIG.windDirection;
+    const legacyDays = ['weekdays', 'weekends'].includes(String(value.schedule_days))
+        ? value.schedule_days as ScheduleDays
+        : 'all';
+    const legacySchedule = scheduleValue({
+        enabled: true,
+        effect,
+        start_date: value.schedule_start_date,
+        end_date: value.schedule_end_date,
+        start_time: value.schedule_start_time,
+        end_time: value.schedule_end_time,
+        timezone: value.schedule_timezone,
+        sun: legacyDays !== 'weekdays',
+        mon: legacyDays !== 'weekends',
+        tue: legacyDays !== 'weekends',
+        wed: legacyDays !== 'weekends',
+        thu: legacyDays !== 'weekends',
+        fri: legacyDays !== 'weekends',
+        sat: legacyDays !== 'weekdays',
+    }, effect);
+    const hasLegacySchedule = [
+        'schedule_start_date',
+        'schedule_end_date',
+        'schedule_start_time',
+        'schedule_end_time',
+        'schedule_days',
+        'schedule_timezone',
+    ].some((key) => key in value);
+    const schedules = Array.isArray(value.schedules)
+        ? value.schedules.slice(0, 20).map((schedule) => scheduleValue(schedule, effect))
+        : hasLegacySchedule
+            ? [legacySchedule]
+            : [];
 
     return {
         enabled: booleanValue(value.enabled, DEFAULT_CONFIG.enabled),
@@ -152,14 +243,13 @@ export function normalizeConfig(raw: unknown): EffectConfig {
         scheduleEndDate: dateValue(value.schedule_end_date),
         scheduleStartTime: formattedValue(value.schedule_start_time, /^(?:[01]\d|2[0-3]):[0-5]\d$/),
         scheduleEndTime: formattedValue(value.schedule_end_time, /^(?:[01]\d|2[0-3]):[0-5]\d$/),
-        scheduleDays: ['weekdays', 'weekends'].includes(String(value.schedule_days))
-            ? value.schedule_days as ScheduleDays
-            : 'all',
+        scheduleDays: legacyDays,
         scheduleTimezone: presetValue(
             value.schedule_timezone,
             TIMEZONE_OPTIONS,
             DEFAULT_CONFIG.scheduleTimezone,
         ),
+        schedules,
     };
 }
 

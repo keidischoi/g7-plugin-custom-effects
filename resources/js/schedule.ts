@@ -1,4 +1,4 @@
-import type { EffectConfig } from './config';
+import type { EffectConfig, EffectKind, EffectSchedule } from './config';
 
 interface ZonedClock {
     date: string;
@@ -57,12 +57,6 @@ export function getZonedClock(
     };
 }
 
-function matchesDay(config: EffectConfig, day: number): boolean {
-    if (config.scheduleDays === 'weekdays') return day >= 1 && day <= 5;
-    if (config.scheduleDays === 'weekends') return day === 0 || day === 6;
-    return true;
-}
-
 function matchesTimeRange(current: string, start: string, end: string): boolean {
     if (!start && !end) return true;
     if (start && !end) return current >= start;
@@ -78,29 +72,41 @@ function previousDate(date: string): string {
     return previous.toISOString().slice(0, 10);
 }
 
-export function isScheduleActive(
-    config: EffectConfig,
-    now: Date = new Date(),
-): boolean {
-    if (!config.scheduleEnabled) return true;
+function matchesSchedule(schedule: EffectSchedule, now: Date): boolean {
+    if (!schedule.enabled) return false;
 
-    const clock = getZonedClock(now, config.scheduleTimezone);
+    const clock = getZonedClock(now, schedule.timezone);
     const overnightCarry = Boolean(
-        config.scheduleStartTime
-        && config.scheduleEndTime
-        && config.scheduleStartTime > config.scheduleEndTime
-        && clock.time < config.scheduleEndTime,
+        schedule.startTime
+        && schedule.endTime
+        && schedule.startTime > schedule.endTime
+        && clock.time < schedule.endTime,
     );
     const scheduleDate = overnightCarry ? previousDate(clock.date) : clock.date;
     const scheduleDay = overnightCarry ? (clock.day + 6) % 7 : clock.day;
 
-    if (config.scheduleStartDate && scheduleDate < config.scheduleStartDate) return false;
-    if (config.scheduleEndDate && scheduleDate > config.scheduleEndDate) return false;
-    if (!matchesDay(config, scheduleDay)) return false;
+    if (schedule.startDate && scheduleDate < schedule.startDate) return false;
+    if (schedule.endDate && scheduleDate > schedule.endDate) return false;
+    if (!schedule.days.includes(scheduleDay)) return false;
 
     return matchesTimeRange(
         clock.time,
-        config.scheduleStartTime,
-        config.scheduleEndTime,
+        schedule.startTime,
+        schedule.endTime,
     );
+}
+
+export function activeScheduledEffect(
+    config: EffectConfig,
+    now: Date = new Date(),
+): EffectKind | null {
+    if (!config.scheduleEnabled) return config.effect;
+    return config.schedules.find((schedule) => matchesSchedule(schedule, now))?.effect ?? null;
+}
+
+export function isScheduleActive(
+    config: EffectConfig,
+    now: Date = new Date(),
+): boolean {
+    return activeScheduledEffect(config, now) !== null;
 }

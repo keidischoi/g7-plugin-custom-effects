@@ -72,8 +72,13 @@
     max-width: 100%;
 }
 
-.g7-custom-effects-schedule-full {
+.g7-custom-effects-schedule-list {
     grid-column: 1 / -1;
+    overflow-x: auto;
+}
+
+.g7-custom-effects-schedule-list table {
+    min-width: 72rem;
 }
 
 @media (min-width: 1024px) {

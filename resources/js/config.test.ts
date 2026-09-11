@@ -93,6 +93,57 @@ describe('normalizeConfig', () => {
             scheduleEndTime: '',
             scheduleDays: 'weekends',
             scheduleTimezone: 'America/New_York',
+            schedules: [
+                expect.objectContaining({
+                    enabled: true,
+                    startDate: '2026-12-01',
+                    endDate: '',
+                    startTime: '22:30',
+                    endTime: '',
+                    timezone: 'America/New_York',
+                    days: [0, 6],
+                }),
+            ],
+        });
+    });
+
+    it('keeps an explicit empty schedule list instead of migrating legacy fields', () => {
+        expect(normalizeConfig({
+            schedules: [],
+            schedule_start_date: '2026-12-01',
+            schedule_days: 'weekends',
+        }).schedules).toEqual([]);
+    });
+
+    it('normalizes per-schedule effects and weekday flags', () => {
+        const config = normalizeConfig({
+            schedules: [{
+                enabled: '1',
+                effect: 'hearts',
+                start_date: '2026-12-24',
+                end_date: '2026-12-25',
+                start_time: '18:00',
+                end_time: '23:00',
+                timezone: 'Asia/Tokyo',
+                sun: false,
+                mon: true,
+                tue: 'false',
+                wed: true,
+                thu: 0,
+                fri: true,
+                sat: '1',
+            }],
+        });
+
+        expect(config.schedules[0]).toMatchObject({
+            enabled: true,
+            effect: 'hearts',
+            startDate: '2026-12-24',
+            endDate: '2026-12-25',
+            startTime: '18:00',
+            endTime: '23:00',
+            timezone: 'Asia/Tokyo',
+            days: [1, 3, 5, 6],
         });
     });
 

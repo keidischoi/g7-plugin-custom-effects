@@ -1,5 +1,5 @@
 {
-    "version": "1.8.30",
+    "version": "1.8.31",
     "layout_name": "plugin_settings",
     "permissions": [
         "core.plugins.update"
@@ -179,7 +179,7 @@
                                                 "props": {
                                                     "id": "effect",
                                                     "name": "effect",
-                                                    "className": "lg:col-span-1 w-full"
+                                                    "className": "lg:col-span-1 g7-custom-effects-detail-input"
                                                 },
                                                 "children": [
                                                     {

@@ -1,5 +1,5 @@
 {
-    "version": "1.6.0",
+    "version": "1.6.1",
     "layout_name": "plugin_settings",
     "permissions": [
         "core.plugins.update"
@@ -671,7 +671,7 @@
                                 "type": "basic",
                                 "name": "Div",
                                 "props": {
-                                    "className": "p-6 mx-3 grid grid-cols-1 md:grid-cols-2 gap-6"
+                                    "className": "px-6 py-4 grid grid-cols-1 lg:grid-cols-2 gap-6"
                                 },
                                 "children": [
                                     {
@@ -679,7 +679,7 @@
                                         "type": "basic",
                                         "name": "Div",
                                         "props": {
-                                            "className": "md:col-span-2 flex items-center justify-between gap-4"
+                                            "className": "min-w-0 lg:col-span-2 flex items-center justify-between gap-4"
                                         },
                                         "children": [
                                             {
@@ -717,6 +717,9 @@
                                         "id": "field_schedule_start_date",
                                         "type": "basic",
                                         "name": "Div",
+                                        "props": {
+                                            "className": "min-w-0"
+                                        },
                                         "children": [
                                             {
                                                 "type": "basic",
@@ -742,7 +745,7 @@
                                                     "id": "schedule_start_date",
                                                     "type": "date",
                                                     "name": "schedule_start_date",
-                                                    "className": "w-full mt-2"
+                                                    "className": "box-border max-w-full w-full mt-2"
                                                 }
                                             }
                                         ]
@@ -751,6 +754,9 @@
                                         "id": "field_schedule_end_date",
                                         "type": "basic",
                                         "name": "Div",
+                                        "props": {
+                                            "className": "min-w-0"
+                                        },
                                         "children": [
                                             {
                                                 "type": "basic",
@@ -776,7 +782,7 @@
                                                     "id": "schedule_end_date",
                                                     "type": "date",
                                                     "name": "schedule_end_date",
-                                                    "className": "w-full mt-2"
+                                                    "className": "box-border max-w-full w-full mt-2"
                                                 }
                                             }
                                         ]
@@ -785,6 +791,9 @@
                                         "id": "field_schedule_start_time",
                                         "type": "basic",
                                         "name": "Div",
+                                        "props": {
+                                            "className": "min-w-0"
+                                        },
                                         "children": [
                                             {
                                                 "type": "basic",
@@ -810,7 +819,7 @@
                                                     "id": "schedule_start_time",
                                                     "type": "time",
                                                     "name": "schedule_start_time",
-                                                    "className": "w-full mt-2"
+                                                    "className": "box-border max-w-full w-full mt-2"
                                                 }
                                             }
                                         ]
@@ -819,6 +828,9 @@
                                         "id": "field_schedule_end_time",
                                         "type": "basic",
                                         "name": "Div",
+                                        "props": {
+                                            "className": "min-w-0"
+                                        },
                                         "children": [
                                             {
                                                 "type": "basic",
@@ -844,7 +856,7 @@
                                                     "id": "schedule_end_time",
                                                     "type": "time",
                                                     "name": "schedule_end_time",
-                                                    "className": "w-full mt-2"
+                                                    "className": "box-border max-w-full w-full mt-2"
                                                 }
                                             }
                                         ]
@@ -853,6 +865,9 @@
                                         "id": "field_schedule_days",
                                         "type": "basic",
                                         "name": "Div",
+                                        "props": {
+                                            "className": "min-w-0"
+                                        },
                                         "children": [
                                             {
                                                 "type": "basic",
@@ -869,7 +884,7 @@
                                                 "props": {
                                                     "id": "schedule_days",
                                                     "name": "schedule_days",
-                                                    "className": "w-full mt-2"
+                                                    "className": "box-border max-w-full w-full mt-2"
                                                 },
                                                 "children": [
                                                     {
@@ -904,6 +919,9 @@
                                         "id": "field_schedule_timezone",
                                         "type": "basic",
                                         "name": "Div",
+                                        "props": {
+                                            "className": "min-w-0"
+                                        },
                                         "children": [
                                             {
                                                 "type": "basic",
@@ -928,7 +946,7 @@
                                                 "props": {
                                                     "id": "schedule_timezone",
                                                     "name": "schedule_timezone",
-                                                    "className": "w-full mt-2"
+                                                    "className": "box-border max-w-full w-full mt-2"
                                                 },
                                                 "children": [
                                                     {

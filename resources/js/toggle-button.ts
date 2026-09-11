@@ -94,8 +94,10 @@ export class HeaderToggleMount {
 
     start(): void {
         this.mountButtons();
-        this.observer = new this.target.MutationObserver(() => this.mountButtons());
-        this.observer.observe(this.target.document.body, { childList: true, subtree: true });
+        const Observer = (this.target as Window & typeof globalThis).MutationObserver;
+        const observer = new Observer(() => this.mountButtons());
+        observer.observe(this.target.document.body, { childList: true, subtree: true });
+        this.observer = observer;
         this.target.addEventListener(PREFERENCE_EVENT, this.handlePreferenceChange);
     }
 

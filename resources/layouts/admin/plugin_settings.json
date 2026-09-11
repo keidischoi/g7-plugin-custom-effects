@@ -1,5 +1,5 @@
 {
-    "version": "1.8.11",
+    "version": "1.8.12",
     "layout_name": "plugin_settings",
     "permissions": [
         "core.plugins.update"
@@ -955,6 +955,7 @@
                                                         {
                                                             "key": "sun",
                                                             "type": "select",
+                                                            "className": "g7-custom-effects-schedule-day-select",
                                                             "label": "$t:g7-plugin-custom-effects.settings.options.day_sun",
                                                             "options": [
                                                                 {
@@ -970,6 +971,7 @@
                                                         {
                                                             "key": "mon",
                                                             "type": "select",
+                                                            "className": "g7-custom-effects-schedule-day-select",
                                                             "label": "$t:g7-plugin-custom-effects.settings.options.day_mon",
                                                             "options": [
                                                                 {
@@ -985,6 +987,7 @@
                                                         {
                                                             "key": "tue",
                                                             "type": "select",
+                                                            "className": "g7-custom-effects-schedule-day-select",
                                                             "label": "$t:g7-plugin-custom-effects.settings.options.day_tue",
                                                             "options": [
                                                                 {
@@ -1000,6 +1003,7 @@
                                                         {
                                                             "key": "wed",
                                                             "type": "select",
+                                                            "className": "g7-custom-effects-schedule-day-select",
                                                             "label": "$t:g7-plugin-custom-effects.settings.options.day_wed",
                                                             "options": [
                                                                 {
@@ -1015,6 +1019,7 @@
                                                         {
                                                             "key": "thu",
                                                             "type": "select",
+                                                            "className": "g7-custom-effects-schedule-day-select",
                                                             "label": "$t:g7-plugin-custom-effects.settings.options.day_thu",
                                                             "options": [
                                                                 {
@@ -1030,6 +1035,7 @@
                                                         {
                                                             "key": "fri",
                                                             "type": "select",
+                                                            "className": "g7-custom-effects-schedule-day-select",
                                                             "label": "$t:g7-plugin-custom-effects.settings.options.day_fri",
                                                             "options": [
                                                                 {
@@ -1045,6 +1051,7 @@
                                                         {
                                                             "key": "sat",
                                                             "type": "select",
+                                                            "className": "g7-custom-effects-schedule-day-select",
                                                             "label": "$t:g7-plugin-custom-effects.settings.options.day_sat",
                                                             "options": [
                                                                 {

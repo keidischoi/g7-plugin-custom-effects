@@ -1,36 +1,72 @@
-function isEnabledSelect(element: Element): element is HTMLSelectElement {
-    if (!(element instanceof HTMLSelectElement)) return false;
-    if (element.classList.contains('g7-custom-effects-schedule-enabled-select')) return true;
+const DAY_LABELS = {
+    ko: ['일', '월', '화', '수', '목', '금', '토'],
+    en: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+} as const;
 
-    const parent = element.parentElement;
-    if (!parent) return false;
-
-    if (
-        parent.classList.contains('g7-custom-effects-schedule-dfl-row')
-        && parent.children[1] === element
-    ) {
-        return true;
-    }
-
-    return Boolean(
-        parent.parentElement?.classList.contains('g7-custom-effects-schedule-dfl-row')
-        && parent.parentElement.children[1] === parent,
-    );
+function dayLabels(target: Window): readonly string[] {
+    return (target.document.documentElement.lang || '').toLowerCase().startsWith('en')
+        ? DAY_LABELS.en
+        : DAY_LABELS.ko;
 }
 
-function enhanceEnabledToggle(select: HTMLSelectElement): void {
-    if (select.dataset.g7EnabledToggle === '1') return;
+function scheduleRoot(target: Window): Element | null {
+    const document = target.document;
+    return document.querySelector('.g7-custom-effects-schedule-list')
+        ?? document.querySelector('.g7-custom-effects-schedule-grid .dynamic-field-list')
+        ?? document.querySelector('.g7-custom-effects-schedule-grid');
+}
+
+function rowChild(element: Element, row: HTMLElement): Element | null {
+    let current: Element | null = element;
+    while (current && current.parentElement !== row) {
+        current = current.parentElement;
+    }
+    return current;
+}
+
+function isEnabledSelect(element: HTMLSelectElement, row: HTMLElement): boolean {
+    if (element.classList.contains('g7-custom-effects-schedule-enabled-select')) return true;
+    if (element.dataset.g7Checkbox === 'enabled') return true;
+    const cell = rowChild(element, row);
+    return cell !== null && [...row.children].indexOf(cell) === 1;
+}
+
+function isDaySelect(element: HTMLSelectElement, row: HTMLElement): boolean {
+    if (element.classList.contains('g7-custom-effects-schedule-day-select')) return true;
+    if (element.dataset.g7Checkbox === 'day') return true;
+    const cell = rowChild(element, row);
+    if (!cell) return false;
+    const index = [...row.children].indexOf(cell);
+    return index >= 7 && index <= 13;
+}
+
+function enhanceTrueFalseCheckbox(
+    select: HTMLSelectElement,
+    className: string,
+    label: string,
+    kind: 'enabled' | 'day',
+): void {
+    if (select.dataset.g7Checkbox) return;
 
     const parent = select.parentElement;
     if (!parent) return;
 
-    select.dataset.g7EnabledToggle = '1';
-    select.classList.add('g7-custom-effects-schedule-enabled-select');
+    select.dataset.g7Checkbox = kind;
+    if (kind === 'enabled') {
+        select.classList.add('g7-custom-effects-schedule-enabled-select');
+    } else {
+        select.classList.add('g7-custom-effects-schedule-day-select');
+    }
 
     let host = parent;
-    if (parent.classList.contains('g7-custom-effects-schedule-dfl-row')) {
+    if (
+        parent.classList.contains('g7-custom-effects-schedule-dfl-row')
+        || parent.tagName === 'TR'
+    ) {
         const wrapper = select.ownerDocument.createElement('span');
-        wrapper.className = 'g7-custom-effects-schedule-enabled-host';
+        wrapper.className = kind === 'enabled'
+            ? 'g7-custom-effects-schedule-enabled-host'
+            : 'g7-custom-effects-schedule-day-host';
         parent.insertBefore(wrapper, select);
         wrapper.appendChild(select);
         host = wrapper;
@@ -38,9 +74,9 @@ function enhanceEnabledToggle(select: HTMLSelectElement): void {
 
     const checkbox = select.ownerDocument.createElement('input');
     checkbox.type = 'checkbox';
-    checkbox.className = 'g7-custom-effects-schedule-enabled';
-    checkbox.title = '사용';
-    checkbox.setAttribute('aria-label', '사용');
+    checkbox.className = className;
+    checkbox.title = label;
+    checkbox.setAttribute('aria-label', label);
     checkbox.checked = select.value !== 'false';
 
     checkbox.addEventListener('change', () => {
@@ -57,28 +93,82 @@ function enhanceEnabledToggle(select: HTMLSelectElement): void {
     host.insertBefore(checkbox, select);
 }
 
+function hideScheduleHeader(root: Element): void {
+    root.querySelectorAll('thead').forEach((header) => {
+        header.setAttribute('hidden', 'true');
+        (header as HTMLElement).style.display = 'none';
+    });
+    root.querySelectorAll('.g7-custom-effects-schedule-dfl-header').forEach((header) => {
+        if (header instanceof HTMLElement) header.style.display = 'none';
+    });
+}
+
+function isScheduleDataRow(element: Element): element is HTMLElement {
+    if (!(element instanceof HTMLElement)) return false;
+    if (element.classList.contains('g7-custom-effects-schedule-dfl-row')) return true;
+    const selects = element.querySelectorAll('select');
+    const inputs = element.querySelectorAll('input:not([type="checkbox"])');
+    return selects.length >= 8 && inputs.length >= 2;
+}
+
+function scheduleRows(root: Element): HTMLElement[] {
+    const named = [...root.querySelectorAll<HTMLElement>('.g7-custom-effects-schedule-dfl-row')];
+    if (named.length > 0) return named;
+
+    return [
+        ...root.querySelectorAll('tbody tr'),
+        ...root.querySelectorAll('.dynamic-field-list > *'),
+    ].filter(isScheduleDataRow);
+}
+
+function enhancePickers(root: Element): void {
+    root.querySelectorAll('input').forEach((element) => {
+        if (!(element instanceof HTMLInputElement)) return;
+        const placeholder = element.getAttribute('placeholder') ?? '';
+        if ((placeholder.includes('YYYY-MM-DD') || placeholder.includes('YYYY')) && element.type !== 'date') {
+            element.type = 'date';
+        }
+        if (placeholder.includes('HH:MM') && element.type !== 'time') {
+            element.type = 'time';
+            element.step = '60';
+        }
+    });
+}
+
 export function enhanceSchedulePickers(target: Window = window): () => void {
     const apply = (): void => {
-        const root = target.document.querySelector('.g7-custom-effects-schedule-list');
+        const root = scheduleRoot(target);
         if (!root) return;
 
-        root.querySelectorAll('input').forEach((element) => {
-            if (!(element instanceof HTMLInputElement)) return;
-            const placeholder = element.getAttribute('placeholder') ?? '';
-            if (placeholder.includes('YYYY-MM-DD') && element.type !== 'date') {
-                element.type = 'date';
-            }
-            if (placeholder.includes('HH:MM') && element.type !== 'time') {
-                element.type = 'time';
-                element.step = '60';
-            }
-        });
+        hideScheduleHeader(root);
+        enhancePickers(root);
 
-        root.querySelectorAll('select').forEach((element) => {
-            if (isEnabledSelect(element)) {
-                enhanceEnabledToggle(element);
-            }
-        });
+        const labels = dayLabels(target);
+        for (const row of scheduleRows(root)) {
+            row.classList.add('g7-custom-effects-schedule-dfl-row');
+
+            row.querySelectorAll('select').forEach((element) => {
+                if (isEnabledSelect(element, row)) {
+                    enhanceTrueFalseCheckbox(
+                        element,
+                        'g7-custom-effects-schedule-enabled',
+                        '사용',
+                        'enabled',
+                    );
+                    return;
+                }
+                if (isDaySelect(element, row)) {
+                    const cell = rowChild(element, row);
+                    const index = cell ? [...row.children].indexOf(cell) : -1;
+                    enhanceTrueFalseCheckbox(
+                        element,
+                        'g7-custom-effects-schedule-day',
+                        labels[Math.max(0, index - 7)] ?? '요일',
+                        'day',
+                    );
+                }
+            });
+        }
     };
 
     apply();
@@ -87,7 +177,7 @@ export function enhanceSchedulePickers(target: Window = window): () => void {
         childList: true,
         subtree: true,
         attributes: true,
-        attributeFilter: ['type', 'placeholder'],
+        attributeFilter: ['type', 'placeholder', 'class'],
     });
     return () => observer.disconnect();
 }

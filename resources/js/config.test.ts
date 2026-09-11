@@ -19,6 +19,10 @@ import {
     resolveCheeseCollision,
     burstStarOnHit,
     resolveStarCollision,
+    addToPile,
+    bounceRainAtFloor,
+    heightAtPile,
+    settleOnPile,
 } from './engine';
 
 describe('normalizeConfig', () => {
@@ -378,5 +382,70 @@ describe('multicolor star collisions', () => {
         burstStarOnHit(particle);
         burstStarOnHit(particle);
         expect(particle.sparkle).toBe(1);
+    });
+});
+
+describe('ground piles', () => {
+    it('lands a falling flake on the floor and raises nearby pile height', () => {
+        const pile = new Float32Array(12);
+        const flake = {
+            x: 16,
+            y: 200,
+            vx: 8,
+            vy: 40,
+            size: 4,
+            rotationSpeed: 2,
+            settled: 0,
+        };
+
+        expect(settleOnPile(flake, 200, pile, 4)).toBe(true);
+        expect(flake.settled).toBe(1);
+        expect(flake.vy).toBe(0);
+        expect(flake.y).toBe(196);
+
+        addToPile(pile, 16, 5);
+        expect(heightAtPile(pile, 16)).toBeGreaterThan(0);
+        expect(heightAtPile(pile, 16)).toBeGreaterThan(heightAtPile(pile, 8));
+    });
+
+    it('leaves airborne flakes falling', () => {
+        const pile = new Float32Array(8);
+        const flake = {
+            x: 8,
+            y: 20,
+            vx: 0,
+            vy: 30,
+            size: 4,
+            rotationSpeed: 1,
+            settled: 0,
+        };
+
+        expect(settleOnPile(flake, 200, pile, 4)).toBe(false);
+        expect(flake.settled).toBe(0);
+        expect(flake.vy).toBe(30);
+    });
+});
+
+describe('rain bouncing', () => {
+    it('turns a hitting drop into an upward bounce instead of resetting', () => {
+        const drop = { x: 10, y: 100, vx: 0, vy: 400, size: 16, sparkle: 0 };
+        expect(bounceRainAtFloor(drop, 100, () => 0.5)).toBe(false);
+        expect(drop.sparkle).toBe(1);
+        expect(drop.vy).toBeLessThan(0);
+        expect(drop.y).toBeLessThanOrEqual(100);
+    });
+
+    it('ignores rain that has not reached the floor', () => {
+        const drop = { x: 0, y: 20, vx: 0, vy: 400, size: 16, sparkle: 0 };
+        expect(bounceRainAtFloor(drop, 100)).toBe(false);
+        expect(drop.vy).toBe(400);
+        expect(drop.sparkle).toBe(0);
+    });
+
+    it('resets after the last bounce', () => {
+        const drop = { x: 0, y: 100, vx: 12, vy: 180, size: 16, sparkle: 2 };
+        expect(bounceRainAtFloor(drop, 100, () => 0.5)).toBe(true);
+        expect(drop.sparkle).toBe(3);
+        expect(drop.vy).toBeLessThan(0);
     });
 });

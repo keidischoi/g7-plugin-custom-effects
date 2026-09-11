@@ -9,6 +9,7 @@ interface Particle {
     baseSize: number;
     sparkle: number;
     explode: number;
+    settled: number;
     phase: number;
     phaseSpeed: number;
     rotation: number;
@@ -246,6 +247,124 @@ export function burstStarOnHit(particle: StarBody): void {
     particle.sparkle = 1;
 }
 
+export const PILE_CELL = 8;
+export const PILE_MAX_HEIGHT = 92;
+export const PILE_RECYCLE_AGE = 16;
+export const RAIN_GRAVITY = 1700;
+export const RAIN_MAX_BOUNCES = 3;
+
+export function pileColumn(
+    x: number,
+    columns: number,
+    cellWidth: number = PILE_CELL,
+): number {
+    return Math.min(columns - 1, Math.max(0, Math.floor(x / cellWidth)));
+}
+
+export function heightAtPile(
+    pile: ArrayLike<number>,
+    x: number,
+    cellWidth: number = PILE_CELL,
+): number {
+    return pile[pileColumn(x, pile.length, cellWidth)] ?? 0;
+}
+
+export function addToPile(
+    pile: Float32Array,
+    x: number,
+    amount: number,
+    maxHeight: number = PILE_MAX_HEIGHT,
+    cellWidth: number = PILE_CELL,
+): void {
+    const center = pileColumn(x, pile.length, cellWidth);
+    const weights = [0.2, 0.6, 0.2] as const;
+    for (let offset = -1; offset <= 1; offset += 1) {
+        const column = center + offset;
+        if (column < 0 || column >= pile.length) continue;
+        pile[column] = Math.min(maxHeight, pile[column] + amount * weights[offset + 1]);
+    }
+}
+
+export function removeFromPile(
+    pile: Float32Array,
+    x: number,
+    amount: number,
+    cellWidth: number = PILE_CELL,
+): void {
+    const center = pileColumn(x, pile.length, cellWidth);
+    const weights = [0.2, 0.6, 0.2] as const;
+    for (let offset = -1; offset <= 1; offset += 1) {
+        const column = center + offset;
+        if (column < 0 || column >= pile.length) continue;
+        pile[column] = Math.max(0, pile[column] - amount * weights[offset + 1]);
+    }
+}
+
+export interface SettlingBody {
+    x: number;
+    y: number;
+    vx: number;
+    vy: number;
+    size: number;
+    rotationSpeed: number;
+    settled: number;
+}
+
+export function settleOnPile(
+    particle: SettlingBody,
+    floorY: number,
+    pile: ArrayLike<number>,
+    restInset: number,
+): boolean {
+    const restY = floorY - heightAtPile(pile, particle.x) - restInset;
+    if (particle.settled > 0) {
+        particle.y = restY;
+        particle.vx = 0;
+        particle.vy = 0;
+        particle.rotationSpeed = 0;
+        return false;
+    }
+    if (particle.y < restY) return false;
+    particle.y = restY;
+    particle.vx = 0;
+    particle.vy = 0;
+    particle.rotationSpeed = 0;
+    particle.settled = 1;
+    return true;
+}
+
+export interface RainBody {
+    x: number;
+    y: number;
+    vx: number;
+    vy: number;
+    size: number;
+    sparkle: number;
+}
+
+export function bounceRainAtFloor(
+    particle: RainBody,
+    floorY: number,
+    random: () => number = Math.random,
+): boolean {
+    const droplet = particle.sparkle > 0;
+    const radius = droplet ? Math.max(1.8, particle.size * 0.18) : 0;
+    if (particle.y + radius < floorY) return false;
+    particle.y = floorY - radius;
+    if (particle.vy <= 0) return false;
+
+    particle.sparkle += 1;
+    if (particle.sparkle === 1) {
+        particle.vy = -(150 + random() * 160);
+        particle.vx += (random() - 0.5) * 120;
+        return false;
+    }
+
+    particle.vy = -Math.abs(particle.vy) * 0.42;
+    particle.vx *= 0.7;
+    return particle.sparkle >= RAIN_MAX_BOUNCES || Math.abs(particle.vy) < 55;
+}
+
 export function particleCount(
     width: number,
     height: number,
@@ -262,6 +381,8 @@ export class EffectsEngine {
     private readonly canvas: HTMLCanvasElement;
     private readonly context: CanvasRenderingContext2D;
     private particles: Particle[] = [];
+    private pile = new Float32Array(1);
+    private grounded = 0;
     private frameId: number | null = null;
     private previousTime = 0;
     private width = 1;
@@ -312,6 +433,7 @@ export class EffectsEngine {
         this.canvas.width = Math.round(this.width * ratio);
         this.canvas.height = Math.round(this.height * ratio);
         this.context.setTransform(ratio, 0, 0, ratio, 0, 0);
+        this.resizePile();
 
         const desiredCount = particleCount(
             this.width,
@@ -324,6 +446,14 @@ export class EffectsEngine {
 
     private createParticles(count: number): void {
         this.particles = Array.from({ length: count }, () => this.newParticle(true));
+        this.pile.fill(0);
+        this.grounded = 0;
+    }
+
+    private resizePile(): void {
+        const columns = Math.max(1, Math.ceil(this.width / PILE_CELL) + 1);
+        if (this.pile.length === columns) return;
+        this.pile = new Float32Array(columns);
     }
 
     private newParticle(randomPosition: boolean): Particle {
@@ -353,6 +483,7 @@ export class EffectsEngine {
             baseSize: size,
             sparkle: 0,
             explode: 0,
+            settled: 0,
             phase: Math.random() * Math.PI * 2,
             phaseSpeed: 0.6 + Math.random() * 1.8,
             rotation: Math.random() * Math.PI * 2,
@@ -473,6 +604,54 @@ export class EffectsEngine {
         this.wrapHorizontally(particle);
     }
 
+    private pileRestInset(particle: Particle): number {
+        if (this.config.effect === 'leaves') return particle.size * 0.58;
+        if (this.config.effect === 'maple_leaves') return particle.size * 0.82;
+        return particle.size;
+    }
+
+    private pileDeposit(particle: Particle): number {
+        if (this.config.effect === 'leaves') return particle.size * 0.36;
+        if (this.config.effect === 'maple_leaves') return particle.size * 0.46;
+        return particle.size * 0.7;
+    }
+
+    private advancePiling(particle: Particle, delta: number, sway: number): void {
+        if (particle.settled > 0) {
+            particle.settled += delta;
+            settleOnPile(particle, this.height, this.pile, this.pileRestInset(particle));
+            if (particle.settled >= PILE_RECYCLE_AGE) {
+                removeFromPile(this.pile, particle.x, this.pileDeposit(particle));
+                this.grounded = Math.max(0, this.grounded - 1);
+                this.resetParticle(particle);
+            }
+            return;
+        }
+
+        particle.phase += particle.phaseSpeed * delta;
+        particle.rotation += particle.rotationSpeed * delta;
+        particle.x += (particle.vx + Math.sin(particle.phase) * sway) * delta;
+        particle.y += particle.vy * delta;
+        this.wrapHorizontally(particle);
+
+        const restY = this.height - heightAtPile(this.pile, particle.x) - this.pileRestInset(particle);
+        if (particle.y < restY) return;
+
+        const maxSettled = Math.max(4, Math.floor(this.particles.length * 0.6));
+        const pileFull = heightAtPile(this.pile, particle.x) >= PILE_MAX_HEIGHT - 0.5;
+        if (pileFull || this.grounded >= maxSettled) {
+            this.resetParticle(particle);
+            return;
+        }
+
+        if (!settleOnPile(particle, this.height, this.pile, this.pileRestInset(particle))) return;
+        addToPile(this.pile, particle.x, this.pileDeposit(particle));
+        this.grounded += 1;
+        if (this.config.effect !== 'snow') {
+            particle.rotation = (Math.random() - 0.5) * 0.8;
+        }
+    }
+
     private wrapHorizontally(particle: Particle): void {
         if (particle.x > this.width + particle.size * 2) particle.x = -particle.size;
         if (particle.x < -particle.size * 2) particle.x = this.width + particle.size;
@@ -492,7 +671,7 @@ export class EffectsEngine {
 
     private drawSnow(delta: number): void {
         for (const particle of this.particles) {
-            this.advanceFalling(particle, delta, 12);
+            this.advancePiling(particle, delta, 12);
             this.prepareParticle(particle);
             this.context.beginPath();
             this.context.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
@@ -503,8 +682,27 @@ export class EffectsEngine {
     private drawRain(delta: number): void {
         this.context.lineWidth = 1.25;
         for (const particle of this.particles) {
-            this.advanceFalling(particle, delta, 0);
+            if (particle.sparkle > 0) particle.vy += RAIN_GRAVITY * delta;
+            particle.x += particle.vx * delta;
+            particle.y += particle.vy * delta;
+            this.wrapHorizontally(particle);
+            if (bounceRainAtFloor(particle, this.height)) this.resetParticle(particle);
             this.prepareParticle(particle);
+            if (particle.sparkle > 0) {
+                const radius = Math.max(1.8, particle.size * 0.18);
+                this.context.beginPath();
+                this.context.ellipse(
+                    particle.x,
+                    particle.y,
+                    radius * 0.72,
+                    radius,
+                    0,
+                    0,
+                    Math.PI * 2,
+                );
+                this.context.fill();
+                continue;
+            }
             const slant = particle.vx * 0.025;
             this.context.beginPath();
             this.context.moveTo(particle.x, particle.y);
@@ -515,7 +713,7 @@ export class EffectsEngine {
 
     private drawLeaves(delta: number): void {
         for (const particle of this.particles) {
-            this.advanceFalling(particle, delta, 32);
+            this.advancePiling(particle, delta, 32);
             this.prepareParticle(particle);
             this.withTransform(particle, () => {
                 const size = particle.size;
@@ -1182,7 +1380,7 @@ export class EffectsEngine {
 
     private drawMapleLeaves(delta: number): void {
         for (const particle of this.particles) {
-            this.advanceFalling(particle, delta, 28);
+            this.advancePiling(particle, delta, 28);
             this.withTransform(particle, () => {
                 const size = particle.size;
                 const body = this.fixedPaletteColor(particle, '#dc2626');

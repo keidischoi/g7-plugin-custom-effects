@@ -170,9 +170,8 @@ describe('plugin settings layout', () => {
         expect(slots).toContain('"key":"intensity"');
         expect(slots).toContain('"key":"wind_direction"');
         expect(slots).not.toContain('"event":"onAddItem"');
-        expect(slots).toContain('($args[0])');
-        expect(slots).toContain('prev.length + 1');
-        expect(slots).toContain('_local.form.intensity');
+        expect(slots).toContain('Array.isArray($args[0]) ? $args[0]');
+        expect(slots).not.toContain('prev.length + 1');
     });
 
     it('loads settings into the local form and provides a complete save flow', () => {

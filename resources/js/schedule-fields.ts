@@ -164,8 +164,8 @@ function assignValue(
     )?.set;
     if (setter) setter.call(element, next);
     else element.value = next;
-    element.dispatchEvent(new Event('input', { bubbles: true }));
-    element.dispatchEvent(new Event('change', { bubbles: true }));
+    element.dispatchEvent(new Event('input', { bubbles: false }));
+    element.dispatchEvent(new Event('change', { bubbles: false }));
 }
 
 export function fillEmptyScheduleRow(row: HTMLElement, target: Window = window): void {
@@ -207,6 +207,85 @@ export function fillEmptyScheduleRow(row: HTMLElement, target: Window = window):
     const selects = extraSelects(row, effect);
     if (selects[0]) assignValue(selects[0], defaults.wind_direction, true);
     if (selects[1]) assignValue(selects[1], defaults.color, true);
+}
+
+interface G7CoreLike {
+    dispatch?: (action: { handler: string; params: Record<string, unknown> }) => unknown;
+    state?: {
+        getLocal?: () => { form?: { schedules?: unknown } };
+        get?: () => { _local?: { form?: { schedules?: unknown } } };
+    };
+}
+
+function g7Core(target: Window): G7CoreLike | undefined {
+    return (target as Window & { G7Core?: G7CoreLike }).G7Core;
+}
+
+function currentSchedules(target: Window): Record<string, unknown>[] | null {
+    const form = g7Core(target)?.state?.getLocal?.()?.form
+        ?? g7Core(target)?.state?.get?.()?._local?.form;
+    return Array.isArray(form?.schedules)
+        ? form.schedules as Record<string, unknown>[]
+        : null;
+}
+
+function filledValuesFromRow(row: HTMLElement): Record<string, unknown> {
+    const effect = row.children[2]?.querySelector('select');
+    if (!(effect instanceof HTMLSelectElement)) return {};
+
+    const numbers = [...row.querySelectorAll('input[type="number"]')];
+    const dates: HTMLInputElement[] = [];
+    const times: HTMLInputElement[] = [];
+    [...row.querySelectorAll('input')].forEach((input) => {
+        if (!(input instanceof HTMLInputElement)) return;
+        const placeholder = input.getAttribute('placeholder') ?? '';
+        if (input.type === 'date' || placeholder.includes('YYYY-MM-DD')) dates.push(input);
+        if (input.type === 'time' || placeholder.includes('HH:MM')) times.push(input);
+    });
+    const extra = extraSelects(row, effect);
+    const numberValue = (input?: HTMLInputElement): number | undefined => {
+        if (!input?.value) return undefined;
+        const value = Number(input.value);
+        return Number.isFinite(value) ? value : undefined;
+    };
+
+    const next: Record<string, unknown> = {};
+    if (effect.value) next.effect = effect.value;
+    if (dates[0]?.value) next.start_date = dates[0].value;
+    if (dates[1]?.value) next.end_date = dates[1].value;
+    if (times[0]?.value) next.start_time = times[0].value;
+    if (times[1]?.value) next.end_time = times[1].value;
+    const intensity = numberValue(numbers[0]);
+    const speed = numberValue(numbers[1]);
+    const opacity = numberValue(numbers[2]);
+    const wind = numberValue(numbers[3]);
+    if (intensity !== undefined) next.intensity = intensity;
+    if (speed !== undefined) next.speed = speed;
+    if (opacity !== undefined) next.opacity = opacity;
+    if (wind !== undefined) next.wind = wind;
+    if (extra[0]?.value) next.wind_direction = extra[0].value;
+    if (extra[1]?.value) next.color = extra[1].value;
+    return next;
+}
+
+function fillAndCommitNewScheduleRow(
+    row: HTMLElement,
+    target: Window,
+    expectedCount: number,
+): void {
+    fillEmptyScheduleRow(row, target);
+    const core = g7Core(target);
+    const schedules = currentSchedules(target);
+    if (!core?.dispatch || !schedules || schedules.length !== expectedCount) return;
+    const last = schedules[schedules.length - 1];
+    if (!last || typeof last !== 'object') return;
+    core.dispatch({
+        handler: 'setState',
+        params: {
+            target: 'local',
+            'form.schedules': [...schedules.slice(0, -1), { ...last, ...filledValuesFromRow(row) }],
+        },
+    });
 }
 
 function isAddScheduleButton(button: Element): boolean {
@@ -291,7 +370,9 @@ export function enhanceSchedulePickers(target: Window = window): () => void {
             const rows = current?.querySelectorAll('.g7-custom-effects-schedule-dfl-row');
             if (!rows || rows.length !== before + 1) return;
             const last = rows[rows.length - 1];
-            if (last instanceof HTMLElement) fillEmptyScheduleRow(last, target);
+            if (last instanceof HTMLElement) {
+                fillAndCommitNewScheduleRow(last, target, before + 1);
+            }
         };
         target.setTimeout(fillNew, 0);
         target.setTimeout(fillNew, 80);

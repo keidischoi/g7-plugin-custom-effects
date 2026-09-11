@@ -7,7 +7,7 @@ import {
     normalizeConfig,
     shouldStart,
 } from './config';
-import { particleCount, signedWind } from './engine';
+import { particleCount, resolveBubbleCollision, signedWind } from './engine';
 
 describe('normalizeConfig', () => {
     it('uses safe defaults for a missing payload', () => {
@@ -163,5 +163,26 @@ describe('signedWind', () => {
     it('chooses a deterministic direction for random wind per particle', () => {
         expect(signedWind(50, 'random', () => 0.2)).toBe(-50);
         expect(signedWind(50, 'random', () => 0.8)).toBe(50);
+    });
+});
+
+describe('resolveBubbleCollision', () => {
+    it('separates overlapping bubbles and exchanges approaching velocity', () => {
+        const first = { x: 0, y: 0, vx: 10, vy: 0, size: 5 };
+        const second = { x: 8, y: 0, vx: -10, vy: 0, size: 5 };
+
+        expect(resolveBubbleCollision(first, second)).toBe(true);
+        expect(second.x - first.x).toBe(10);
+        expect(first.vx).toBe(-10);
+        expect(second.vx).toBe(10);
+    });
+
+    it('ignores bubbles that do not overlap', () => {
+        const first = { x: 0, y: 0, vx: 1, vy: 0, size: 5 };
+        const second = { x: 12, y: 0, vx: -1, vy: 0, size: 5 };
+
+        expect(resolveBubbleCollision(first, second)).toBe(false);
+        expect(first).toEqual({ x: 0, y: 0, vx: 1, vy: 0, size: 5 });
+        expect(second).toEqual({ x: 12, y: 0, vx: -1, vy: 0, size: 5 });
     });
 });

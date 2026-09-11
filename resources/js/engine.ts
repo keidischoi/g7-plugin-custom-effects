@@ -14,6 +14,14 @@ interface Particle {
     alpha: number;
 }
 
+export interface CollisionBody {
+    x: number;
+    y: number;
+    vx: number;
+    vy: number;
+    size: number;
+}
+
 const EFFECT_DENSITY: Record<EffectKind, number> = {
     snow: 1,
     rain: 1.25,
@@ -49,6 +57,38 @@ export function signedWind(
         ? (random() < 0.5 ? -1 : 1)
         : direction === 'left' ? -1 : 1;
     return Math.abs(strength) * sign;
+}
+
+export function resolveBubbleCollision(
+    first: CollisionBody,
+    second: CollisionBody,
+): boolean {
+    const dx = second.x - first.x;
+    const dy = second.y - first.y;
+    const minimumDistance = first.size + second.size;
+    const distanceSquared = dx * dx + dy * dy;
+    if (distanceSquared >= minimumDistance * minimumDistance) return false;
+
+    const distance = Math.sqrt(distanceSquared);
+    const normalX = distance > 0 ? dx / distance : 1;
+    const normalY = distance > 0 ? dy / distance : 0;
+    const overlap = minimumDistance - distance;
+
+    first.x -= normalX * overlap * 0.5;
+    first.y -= normalY * overlap * 0.5;
+    second.x += normalX * overlap * 0.5;
+    second.y += normalY * overlap * 0.5;
+
+    const relativeVelocity = (second.vx - first.vx) * normalX
+        + (second.vy - first.vy) * normalY;
+    if (relativeVelocity < 0) {
+        first.vx += relativeVelocity * normalX;
+        first.vy += relativeVelocity * normalY;
+        second.vx -= relativeVelocity * normalX;
+        second.vy -= relativeVelocity * normalY;
+    }
+
+    return true;
 }
 
 export function particleCount(
@@ -411,7 +451,11 @@ export class EffectsEngine {
             particle.phase += particle.phaseSpeed * delta;
             particle.x += particle.vx * delta;
             particle.y += particle.vy * delta;
+        }
 
+        this.resolveBouncingBubbleCollisions();
+
+        for (const particle of this.particles) {
             if (particle.x <= particle.size || particle.x >= this.width - particle.size) {
                 particle.x = Math.min(
                     this.width - particle.size,
@@ -442,6 +486,32 @@ export class EffectsEngine {
                 Math.PI * 2,
             );
             this.context.fill();
+        }
+    }
+
+    private resolveBouncingBubbleCollisions(): void {
+        const largestDiameter = Math.max(
+            1,
+            ...this.particles.map((particle) => particle.size * 2),
+        );
+        const grid = new Map<string, Particle[]>();
+
+        for (const particle of this.particles) {
+            const cellX = Math.floor(particle.x / largestDiameter);
+            const cellY = Math.floor(particle.y / largestDiameter);
+
+            for (let offsetY = -1; offsetY <= 1; offsetY += 1) {
+                for (let offsetX = -1; offsetX <= 1; offsetX += 1) {
+                    const nearby = grid.get(`${cellX + offsetX}:${cellY + offsetY}`);
+                    if (!nearby) continue;
+                    for (const other of nearby) resolveBubbleCollision(other, particle);
+                }
+            }
+
+            const key = `${cellX}:${cellY}`;
+            const bucket = grid.get(key);
+            if (bucket) bucket.push(particle);
+            else grid.set(key, [particle]);
         }
     }
 

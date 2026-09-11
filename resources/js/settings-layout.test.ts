@@ -65,6 +65,49 @@ describe('plugin settings layout', () => {
         expect(renderedOptions).toEqual(EFFECT_KINDS);
     });
 
+    it('lists effect dropdowns in Korean name order', () => {
+        const labels = JSON.parse(readFileSync(
+            resolve(import.meta.dirname, '../lang/ko.json'),
+            'utf8',
+        )).settings.options as Record<string, string>;
+        const names = EFFECT_KINDS.map((effect) => labels[effect]);
+        expect(names).toEqual([...names].sort((left, right) => left.localeCompare(right, 'ko')));
+
+        const collectEffectValues = (value: unknown, result: string[] = []): string[] => {
+            if (Array.isArray(value)) {
+                value.forEach((item) => collectEffectValues(item, result));
+                return result;
+            }
+            if (!value || typeof value !== 'object') return result;
+            const node = value as LayoutNode & {
+                children?: unknown;
+                props?: { name?: string; value?: string };
+                key?: string;
+                options?: Array<{ value?: string }>;
+            };
+            if (node.name === 'Select' && node.props?.name === 'effect') {
+                result.push(
+                    ...((node.children as Array<{ props?: { value?: string } }> | undefined) ?? [])
+                        .map((child) => child.props?.value)
+                        .filter((item): item is string => typeof item === 'string'),
+                );
+            }
+            if (node.key === 'effect' && Array.isArray(node.options)) {
+                result.push(
+                    ...node.options
+                        .map((item) => item.value)
+                        .filter((item): item is string => typeof item === 'string'),
+                );
+            }
+            Object.values(node).forEach((item) => collectEffectValues(item, result));
+            return result;
+        };
+
+        const lists = collectEffectValues(layout.slots);
+        expect(lists.slice(0, EFFECT_KINDS.length)).toEqual([...EFFECT_KINDS]);
+        expect(lists.slice(EFFECT_KINDS.length, EFFECT_KINDS.length * 2)).toEqual([...EFFECT_KINDS]);
+    });
+
     it('keeps preset dropdowns aligned with runtime normalization', () => {
         expect(layout.schema.color.options).toEqual(COLOR_OPTIONS);
         expect(layout.schema.wind_direction.options).toEqual([

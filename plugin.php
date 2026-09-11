@@ -1,6 +1,6 @@
 <?php
 
-namespace Plugins\G7\PluginCustomEffects;
+namespace Plugins\G7\Plugin\Custom\Effects;
 
 use App\Extension\AbstractPlugin;
 

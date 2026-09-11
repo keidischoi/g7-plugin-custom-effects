@@ -21,6 +21,6 @@ export default defineConfig({
         },
         sourcemap: !['0', 'false'].includes(process.env.G7_BUILD_SOURCEMAP ?? ''),
         target: 'es2020',
-        minify: 'esbuild',
+        minify: 'oxc',
     },
 });

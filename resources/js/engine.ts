@@ -201,6 +201,51 @@ export function explodeCheeseOnHit(particle: CheeseBody): void {
     particle.vy *= 0.12;
 }
 
+export const STAR_HIT_RADIUS = 2.85;
+export const STAR_BURST_DECAY = 1.15;
+
+export interface StarBody extends CollisionBody {
+    sparkle: number;
+}
+
+export function resolveStarCollision(
+    first: StarBody,
+    second: StarBody,
+): boolean {
+    if (first.sparkle > 0.4 || second.sparkle > 0.4) return false;
+
+    const dx = second.x - first.x;
+    const dy = second.y - first.y;
+    const minimumDistance = (first.size + second.size) * STAR_HIT_RADIUS;
+    const distanceSquared = dx * dx + dy * dy;
+    if (distanceSquared >= minimumDistance * minimumDistance) return false;
+
+    const distance = Math.sqrt(distanceSquared);
+    const normalX = distance > 0 ? dx / distance : 1;
+    const normalY = distance > 0 ? dy / distance : 0;
+    const overlap = minimumDistance - distance;
+
+    first.x -= normalX * overlap * 0.5;
+    first.y -= normalY * overlap * 0.5;
+    second.x += normalX * overlap * 0.5;
+    second.y += normalY * overlap * 0.5;
+
+    const relativeVelocity = (second.vx - first.vx) * normalX
+        + (second.vy - first.vy) * normalY;
+    if (relativeVelocity >= 0) return false;
+
+    first.vx += relativeVelocity * normalX * 0.55;
+    first.vy += relativeVelocity * normalY * 0.55;
+    second.vx -= relativeVelocity * normalX * 0.55;
+    second.vy -= relativeVelocity * normalY * 0.55;
+    return true;
+}
+
+export function burstStarOnHit(particle: StarBody): void {
+    if (particle.sparkle > 0.4) return;
+    particle.sparkle = 1;
+}
+
 export function particleCount(
     width: number,
     height: number,
@@ -489,9 +534,23 @@ export class EffectsEngine {
     }
 
     private drawStars(delta: number): void {
+        const fireworks = this.config.effect === 'stars_multicolor';
         for (const particle of this.particles) {
             this.advanceFalling(particle, delta, 14);
+            if (fireworks) {
+                particle.sparkle = Math.max(0, particle.sparkle - delta * STAR_BURST_DECAY);
+            }
+        }
+        if (fireworks) this.resolveStarCollisions();
+        for (const particle of this.particles) {
+            if (fireworks && particle.sparkle > 0) this.drawStarFirework(particle);
             this.prepareParticle(particle);
+            if (fireworks && particle.sparkle > 0) {
+                this.context.globalAlpha = Math.min(
+                    1,
+                    this.context.globalAlpha * (1 + particle.sparkle * 0.5),
+                );
+            }
             this.withTransform(particle, () => {
                 this.context.beginPath();
                 for (let point = 0; point < 10; point += 1) {
@@ -506,6 +565,110 @@ export class EffectsEngine {
                 this.context.fill();
             });
         }
+    }
+
+    private drawStarFirework(particle: Particle): void {
+        const palette = EFFECT_PALETTES.stars_multicolor ?? [];
+        if (palette.length === 0) return;
+
+        const fade = particle.sparkle;
+        const progress = 1 - fade;
+        const size = particle.size;
+        const opacity = (this.config.opacity / 100) * particle.alpha;
+        const rays = 14;
+        const burst = size * (2.4 + progress * 8.2);
+
+        this.context.save();
+        this.context.translate(particle.x, particle.y);
+        this.context.globalAlpha = opacity;
+
+        const flashRadius = size * (2.1 + progress * 3.4);
+        const flash = this.context.createRadialGradient(0, 0, 0, 0, 0, flashRadius);
+        flash.addColorStop(0, `rgba(255, 255, 255, ${0.9 * fade})`);
+        flash.addColorStop(0.22, this.hexAlpha(palette[particle.colorIndex % palette.length], 0.5 * fade));
+        flash.addColorStop(1, 'rgba(255, 255, 255, 0)');
+        this.context.fillStyle = flash;
+        this.context.beginPath();
+        this.context.arc(0, 0, flashRadius, 0, Math.PI * 2);
+        this.context.fill();
+
+        this.context.lineCap = 'round';
+        for (let ray = 0; ray < rays; ray += 1) {
+            const angle = particle.phase + ray * (Math.PI * 2 / rays);
+            const inner = size * (0.45 + progress * 1.1);
+            const length = burst * (0.7 + (ray % 3) * 0.12);
+            const color = palette[(particle.colorIndex + ray) % palette.length];
+            this.context.strokeStyle = color;
+            this.context.lineWidth = Math.max(1.15, size * (0.26 + fade * 0.28));
+            this.context.globalAlpha = opacity * (0.45 + fade * 0.55);
+            this.context.beginPath();
+            this.context.moveTo(Math.cos(angle) * inner, Math.sin(angle) * inner);
+            this.context.lineTo(Math.cos(angle) * length, Math.sin(angle) * length);
+            this.context.stroke();
+
+            this.context.fillStyle = ray % 2 === 0 ? '#fff7ed' : color;
+            this.fillCircle(
+                Math.cos(angle) * length,
+                Math.sin(angle) * length,
+                size * (0.2 + fade * 0.18),
+            );
+
+            const sparkAngle = angle + Math.PI / rays;
+            const sparkLength = burst * 0.48;
+            this.context.strokeStyle = palette[(particle.colorIndex + ray + 3) % palette.length];
+            this.context.lineWidth = Math.max(0.8, size * 0.18);
+            this.context.globalAlpha = opacity * fade * 0.75;
+            this.context.beginPath();
+            this.context.moveTo(Math.cos(sparkAngle) * inner * 0.7, Math.sin(sparkAngle) * inner * 0.7);
+            this.context.lineTo(Math.cos(sparkAngle) * sparkLength, Math.sin(sparkAngle) * sparkLength);
+            this.context.stroke();
+            this.context.fillStyle = '#fffbeb';
+            this.fillCircle(
+                Math.cos(sparkAngle) * sparkLength,
+                Math.sin(sparkAngle) * sparkLength,
+                size * 0.14 * fade,
+            );
+        }
+
+        this.context.restore();
+    }
+
+    private resolveStarCollisions(): void {
+        const largestDiameter = Math.max(
+            1,
+            ...this.particles.map((particle) => particle.size * 2 * STAR_HIT_RADIUS),
+        );
+        const grid = new Map<string, Particle[]>();
+
+        for (const particle of this.particles) {
+            const cellX = Math.floor(particle.x / largestDiameter);
+            const cellY = Math.floor(particle.y / largestDiameter);
+
+            for (let offsetY = -1; offsetY <= 1; offsetY += 1) {
+                for (let offsetX = -1; offsetX <= 1; offsetX += 1) {
+                    const nearby = grid.get(`${cellX + offsetX}:${cellY + offsetY}`);
+                    if (!nearby) continue;
+                    for (const other of nearby) {
+                        if (!resolveStarCollision(other, particle)) continue;
+                        burstStarOnHit(other);
+                        burstStarOnHit(particle);
+                    }
+                }
+            }
+
+            const key = `${cellX}:${cellY}`;
+            const bucket = grid.get(key);
+            if (bucket) bucket.push(particle);
+            else grid.set(key, [particle]);
+        }
+    }
+
+    private hexAlpha(hex: string, alpha: number): string {
+        const value = hex.replace('#', '');
+        const red = Number.parseInt(value.slice(0, 2), 16);
+        const green = Number.parseInt(value.slice(2, 4), 16);
+        const blue = Number.parseInt(value.slice(4, 6), 16);
+        return `rgba(${red}, ${green}, ${blue}, ${alpha})`;
     }
 
     private drawHearts(delta: number): void {

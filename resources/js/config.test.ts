@@ -17,6 +17,8 @@ import {
     resolvePoopCollision,
     explodeCheeseOnHit,
     resolveCheeseCollision,
+    burstStarOnHit,
+    resolveStarCollision,
 } from './engine';
 
 describe('normalizeConfig', () => {
@@ -346,5 +348,35 @@ describe('cheese collisions', () => {
         explodeCheeseOnHit(particle);
         expect(particle.explode).toBe(1);
         expect(particle.vx).toBe(velocityX);
+    });
+});
+
+describe('multicolor star collisions', () => {
+    it('bursts fireworks when two approaching stars collide', () => {
+        const first = { x: 0, y: 0, vx: 14, vy: 0, size: 5, sparkle: 0 };
+        const second = { x: 24, y: 0, vx: -14, vy: 0, size: 5, sparkle: 0 };
+
+        expect(resolveStarCollision(first, second)).toBe(true);
+        burstStarOnHit(first);
+        burstStarOnHit(second);
+        expect(first.sparkle).toBe(1);
+        expect(second.sparkle).toBe(1);
+        expect(resolveStarCollision(first, second)).toBe(false);
+    });
+
+    it('does not burst stars that are far apart', () => {
+        const first = { x: 0, y: 0, vx: 8, vy: 0, size: 5, sparkle: 0 };
+        const second = { x: 80, y: 0, vx: -8, vy: 0, size: 5, sparkle: 0 };
+
+        expect(resolveStarCollision(first, second)).toBe(false);
+        expect(first.sparkle).toBe(0);
+        expect(second.sparkle).toBe(0);
+    });
+
+    it('keeps an already bursting star from firing again', () => {
+        const particle = { x: 0, y: 0, vx: 10, vy: 4, size: 5, sparkle: 0 };
+        burstStarOnHit(particle);
+        burstStarOnHit(particle);
+        expect(particle.sparkle).toBe(1);
     });
 });

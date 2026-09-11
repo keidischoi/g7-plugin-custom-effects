@@ -1,5 +1,5 @@
 {
-    "version": "1.7.5",
+    "version": "1.7.6",
     "layout_name": "plugin_settings",
     "permissions": [
         "core.plugins.update"
@@ -746,7 +746,7 @@
                                                     "addLabel": "$t:g7-plugin-custom-effects.settings.fields.schedules.add",
                                                     "emptyMessage": "$t:g7-plugin-custom-effects.settings.fields.schedules.empty",
                                                     "enableDrag": true,
-                                                    "showIndex": true,
+                                                    "showIndex": false,
                                                     "headerClassName": "g7-custom-effects-schedule-dfl-header",
                                                     "rowClassName": "g7-custom-effects-schedule-dfl-row",
                                                     "minItems": 0,
@@ -756,6 +756,7 @@
                                                             "key": "enabled",
                                                             "type": "select",
                                                             "label": "$t:g7-plugin-custom-effects.settings.fields.schedules.enabled",
+                                                            "className": "g7-custom-effects-schedule-enabled-select",
                                                             "options": [
                                                                 {
                                                                     "value": "true",

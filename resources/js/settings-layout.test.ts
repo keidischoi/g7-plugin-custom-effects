@@ -99,14 +99,19 @@ describe('plugin settings layout', () => {
         expect(slots).toContain('g7-custom-effects-schedule-dfl-row');
         expect(effectsCss).toContain('grid-row: 2');
         expect(effectsCss).toContain('.g7-custom-effects-schedule-dfl-row {');
-        expect(effectsCss).toContain('grid-template-columns: 1.5rem 2rem repeat(7, minmax(3.2rem, 0.55fr))');
+        expect(effectsCss).toContain('grid-template-columns: 1.5rem 2.25rem repeat(7, minmax(3.2rem, 0.55fr)) minmax(1.75rem, auto)');
         expect(effectsCss).toContain('.g7-custom-effects-schedule-full {');
-        expect(effectsCss).toContain('> :nth-child(9) { grid-column: 3; grid-row: 2; }');
-        expect(effectsCss).toContain('> :nth-child(15) { grid-column: 9; grid-row: 2; }');
-        expect(effectsCss).toContain('> :nth-child(16) {');
+        expect(effectsCss).toContain('> :nth-child(8) { grid-column: 3; grid-row: 2; }');
+        expect(effectsCss).toContain('> :nth-child(14) { grid-column: 9; grid-row: 2; }');
+        expect(effectsCss).toContain('> :nth-child(15) {');
+        expect(effectsCss).not.toContain('> :nth-child(16) {');
         expect(effectsCss).toContain('input[type="date"]');
         expect(effectsCss).toContain('input[type="time"]');
         expect(effectsCss).toContain('content: "시작 시간"');
+        expect(effectsCss).toContain('.g7-custom-effects-schedule-enabled {');
+        expect(effectsCss).not.toContain('content: "사용"');
+        expect(slots).toContain('"showIndex":false');
+        expect(slots).toContain('g7-custom-effects-schedule-enabled-select');
     });
 
     it('loads settings into the local form and provides a complete save flow', () => {

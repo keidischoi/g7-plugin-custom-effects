@@ -29,7 +29,7 @@ export interface CollisionBody {
 const EFFECT_DENSITY: Record<EffectKind, number> = {
     snow: 1,
     rain: 1.25,
-    fog: 0.22,
+    fog: 0.32,
     leaves: 0.45,
     stars: 0.55,
     stars_multicolor: 0.55,
@@ -725,47 +725,47 @@ export class EffectsEngine {
     private drawFog(delta: number): void {
         for (const particle of this.particles) {
             particle.phase += particle.phaseSpeed * delta;
-            particle.rotation += particle.rotationSpeed * delta;
-            particle.x += (particle.vx + Math.sin(particle.phase) * 10) * delta;
-            particle.y += (particle.vy + Math.cos(particle.phase * 0.55) * 6) * delta;
+            particle.x += (particle.vx + Math.sin(particle.phase) * 8) * delta;
+            particle.y += (particle.vy + Math.cos(particle.phase * 0.45) * 4) * delta;
             if (particle.x > this.width + particle.size * 2) particle.x = -particle.size * 2;
             if (particle.x < -particle.size * 2) particle.x = this.width + particle.size * 2;
             if (particle.y > this.height + particle.size) particle.y = -particle.size;
             if (particle.y < -particle.size) particle.y = this.height + particle.size;
 
             const opacity = (this.config.opacity / 100) * particle.alpha;
+            const tilt = Math.sin(particle.phase) * 0.12;
             this.context.fillStyle = this.colorFor(particle);
-            this.context.globalAlpha = opacity * 0.55;
+            this.context.globalAlpha = opacity * 0.42;
             this.context.beginPath();
             this.context.ellipse(
                 particle.x,
                 particle.y,
-                particle.size * 1.35,
-                particle.size * 0.52,
-                particle.rotation * 0.2,
+                particle.size * 1.7,
+                particle.size * 0.42,
+                tilt,
                 0,
                 Math.PI * 2,
             );
             this.context.fill();
-            this.context.globalAlpha = opacity * 0.38;
+            this.context.globalAlpha = opacity * 0.28;
             this.context.beginPath();
             this.context.ellipse(
-                particle.x + particle.size * 0.42,
-                particle.y - particle.size * 0.1,
-                particle.size * 0.92,
-                particle.size * 0.4,
-                0,
+                particle.x + particle.size * 0.55,
+                particle.y - particle.size * 0.08,
+                particle.size * 1.15,
+                particle.size * 0.34,
+                tilt * 0.5,
                 0,
                 Math.PI * 2,
             );
             this.context.fill();
             this.context.beginPath();
             this.context.ellipse(
-                particle.x - particle.size * 0.38,
-                particle.y + particle.size * 0.08,
-                particle.size,
-                particle.size * 0.36,
-                0,
+                particle.x - particle.size * 0.5,
+                particle.y + particle.size * 0.06,
+                particle.size * 1.25,
+                particle.size * 0.32,
+                -tilt * 0.4,
                 0,
                 Math.PI * 2,
             );

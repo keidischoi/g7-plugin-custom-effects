@@ -5,16 +5,41 @@ export const EFFECT_KINDS = [
     'rain',
     'leaves',
     'stars',
+    'stars_multicolor',
     'hearts',
     'petals',
     'confetti',
     'bubbles',
+    'bouncing_bubbles',
     'fireflies',
+] as const;
+
+export const COLOR_OPTIONS = [
+    '#ffffff',
+    '#bae6fd',
+    '#f9a8d4',
+    '#fde047',
+    '#86efac',
+    '#c4b5fd',
+    '#fb923c',
+    '#f87171',
+] as const;
+
+export const TIMEZONE_OPTIONS = [
+    'Asia/Seoul',
+    'UTC',
+    'Asia/Tokyo',
+    'Asia/Shanghai',
+    'America/New_York',
+    'America/Los_Angeles',
+    'Europe/London',
+    'Europe/Paris',
+    'Australia/Sydney',
 ] as const;
 
 export type EffectKind = typeof EFFECT_KINDS[number];
 export type ScheduleDays = 'all' | 'weekdays' | 'weekends';
-export type WindDirection = 'none' | 'left' | 'right';
+export type WindDirection = 'none' | 'left' | 'right' | 'random';
 
 export interface EffectConfig {
     enabled: boolean;
@@ -71,15 +96,14 @@ function boundedInteger(value: unknown, fallback: number, min: number, max: numb
     return Math.min(max, Math.max(min, Math.round(number)));
 }
 
-function colorValue(value: unknown): string {
-    if (typeof value !== 'string') return DEFAULT_CONFIG.color;
-
-    const color = value.trim();
-    if (color.length === 0 || color.length > 64 || /[;{}<>]/.test(color)) {
-        return DEFAULT_CONFIG.color;
-    }
-
-    return color;
+function presetValue<const T extends readonly string[]>(
+    value: unknown,
+    options: T,
+    fallback: T[number],
+): T[number] {
+    return typeof value === 'string' && options.includes(value as T[number])
+        ? value as T[number]
+        : fallback;
 }
 
 function formattedValue(value: unknown, pattern: RegExp): string {
@@ -104,7 +128,7 @@ export function normalizeConfig(raw: unknown): EffectConfig {
         ? value.effect as EffectKind
         : DEFAULT_CONFIG.effect;
     const legacyWind = boundedInteger(value.wind, DEFAULT_CONFIG.wind, -100, 100);
-    const windDirection = ['none', 'left', 'right'].includes(String(value.wind_direction))
+    const windDirection = ['none', 'left', 'right', 'random'].includes(String(value.wind_direction))
         ? value.wind_direction as WindDirection
         : legacyWind < 0 ? 'left' : legacyWind > 0 ? 'right' : DEFAULT_CONFIG.windDirection;
 
@@ -116,7 +140,7 @@ export function normalizeConfig(raw: unknown): EffectConfig {
         opacity: boundedInteger(value.opacity, DEFAULT_CONFIG.opacity, 10, 100),
         wind: Math.abs(legacyWind),
         windDirection,
-        color: colorValue(value.color),
+        color: presetValue(value.color, COLOR_OPTIONS, DEFAULT_CONFIG.color),
         mobileEnabled: booleanValue(value.mobile_enabled, DEFAULT_CONFIG.mobileEnabled),
         adminEnabled: booleanValue(value.admin_enabled, DEFAULT_CONFIG.adminEnabled),
         respectReducedMotion: booleanValue(
@@ -131,11 +155,11 @@ export function normalizeConfig(raw: unknown): EffectConfig {
         scheduleDays: ['weekdays', 'weekends'].includes(String(value.schedule_days))
             ? value.schedule_days as ScheduleDays
             : 'all',
-        scheduleTimezone: typeof value.schedule_timezone === 'string'
-            && value.schedule_timezone.trim().length > 0
-            && value.schedule_timezone.length <= 64
-            ? value.schedule_timezone.trim()
-            : DEFAULT_CONFIG.scheduleTimezone,
+        scheduleTimezone: presetValue(
+            value.schedule_timezone,
+            TIMEZONE_OPTIONS,
+            DEFAULT_CONFIG.scheduleTimezone,
+        ),
     };
 }
 

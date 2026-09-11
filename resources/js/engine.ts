@@ -19,25 +19,36 @@ const EFFECT_DENSITY: Record<EffectKind, number> = {
     rain: 1.25,
     leaves: 0.45,
     stars: 0.55,
+    stars_multicolor: 0.55,
     hearts: 0.4,
     petals: 0.65,
     confetti: 0.75,
     bubbles: 0.4,
+    bouncing_bubbles: 0.35,
     fireflies: 0.3,
 };
 
 const EFFECT_PALETTES: Partial<Record<EffectKind, readonly string[]>> = {
     leaves: ['#d97706', '#dc2626', '#ca8a04', '#65a30d'],
+    stars_multicolor: ['#f87171', '#fb923c', '#fde047', '#86efac', '#38bdf8', '#c4b5fd', '#f9a8d4'],
     hearts: ['#fb7185', '#f43f5e', '#ec4899'],
     petals: ['#fbcfe8', '#f9a8d4', '#fda4af', '#ffffff'],
     confetti: ['#f43f5e', '#facc15', '#22c55e', '#38bdf8', '#a855f7'],
     bubbles: ['#bae6fd', '#ddd6fe', '#fbcfe8'],
+    bouncing_bubbles: ['#bae6fd', '#ddd6fe', '#fbcfe8', '#86efac'],
     fireflies: ['#fef08a', '#fde047', '#bef264'],
 };
 
-export function signedWind(strength: number, direction: WindDirection): number {
+export function signedWind(
+    strength: number,
+    direction: WindDirection,
+    random: () => number = Math.random,
+): number {
     if (direction === 'none') return 0;
-    return Math.abs(strength) * (direction === 'left' ? -1 : 1);
+    const sign = direction === 'random'
+        ? (random() < 0.5 ? -1 : 1)
+        : direction === 'left' ? -1 : 1;
+    return Math.abs(strength) * sign;
 }
 
 export function particleCount(
@@ -125,6 +136,7 @@ export class EffectsEngine {
         const effect = this.config.effect;
         const rain = effect === 'rain';
         const bubbles = effect === 'bubbles';
+        const bouncingBubbles = effect === 'bouncing_bubbles';
         const fireflies = effect === 'fireflies';
         const speedRange = this.speedRange(effect);
         const wind = signedWind(this.config.wind, this.config.windDirection);
@@ -134,10 +146,11 @@ export class EffectsEngine {
             y: randomPosition
                 ? Math.random() * this.height
                 : bubbles ? this.height + 20 : -(Math.random() * 40 + 10),
-            vx: fireflies
+            vx: fireflies || bouncingBubbles
                 ? (Math.random() - 0.5) * 30 * speed
+                    + wind * (bouncingBubbles ? 0.35 : 0)
                 : wind * (rain ? 0.8 : 0.35) + (Math.random() - 0.5) * 18,
-            vy: (bubbles ? -1 : 1)
+            vy: (bubbles ? -1 : bouncingBubbles && Math.random() < 0.5 ? -1 : 1)
                 * (speedRange[0] + Math.random() * (speedRange[1] - speedRange[0]))
                 * speed,
             size: this.sizeRange(effect),
@@ -156,10 +169,12 @@ export class EffectsEngine {
             rain: [520, 880],
             leaves: [38, 82],
             stars: [24, 58],
+            stars_multicolor: [24, 58],
             hearts: [26, 62],
             petals: [24, 58],
             confetti: [70, 145],
             bubbles: [22, 55],
+            bouncing_bubbles: [28, 65],
             fireflies: [8, 24],
         };
         return ranges[effect];
@@ -171,10 +186,12 @@ export class EffectsEngine {
             rain: [10, 28],
             leaves: [7, 13],
             stars: [3.5, 7],
+            stars_multicolor: [3.5, 7],
             hearts: [5, 10],
             petals: [5, 10],
             confetti: [4, 9],
             bubbles: [5, 14],
+            bouncing_bubbles: [5, 14],
             fireflies: [1.5, 3.5],
         };
         const [min, max] = ranges[effect];
@@ -212,10 +229,12 @@ export class EffectsEngine {
             case 'rain': this.drawRain(delta); break;
             case 'leaves': this.drawLeaves(delta); break;
             case 'stars': this.drawStars(delta); break;
+            case 'stars_multicolor': this.drawStars(delta); break;
             case 'hearts': this.drawHearts(delta); break;
             case 'petals': this.drawPetals(delta); break;
             case 'confetti': this.drawConfetti(delta); break;
             case 'bubbles': this.drawBubbles(delta); break;
+            case 'bouncing_bubbles': this.drawBouncingBubbles(delta); break;
             case 'fireflies': this.drawFireflies(delta); break;
             default: this.drawSnow(delta);
         }
@@ -369,6 +388,45 @@ export class EffectsEngine {
             particle.y += particle.vy * delta;
             if (particle.y < -particle.size * 3) this.resetParticle(particle);
             this.wrapHorizontally(particle);
+            this.prepareParticle(particle);
+            this.context.lineWidth = 1;
+            this.context.beginPath();
+            this.context.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
+            this.context.stroke();
+            this.context.globalAlpha *= 0.65;
+            this.context.beginPath();
+            this.context.arc(
+                particle.x - particle.size * 0.3,
+                particle.y - particle.size * 0.3,
+                particle.size * 0.16,
+                0,
+                Math.PI * 2,
+            );
+            this.context.fill();
+        }
+    }
+
+    private drawBouncingBubbles(delta: number): void {
+        for (const particle of this.particles) {
+            particle.phase += particle.phaseSpeed * delta;
+            particle.x += particle.vx * delta;
+            particle.y += particle.vy * delta;
+
+            if (particle.x <= particle.size || particle.x >= this.width - particle.size) {
+                particle.x = Math.min(
+                    this.width - particle.size,
+                    Math.max(particle.size, particle.x),
+                );
+                particle.vx *= -1;
+            }
+            if (particle.y <= particle.size || particle.y >= this.height - particle.size) {
+                particle.y = Math.min(
+                    this.height - particle.size,
+                    Math.max(particle.size, particle.y),
+                );
+                particle.vy *= -1;
+            }
+
             this.prepareParticle(particle);
             this.context.lineWidth = 1;
             this.context.beginPath();

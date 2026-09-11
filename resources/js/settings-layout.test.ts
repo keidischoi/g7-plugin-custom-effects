@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { EFFECT_KINDS } from './config';
+import { COLOR_OPTIONS, EFFECT_KINDS, TIMEZONE_OPTIONS } from './config';
 
 interface LayoutNode {
     name?: string;
@@ -17,6 +17,9 @@ const layout = JSON.parse(readFileSync(
 )) as {
     schema: Record<string, unknown> & {
         effect: { options: string[] };
+        color: { options: string[] };
+        schedule_timezone: { options: string[] };
+        wind_direction: { options: string[] };
     };
     data_sources: Array<{ initLocal?: string }>;
     slots: unknown;
@@ -59,6 +62,22 @@ describe('plugin settings layout', () => {
             JSON.stringify(layout.slots).includes(`"value":"${effect}"`)
         ));
         expect(renderedOptions).toEqual(EFFECT_KINDS);
+    });
+
+    it('keeps preset dropdowns aligned with runtime normalization', () => {
+        expect(layout.schema.color.options).toEqual(COLOR_OPTIONS);
+        expect(layout.schema.schedule_timezone.options).toEqual(TIMEZONE_OPTIONS);
+        expect(layout.schema.wind_direction.options).toEqual([
+            'none',
+            'left',
+            'right',
+            'random',
+        ]);
+
+        const slots = JSON.stringify(layout.slots);
+        for (const value of [...COLOR_OPTIONS, ...TIMEZONE_OPTIONS]) {
+            expect(slots).toContain(`"value":"${value}"`);
+        }
     });
 
     it('loads settings into the local form and provides a complete save flow', () => {

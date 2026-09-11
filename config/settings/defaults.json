@@ -1,6 +1,6 @@
 {
     "_meta": {
-        "version": "1.8.2",
+        "version": "1.8.3",
         "description": "날씨 및 장식 화면 효과 플러그인 기본값과 프론트엔드 공개 설정"
     },
     "defaults": {

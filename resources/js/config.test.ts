@@ -9,7 +9,15 @@ import {
     readSiteTimezone,
     shouldStart,
 } from './config';
-import { particleCount, resolveBubbleCollision, signedWind, growPoopOnHit, resolvePoopCollision } from './engine';
+import {
+    particleCount,
+    resolveBubbleCollision,
+    signedWind,
+    growPoopOnHit,
+    resolvePoopCollision,
+    explodeCheeseOnHit,
+    resolveCheeseCollision,
+} from './engine';
 
 describe('normalizeConfig', () => {
     it('uses safe defaults for a missing payload', () => {
@@ -305,5 +313,38 @@ describe('poop collisions', () => {
         expect(second.sparkle).toBe(1);
         expect(first.size).toBeGreaterThan(10);
         expect(second.x - first.x).toBeCloseTo(17.6);
+    });
+});
+
+describe('cheese collisions', () => {
+    it('explodes two approaching cheeses and ignores later overlapping bursts', () => {
+        const first = { x: 0, y: 0, vx: 12, vy: 0, size: 10, explode: 0 };
+        const second = { x: 16, y: 0, vx: -12, vy: 0, size: 10, explode: 0 };
+
+        expect(resolveCheeseCollision(first, second)).toBe(true);
+        explodeCheeseOnHit(first);
+        explodeCheeseOnHit(second);
+        expect(first.explode).toBe(1);
+        expect(second.explode).toBe(1);
+        expect(first.vx).toBeLessThan(12);
+        expect(resolveCheeseCollision(first, second)).toBe(false);
+    });
+
+    it('does not explode cheeses that are not overlapping', () => {
+        const first = { x: 0, y: 0, vx: 8, vy: 0, size: 10, explode: 0 };
+        const second = { x: 40, y: 0, vx: -8, vy: 0, size: 10, explode: 0 };
+
+        expect(resolveCheeseCollision(first, second)).toBe(false);
+        expect(first.explode).toBe(0);
+        expect(second.explode).toBe(0);
+    });
+
+    it('keeps an already exploding cheese from bursting again', () => {
+        const particle = { x: 0, y: 0, vx: 20, vy: 10, size: 10, explode: 0 };
+        explodeCheeseOnHit(particle);
+        const velocityX = particle.vx;
+        explodeCheeseOnHit(particle);
+        expect(particle.explode).toBe(1);
+        expect(particle.vx).toBe(velocityX);
     });
 });

@@ -21,6 +21,13 @@ const EFFECT_SYMBOLS: Record<EffectKind, string> = {
     bubbles: '○',
     bouncing_bubbles: '◉',
     fireflies: '•',
+    cheese: '▲',
+    poop: '☁',
+    ice_cream: '▲',
+    bills: '▤',
+    coins: '◎',
+    alarm_clock: '⏰',
+    maple_leaves: '🍁',
 };
 
 function translatedLabel(target: Window, enabled: boolean): string {

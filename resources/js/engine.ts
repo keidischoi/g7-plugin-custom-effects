@@ -34,6 +34,13 @@ const EFFECT_DENSITY: Record<EffectKind, number> = {
     bubbles: 0.4,
     bouncing_bubbles: 0.35,
     fireflies: 0.3,
+    cheese: 0.4,
+    poop: 0.38,
+    ice_cream: 0.36,
+    bills: 0.42,
+    coins: 0.45,
+    alarm_clock: 0.34,
+    maple_leaves: 0.42,
 };
 
 const EFFECT_PALETTES: Partial<Record<EffectKind, readonly string[]>> = {
@@ -45,6 +52,13 @@ const EFFECT_PALETTES: Partial<Record<EffectKind, readonly string[]>> = {
     bubbles: ['#bae6fd', '#ddd6fe', '#fbcfe8'],
     bouncing_bubbles: ['#bae6fd', '#ddd6fe', '#fbcfe8', '#86efac'],
     fireflies: ['#fef08a', '#fde047', '#bef264'],
+    cheese: ['#facc15', '#fde047', '#fbbf24', '#f59e0b'],
+    poop: ['#92400e', '#a16207', '#78350f', '#b45309'],
+    ice_cream: ['#fda4af', '#f9a8d4', '#fed7aa', '#fef3c7'],
+    bills: ['#86efac', '#4ade80', '#bbf7d0', '#22c55e'],
+    coins: ['#facc15', '#eab308', '#fde68a', '#d97706'],
+    alarm_clock: ['#f87171', '#fb7185', '#fda4af', '#e11d48'],
+    maple_leaves: ['#dc2626', '#ea580c', '#ca8a04', '#b45309'],
 };
 
 export function signedWind(
@@ -216,6 +230,13 @@ export class EffectsEngine {
             bubbles: [22, 55],
             bouncing_bubbles: [28, 65],
             fireflies: [8, 24],
+            cheese: [32, 70],
+            poop: [30, 68],
+            ice_cream: [28, 64],
+            bills: [36, 78],
+            coins: [40, 88],
+            alarm_clock: [30, 66],
+            maple_leaves: [34, 76],
         };
         return ranges[effect];
     }
@@ -233,6 +254,13 @@ export class EffectsEngine {
             bubbles: [5, 14],
             bouncing_bubbles: [5, 14],
             fireflies: [1.5, 3.5],
+            cheese: [8, 16],
+            poop: [8, 15],
+            ice_cream: [9, 16],
+            bills: [8, 14],
+            coins: [6, 12],
+            alarm_clock: [8, 15],
+            maple_leaves: [8, 15],
         };
         const [min, max] = ranges[effect];
         return min + Math.random() * (max - min);
@@ -276,6 +304,13 @@ export class EffectsEngine {
             case 'bubbles': this.drawBubbles(delta); break;
             case 'bouncing_bubbles': this.drawBouncingBubbles(delta); break;
             case 'fireflies': this.drawFireflies(delta); break;
+            case 'cheese': this.drawCheese(delta); break;
+            case 'poop': this.drawPoop(delta); break;
+            case 'ice_cream': this.drawIceCream(delta); break;
+            case 'bills': this.drawBills(delta); break;
+            case 'coins': this.drawCoins(delta); break;
+            case 'alarm_clock': this.drawAlarmClock(delta); break;
+            case 'maple_leaves': this.drawMapleLeaves(delta); break;
             default: this.drawSnow(delta);
         }
 
@@ -534,6 +569,191 @@ export class EffectsEngine {
             this.context.arc(particle.x, particle.y, particle.size * 0.65, 0, Math.PI * 2);
             this.context.fill();
         }
+    }
+
+    private drawCheese(delta: number): void {
+        for (const particle of this.particles) {
+            this.advanceFalling(particle, delta, 16);
+            this.prepareParticle(particle);
+            this.withTransform(particle, () => {
+                const size = particle.size;
+                this.context.beginPath();
+                this.context.moveTo(-size, size * 0.7);
+                this.context.lineTo(size, size * 0.7);
+                this.context.lineTo(size * 0.12, -size);
+                this.context.closePath();
+                this.context.fill();
+                this.context.fillStyle = 'rgba(180, 83, 9, 0.35)';
+                this.fillCircle(-size * 0.22, size * 0.18, size * 0.18);
+                this.fillCircle(size * 0.28, size * 0.32, size * 0.14);
+                this.fillCircle(size * 0.02, -size * 0.22, size * 0.12);
+            });
+        }
+    }
+
+    private drawPoop(delta: number): void {
+        for (const particle of this.particles) {
+            this.advanceFalling(particle, delta, 14);
+            this.prepareParticle(particle);
+            this.withTransform(particle, () => {
+                const size = particle.size;
+                this.fillCircle(0, size * 0.42, size * 0.72);
+                this.fillCircle(-size * 0.08, -size * 0.08, size * 0.5);
+                this.fillCircle(size * 0.12, -size * 0.52, size * 0.32);
+                this.context.fillStyle = '#1f2937';
+                this.fillCircle(-size * 0.18, -size * 0.12, size * 0.08);
+                this.fillCircle(size * 0.16, -size * 0.08, size * 0.08);
+            });
+        }
+    }
+
+    private drawIceCream(delta: number): void {
+        for (const particle of this.particles) {
+            this.advanceFalling(particle, delta, 18);
+            this.prepareParticle(particle);
+            this.withTransform(particle, () => {
+                const size = particle.size;
+                this.context.fillStyle = '#d97706';
+                this.context.beginPath();
+                this.context.moveTo(-size * 0.42, size * 0.05);
+                this.context.lineTo(size * 0.42, size * 0.05);
+                this.context.lineTo(0, size);
+                this.context.closePath();
+                this.context.fill();
+                this.context.fillStyle = this.colorFor(particle);
+                this.fillCircle(0, -size * 0.28, size * 0.52);
+                this.context.fillStyle = '#ef4444';
+                this.fillCircle(0, -size * 0.78, size * 0.14);
+            });
+        }
+    }
+
+    private drawBills(delta: number): void {
+        for (const particle of this.particles) {
+            this.advanceFalling(particle, delta, 10);
+            this.prepareParticle(particle);
+            this.withTransform(particle, () => {
+                const width = particle.size * 1.8;
+                const height = particle.size * 0.95;
+                this.roundRect(-width / 2, -height / 2, width, height, height * 0.12);
+                this.context.fill();
+                this.context.strokeStyle = 'rgba(21, 128, 61, 0.85)';
+                this.context.lineWidth = 0.8;
+                this.context.stroke();
+                this.context.fillStyle = 'rgba(21, 128, 61, 0.9)';
+                this.fillCircle(0, 0, Math.min(width, height) * 0.22);
+                this.context.strokeStyle = 'rgba(255, 255, 255, 0.85)';
+                this.context.beginPath();
+                this.context.moveTo(-width * 0.32, -height * 0.18);
+                this.context.lineTo(-width * 0.32, height * 0.18);
+                this.context.moveTo(width * 0.32, -height * 0.18);
+                this.context.lineTo(width * 0.32, height * 0.18);
+                this.context.stroke();
+            });
+        }
+    }
+
+    private drawCoins(delta: number): void {
+        for (const particle of this.particles) {
+            this.advanceFalling(particle, delta, 8);
+            this.prepareParticle(particle);
+            this.withTransform(particle, () => {
+                const size = particle.size;
+                this.fillCircle(0, 0, size);
+                this.context.strokeStyle = 'rgba(146, 64, 14, 0.8)';
+                this.context.lineWidth = 1.1;
+                this.context.beginPath();
+                this.context.arc(0, 0, size * 0.72, 0, Math.PI * 2);
+                this.context.stroke();
+                this.context.beginPath();
+                this.context.moveTo(0, -size * 0.32);
+                this.context.lineTo(0, size * 0.32);
+                this.context.moveTo(-size * 0.18, -size * 0.12);
+                this.context.lineTo(size * 0.18, -size * 0.12);
+                this.context.stroke();
+            });
+        }
+    }
+
+    private drawAlarmClock(delta: number): void {
+        for (const particle of this.particles) {
+            this.advanceFalling(particle, delta, 12);
+            this.prepareParticle(particle);
+            this.withTransform(particle, () => {
+                const size = particle.size;
+                this.fillCircle(-size * 0.42, -size * 0.72, size * 0.28);
+                this.fillCircle(size * 0.42, -size * 0.72, size * 0.28);
+                this.fillCircle(0, 0, size * 0.72);
+                this.context.fillStyle = '#fff7ed';
+                this.fillCircle(0, 0, size * 0.5);
+                this.context.strokeStyle = '#1f2937';
+                this.context.lineWidth = 1;
+                this.context.beginPath();
+                this.context.moveTo(0, 0);
+                this.context.lineTo(0, -size * 0.32);
+                this.context.moveTo(0, 0);
+                this.context.lineTo(size * 0.28, size * 0.12);
+                this.context.stroke();
+                this.context.strokeStyle = this.colorFor(particle);
+                this.context.beginPath();
+                this.context.moveTo(-size * 0.22, size * 0.62);
+                this.context.lineTo(-size * 0.38, size * 0.92);
+                this.context.moveTo(size * 0.22, size * 0.62);
+                this.context.lineTo(size * 0.38, size * 0.92);
+                this.context.stroke();
+            });
+        }
+    }
+
+    private drawMapleLeaves(delta: number): void {
+        for (const particle of this.particles) {
+            this.advanceFalling(particle, delta, 28);
+            this.prepareParticle(particle);
+            this.withTransform(particle, () => {
+                const size = particle.size;
+                this.context.beginPath();
+                this.context.moveTo(0, -size);
+                this.context.lineTo(size * 0.22, -size * 0.38);
+                this.context.lineTo(size * 0.72, -size * 0.62);
+                this.context.lineTo(size * 0.42, -size * 0.12);
+                this.context.lineTo(size, size * 0.02);
+                this.context.lineTo(size * 0.38, size * 0.22);
+                this.context.lineTo(size * 0.52, size * 0.62);
+                this.context.lineTo(size * 0.12, size * 0.38);
+                this.context.lineTo(0, size * 0.82);
+                this.context.lineTo(-size * 0.12, size * 0.38);
+                this.context.lineTo(-size * 0.52, size * 0.62);
+                this.context.lineTo(-size * 0.38, size * 0.22);
+                this.context.lineTo(-size, size * 0.02);
+                this.context.lineTo(-size * 0.42, -size * 0.12);
+                this.context.lineTo(-size * 0.72, -size * 0.62);
+                this.context.lineTo(-size * 0.22, -size * 0.38);
+                this.context.closePath();
+                this.context.fill();
+                this.context.lineWidth = 0.8;
+                this.context.beginPath();
+                this.context.moveTo(0, -size * 0.35);
+                this.context.lineTo(0, size * 1.15);
+                this.context.stroke();
+            });
+        }
+    }
+
+    private fillCircle(x: number, y: number, radius: number): void {
+        this.context.beginPath();
+        this.context.arc(x, y, Math.max(0.35, radius), 0, Math.PI * 2);
+        this.context.fill();
+    }
+
+    private roundRect(x: number, y: number, width: number, height: number, radius: number): void {
+        const corner = Math.min(radius, width / 2, height / 2);
+        this.context.beginPath();
+        this.context.moveTo(x + corner, y);
+        this.context.arcTo(x + width, y, x + width, y + height, corner);
+        this.context.arcTo(x + width, y + height, x, y + height, corner);
+        this.context.arcTo(x, y + height, x, y, corner);
+        this.context.arcTo(x, y, x + width, y, corner);
+        this.context.closePath();
     }
 
     private withTransform(particle: Particle, draw: () => void): void {

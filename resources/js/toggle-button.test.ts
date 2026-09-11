@@ -6,6 +6,7 @@ import {
     HeaderToggleMount,
     updateToggleButton,
 } from './toggle-button';
+import { EFFECT_KINDS } from './config';
 
 afterEach(() => {
     document.body.replaceChildren();
@@ -61,5 +62,12 @@ describe('effects header toggle', () => {
         expect(button.dataset.enabled).toBe('true');
         expect(button.getAttribute('aria-label')).toBe('화면 효과 끄기');
         expect(button.textContent).toBe('♥');
+    });
+
+    it('has a header symbol for every effect', () => {
+        for (const effect of EFFECT_KINDS) {
+            const button = createToggleButton(true, effect, () => true, window);
+            expect(button.textContent?.trim().length).toBeGreaterThan(0);
+        }
     });
 });

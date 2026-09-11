@@ -248,8 +248,8 @@ export function burstStarOnHit(particle: StarBody): void {
 }
 
 export const PILE_CELL = 8;
-export const PILE_MAX_HEIGHT = 92;
-export const PILE_RECYCLE_AGE = 16;
+export const PILE_MAX_HEIGHT = 110;
+export const PILE_RECYCLE_AGE = 18;
 export const RAIN_GRAVITY = 1700;
 export const RAIN_MAX_BOUNCES = 3;
 
@@ -277,7 +277,7 @@ export function addToPile(
     cellWidth: number = PILE_CELL,
 ): void {
     const center = pileColumn(x, pile.length, cellWidth);
-    const weights = [0.2, 0.6, 0.2] as const;
+    const weights = [0.12, 0.76, 0.12] as const;
     for (let offset = -1; offset <= 1; offset += 1) {
         const column = center + offset;
         if (column < 0 || column >= pile.length) continue;
@@ -292,7 +292,7 @@ export function removeFromPile(
     cellWidth: number = PILE_CELL,
 ): void {
     const center = pileColumn(x, pile.length, cellWidth);
-    const weights = [0.2, 0.6, 0.2] as const;
+    const weights = [0.12, 0.76, 0.12] as const;
     for (let offset = -1; offset <= 1; offset += 1) {
         const column = center + offset;
         if (column < 0 || column >= pile.length) continue;
@@ -318,7 +318,6 @@ export function settleOnPile(
 ): boolean {
     const restY = floorY - heightAtPile(pile, particle.x) - restInset;
     if (particle.settled > 0) {
-        particle.y = restY;
         particle.vx = 0;
         particle.vy = 0;
         particle.rotationSpeed = 0;
@@ -348,7 +347,7 @@ export function bounceRainAtFloor(
     random: () => number = Math.random,
 ): boolean {
     const droplet = particle.sparkle > 0;
-    const radius = droplet ? Math.max(1.8, particle.size * 0.18) : 0;
+    const radius = droplet ? Math.max(2.4, particle.size * 0.26) : 0;
     if (particle.y + radius < floorY) return false;
     particle.y = floorY - radius;
     if (particle.vy <= 0) return false;
@@ -611,9 +610,9 @@ export class EffectsEngine {
     }
 
     private pileDeposit(particle: Particle): number {
-        if (this.config.effect === 'leaves') return particle.size * 0.36;
-        if (this.config.effect === 'maple_leaves') return particle.size * 0.46;
-        return particle.size * 0.7;
+        if (this.config.effect === 'leaves') return particle.size * 2.4;
+        if (this.config.effect === 'maple_leaves') return particle.size * 2.2;
+        return Math.max(8, particle.size * 9.5);
     }
 
     private advancePiling(particle: Particle, delta: number, sway: number): void {
@@ -637,7 +636,7 @@ export class EffectsEngine {
         const restY = this.height - heightAtPile(this.pile, particle.x) - this.pileRestInset(particle);
         if (particle.y < restY) return;
 
-        const maxSettled = Math.max(4, Math.floor(this.particles.length * 0.6));
+        const maxSettled = Math.max(4, Math.floor(this.particles.length * 0.72));
         const pileFull = heightAtPile(this.pile, particle.x) >= PILE_MAX_HEIGHT - 0.5;
         if (pileFull || this.grounded >= maxSettled) {
             this.resetParticle(particle);
@@ -689,7 +688,7 @@ export class EffectsEngine {
             if (bounceRainAtFloor(particle, this.height)) this.resetParticle(particle);
             this.prepareParticle(particle);
             if (particle.sparkle > 0) {
-                const radius = Math.max(1.8, particle.size * 0.18);
+                const radius = Math.max(2.4, particle.size * 0.26);
                 this.context.beginPath();
                 this.context.ellipse(
                     particle.x,

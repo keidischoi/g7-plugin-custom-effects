@@ -406,6 +406,19 @@ describe('ground piles', () => {
         addToPile(pile, 16, 5);
         expect(heightAtPile(pile, 16)).toBeGreaterThan(0);
         expect(heightAtPile(pile, 16)).toBeGreaterThan(heightAtPile(pile, 8));
+
+        const later = {
+            x: 16,
+            y: 196,
+            vx: 0,
+            vy: 20,
+            size: 4,
+            rotationSpeed: 0,
+            settled: 0,
+        };
+        expect(settleOnPile(later, 200, pile, 4)).toBe(true);
+        expect(later.y).toBeLessThan(flake.y);
+        expect(flake.y).toBe(196);
     });
 
     it('leaves airborne flakes falling', () => {

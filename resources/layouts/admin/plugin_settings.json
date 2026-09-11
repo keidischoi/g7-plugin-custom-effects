@@ -1,5 +1,5 @@
 {
-    "version": "1.8.13",
+    "version": "1.8.14",
     "layout_name": "plugin_settings",
     "permissions": [
         "core.plugins.update"
@@ -186,22 +186,6 @@
                                                         "type": "basic",
                                                         "name": "Option",
                                                         "props": {
-                                                            "value": "snow"
-                                                        },
-                                                        "text": "$t:g7-plugin-custom-effects.settings.options.snow"
-                                                    },
-                                                    {
-                                                        "type": "basic",
-                                                        "name": "Option",
-                                                        "props": {
-                                                            "value": "rain"
-                                                        },
-                                                        "text": "$t:g7-plugin-custom-effects.settings.options.rain"
-                                                    },
-                                                    {
-                                                        "type": "basic",
-                                                        "name": "Option",
-                                                        "props": {
                                                             "value": "leaves"
                                                         },
                                                         "text": "$t:g7-plugin-custom-effects.settings.options.leaves"
@@ -210,113 +194,17 @@
                                                         "type": "basic",
                                                         "name": "Option",
                                                         "props": {
-                                                            "value": "stars"
+                                                            "value": "snow"
                                                         },
-                                                        "text": "$t:g7-plugin-custom-effects.settings.options.stars"
+                                                        "text": "$t:g7-plugin-custom-effects.settings.options.snow"
                                                     },
                                                     {
                                                         "type": "basic",
                                                         "name": "Option",
                                                         "props": {
-                                                            "value": "stars_multicolor"
+                                                            "value": "maple_leaves"
                                                         },
-                                                        "text": "$t:g7-plugin-custom-effects.settings.options.stars_multicolor"
-                                                    },
-                                                    {
-                                                        "type": "basic",
-                                                        "name": "Option",
-                                                        "props": {
-                                                            "value": "hearts"
-                                                        },
-                                                        "text": "$t:g7-plugin-custom-effects.settings.options.hearts"
-                                                    },
-                                                    {
-                                                        "type": "basic",
-                                                        "name": "Option",
-                                                        "props": {
-                                                            "value": "petals"
-                                                        },
-                                                        "text": "$t:g7-plugin-custom-effects.settings.options.petals"
-                                                    },
-                                                    {
-                                                        "type": "basic",
-                                                        "name": "Option",
-                                                        "props": {
-                                                            "value": "cherry_blossoms"
-                                                        },
-                                                        "text": "$t:g7-plugin-custom-effects.settings.options.cherry_blossoms"
-                                                    },
-                                                    {
-                                                        "type": "basic",
-                                                        "name": "Option",
-                                                        "props": {
-                                                            "value": "sunflowers"
-                                                        },
-                                                        "text": "$t:g7-plugin-custom-effects.settings.options.sunflowers"
-                                                    },
-                                                    {
-                                                        "type": "basic",
-                                                        "name": "Option",
-                                                        "props": {
-                                                            "value": "confetti"
-                                                        },
-                                                        "text": "$t:g7-plugin-custom-effects.settings.options.confetti"
-                                                    },
-                                                    {
-                                                        "type": "basic",
-                                                        "name": "Option",
-                                                        "props": {
-                                                            "value": "bubbles"
-                                                        },
-                                                        "text": "$t:g7-plugin-custom-effects.settings.options.bubbles"
-                                                    },
-                                                    {
-                                                        "type": "basic",
-                                                        "name": "Option",
-                                                        "props": {
-                                                            "value": "bouncing_bubbles"
-                                                        },
-                                                        "text": "$t:g7-plugin-custom-effects.settings.options.bouncing_bubbles"
-                                                    },
-                                                    {
-                                                        "type": "basic",
-                                                        "name": "Option",
-                                                        "props": {
-                                                            "value": "fireflies"
-                                                        },
-                                                        "text": "$t:g7-plugin-custom-effects.settings.options.fireflies"
-                                                    },
-                                                    {
-                                                        "type": "basic",
-                                                        "name": "Option",
-                                                        "props": {
-                                                            "value": "cheese"
-                                                        },
-                                                        "text": "$t:g7-plugin-custom-effects.settings.options.cheese"
-                                                    },
-                                                    {
-                                                        "type": "basic",
-                                                        "name": "Option",
-                                                        "props": {
-                                                            "value": "poop"
-                                                        },
-                                                        "text": "$t:g7-plugin-custom-effects.settings.options.poop"
-                                                    },
-                                                    {
-                                                        "type": "basic",
-                                                        "name": "Option",
-                                                        "props": {
-                                                            "value": "ice_cream"
-                                                        },
-                                                        "text": "$t:g7-plugin-custom-effects.settings.options.ice_cream"
-                                                    },
-                                                    {
-                                                        "type": "basic",
-                                                        "name": "Option",
-                                                        "props": {
-                                                            "value": "bills"
-                                                        },
-                                                        "text": "$t:g7-plugin-custom-effects.settings.options.bills"
+                                                        "text": "$t:g7-plugin-custom-effects.settings.options.maple_leaves"
                                                     },
                                                     {
                                                         "type": "basic",
@@ -330,6 +218,86 @@
                                                         "type": "basic",
                                                         "name": "Option",
                                                         "props": {
+                                                            "value": "fireflies"
+                                                        },
+                                                        "text": "$t:g7-plugin-custom-effects.settings.options.fireflies"
+                                                    },
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "Option",
+                                                        "props": {
+                                                            "value": "cherry_blossoms"
+                                                        },
+                                                        "text": "$t:g7-plugin-custom-effects.settings.options.cherry_blossoms"
+                                                    },
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "Option",
+                                                        "props": {
+                                                            "value": "petals"
+                                                        },
+                                                        "text": "$t:g7-plugin-custom-effects.settings.options.petals"
+                                                    },
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "Option",
+                                                        "props": {
+                                                            "value": "stars"
+                                                        },
+                                                        "text": "$t:g7-plugin-custom-effects.settings.options.stars"
+                                                    },
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "Option",
+                                                        "props": {
+                                                            "value": "rain"
+                                                        },
+                                                        "text": "$t:g7-plugin-custom-effects.settings.options.rain"
+                                                    },
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "Option",
+                                                        "props": {
+                                                            "value": "bubbles"
+                                                        },
+                                                        "text": "$t:g7-plugin-custom-effects.settings.options.bubbles"
+                                                    },
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "Option",
+                                                        "props": {
+                                                            "value": "confetti"
+                                                        },
+                                                        "text": "$t:g7-plugin-custom-effects.settings.options.confetti"
+                                                    },
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "Option",
+                                                        "props": {
+                                                            "value": "ice_cream"
+                                                        },
+                                                        "text": "$t:g7-plugin-custom-effects.settings.options.ice_cream"
+                                                    },
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "Option",
+                                                        "props": {
+                                                            "value": "stars_multicolor"
+                                                        },
+                                                        "text": "$t:g7-plugin-custom-effects.settings.options.stars_multicolor"
+                                                    },
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "Option",
+                                                        "props": {
+                                                            "value": "poop"
+                                                        },
+                                                        "text": "$t:g7-plugin-custom-effects.settings.options.poop"
+                                                    },
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "Option",
+                                                        "props": {
                                                             "value": "alarm_clock"
                                                         },
                                                         "text": "$t:g7-plugin-custom-effects.settings.options.alarm_clock"
@@ -338,9 +306,41 @@
                                                         "type": "basic",
                                                         "name": "Option",
                                                         "props": {
-                                                            "value": "maple_leaves"
+                                                            "value": "bills"
                                                         },
-                                                        "text": "$t:g7-plugin-custom-effects.settings.options.maple_leaves"
+                                                        "text": "$t:g7-plugin-custom-effects.settings.options.bills"
+                                                    },
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "Option",
+                                                        "props": {
+                                                            "value": "cheese"
+                                                        },
+                                                        "text": "$t:g7-plugin-custom-effects.settings.options.cheese"
+                                                    },
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "Option",
+                                                        "props": {
+                                                            "value": "bouncing_bubbles"
+                                                        },
+                                                        "text": "$t:g7-plugin-custom-effects.settings.options.bouncing_bubbles"
+                                                    },
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "Option",
+                                                        "props": {
+                                                            "value": "hearts"
+                                                        },
+                                                        "text": "$t:g7-plugin-custom-effects.settings.options.hearts"
+                                                    },
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "Option",
+                                                        "props": {
+                                                            "value": "sunflowers"
+                                                        },
+                                                        "text": "$t:g7-plugin-custom-effects.settings.options.sunflowers"
                                                     }
                                                 ]
                                             }
@@ -846,84 +846,84 @@
                                                             "label": "$t:g7-plugin-custom-effects.settings.fields.effect.label",
                                                             "options": [
                                                                 {
-                                                                    "value": "snow",
-                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.snow"
-                                                                },
-                                                                {
-                                                                    "value": "rain",
-                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.rain"
-                                                                },
-                                                                {
                                                                     "value": "leaves",
                                                                     "label": "$t:g7-plugin-custom-effects.settings.options.leaves"
                                                                 },
                                                                 {
-                                                                    "value": "stars",
-                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.stars"
+                                                                    "value": "snow",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.snow"
                                                                 },
                                                                 {
-                                                                    "value": "stars_multicolor",
-                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.stars_multicolor"
-                                                                },
-                                                                {
-                                                                    "value": "hearts",
-                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.hearts"
-                                                                },
-                                                                {
-                                                                    "value": "petals",
-                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.petals"
-                                                                },
-                                                                {
-                                                                    "value": "cherry_blossoms",
-                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.cherry_blossoms"
-                                                                },
-                                                                {
-                                                                    "value": "sunflowers",
-                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.sunflowers"
-                                                                },
-                                                                {
-                                                                    "value": "confetti",
-                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.confetti"
-                                                                },
-                                                                {
-                                                                    "value": "bubbles",
-                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.bubbles"
-                                                                },
-                                                                {
-                                                                    "value": "bouncing_bubbles",
-                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.bouncing_bubbles"
-                                                                },
-                                                                {
-                                                                    "value": "fireflies",
-                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.fireflies"
-                                                                },
-                                                                {
-                                                                    "value": "cheese",
-                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.cheese"
-                                                                },
-                                                                {
-                                                                    "value": "poop",
-                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.poop"
-                                                                },
-                                                                {
-                                                                    "value": "ice_cream",
-                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.ice_cream"
-                                                                },
-                                                                {
-                                                                    "value": "bills",
-                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.bills"
+                                                                    "value": "maple_leaves",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.maple_leaves"
                                                                 },
                                                                 {
                                                                     "value": "coins",
                                                                     "label": "$t:g7-plugin-custom-effects.settings.options.coins"
                                                                 },
                                                                 {
+                                                                    "value": "fireflies",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.fireflies"
+                                                                },
+                                                                {
+                                                                    "value": "cherry_blossoms",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.cherry_blossoms"
+                                                                },
+                                                                {
+                                                                    "value": "petals",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.petals"
+                                                                },
+                                                                {
+                                                                    "value": "stars",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.stars"
+                                                                },
+                                                                {
+                                                                    "value": "rain",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.rain"
+                                                                },
+                                                                {
+                                                                    "value": "bubbles",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.bubbles"
+                                                                },
+                                                                {
+                                                                    "value": "confetti",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.confetti"
+                                                                },
+                                                                {
+                                                                    "value": "ice_cream",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.ice_cream"
+                                                                },
+                                                                {
+                                                                    "value": "stars_multicolor",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.stars_multicolor"
+                                                                },
+                                                                {
+                                                                    "value": "poop",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.poop"
+                                                                },
+                                                                {
                                                                     "value": "alarm_clock",
                                                                     "label": "$t:g7-plugin-custom-effects.settings.options.alarm_clock"
                                                                 },
                                                                 {
-                                                                    "value": "maple_leaves",
-                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.maple_leaves"
+                                                                    "value": "bills",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.bills"
+                                                                },
+                                                                {
+                                                                    "value": "cheese",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.cheese"
+                                                                },
+                                                                {
+                                                                    "value": "bouncing_bubbles",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.bouncing_bubbles"
+                                                                },
+                                                                {
+                                                                    "value": "hearts",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.hearts"
+                                                                },
+                                                                {
+                                                                    "value": "sunflowers",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.sunflowers"
                                                                 }
                                                             ],
                                                             "required": true
@@ -1410,26 +1410,26 @@
         "effect": {
             "type": "enum",
             "options": [
-                "snow",
-                "rain",
                 "leaves",
-                "stars",
-                "stars_multicolor",
-                "hearts",
-                "petals",
-                "cherry_blossoms",
-                "sunflowers",
-                "confetti",
-                "bubbles",
-                "bouncing_bubbles",
-                "fireflies",
-                "cheese",
-                "poop",
-                "ice_cream",
-                "bills",
+                "snow",
+                "maple_leaves",
                 "coins",
+                "fireflies",
+                "cherry_blossoms",
+                "petals",
+                "stars",
+                "rain",
+                "bubbles",
+                "confetti",
+                "ice_cream",
+                "stars_multicolor",
+                "poop",
                 "alarm_clock",
-                "maple_leaves"
+                "bills",
+                "cheese",
+                "bouncing_bubbles",
+                "hearts",
+                "sunflowers"
             ],
             "default": "snow"
         },

@@ -23,6 +23,15 @@ function isDaySelect(element: HTMLSelectElement): boolean {
         && element.classList.contains('g7-custom-effects-schedule-day-select');
 }
 
+function dayCaption(select: HTMLSelectElement, host: Element): string {
+    const labelled = host.querySelector('label');
+    const fromLabel = labelled?.childNodes[0]?.textContent?.trim()
+        || labelled?.textContent?.trim()
+        || '';
+    if (fromLabel && fromLabel.length <= 8) return fromLabel;
+    return select.getAttribute('aria-label') || '요일';
+}
+
 function enhanceTrueFalseToggle(
     select: HTMLSelectElement,
     flag: 'g7EnabledToggle' | 'g7DayToggle',
@@ -39,7 +48,7 @@ function enhanceTrueFalseToggle(
     select.dataset[flag] = '1';
     select.classList.add(selectClass);
 
-    let host = parent;
+    let host: Element = parent;
     if (parent.classList.contains('g7-custom-effects-schedule-dfl-row')) {
         const wrapper = select.ownerDocument.createElement('span');
         wrapper.className = hostClass;
@@ -51,8 +60,6 @@ function enhanceTrueFalseToggle(
     const checkbox = select.ownerDocument.createElement('input');
     checkbox.type = 'checkbox';
     checkbox.className = className;
-    checkbox.title = label;
-    checkbox.setAttribute('aria-label', label);
     checkbox.checked = select.value !== 'false';
 
     checkbox.addEventListener('change', () => {
@@ -66,6 +73,34 @@ function enhanceTrueFalseToggle(
         checkbox.checked = select.value !== 'false';
     });
 
+    if (flag === 'g7DayToggle') {
+        const caption = dayCaption(select, host);
+        checkbox.title = caption;
+        const wrappingLabel = select.closest('label');
+        const siblingLabel = wrappingLabel ?? host.querySelector('label');
+
+        if (siblingLabel instanceof HTMLLabelElement) {
+            if (!checkbox.id) {
+                checkbox.id = `g7-custom-effects-day-${Math.random().toString(36).slice(2, 9)}`;
+            }
+            siblingLabel.htmlFor = checkbox.id;
+            if (wrappingLabel) {
+                wrappingLabel.insertBefore(checkbox, select);
+            } else {
+                siblingLabel.after(checkbox);
+            }
+            return;
+        }
+
+        const created = select.ownerDocument.createElement('label');
+        created.className = 'g7-custom-effects-schedule-day-label';
+        created.append(caption, checkbox);
+        host.insertBefore(created, select);
+        return;
+    }
+
+    checkbox.title = label;
+    checkbox.setAttribute('aria-label', label);
     host.insertBefore(checkbox, select);
 }
 

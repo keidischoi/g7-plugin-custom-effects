@@ -65,6 +65,49 @@ describe('plugin settings layout', () => {
         expect(renderedOptions).toEqual(EFFECT_KINDS);
     });
 
+    it('lists effect dropdowns in Korean name order', () => {
+        const labels = JSON.parse(readFileSync(
+            resolve(import.meta.dirname, '../lang/ko.json'),
+            'utf8',
+        )).settings.options as Record<string, string>;
+        const names = EFFECT_KINDS.map((effect) => labels[effect]);
+        expect(names).toEqual([...names].sort((left, right) => left.localeCompare(right, 'ko')));
+
+        const collectEffectValues = (value: unknown, result: string[] = []): string[] => {
+            if (Array.isArray(value)) {
+                value.forEach((item) => collectEffectValues(item, result));
+                return result;
+            }
+            if (!value || typeof value !== 'object') return result;
+            const node = value as LayoutNode & {
+                children?: unknown;
+                props?: { name?: string; value?: string };
+                key?: string;
+                options?: Array<{ value?: string }>;
+            };
+            if (node.name === 'Select' && node.props?.name === 'effect') {
+                result.push(
+                    ...((node.children as Array<{ props?: { value?: string } }> | undefined) ?? [])
+                        .map((child) => child.props?.value)
+                        .filter((item): item is string => typeof item === 'string'),
+                );
+            }
+            if (node.key === 'effect' && Array.isArray(node.options)) {
+                result.push(
+                    ...node.options
+                        .map((item) => item.value)
+                        .filter((item): item is string => typeof item === 'string'),
+                );
+            }
+            Object.values(node).forEach((item) => collectEffectValues(item, result));
+            return result;
+        };
+
+        const lists = collectEffectValues(layout.slots);
+        expect(lists.slice(0, EFFECT_KINDS.length)).toEqual([...EFFECT_KINDS]);
+        expect(lists.slice(EFFECT_KINDS.length, EFFECT_KINDS.length * 2)).toEqual([...EFFECT_KINDS]);
+    });
+
     it('keeps preset dropdowns aligned with runtime normalization', () => {
         expect(layout.schema.color.options).toEqual(COLOR_OPTIONS);
         expect(layout.schema.wind_direction.options).toEqual([
@@ -99,8 +142,10 @@ describe('plugin settings layout', () => {
         expect(slots).toContain('g7-custom-effects-schedule-dfl-row');
         expect(effectsCss).toContain('grid-row: 2');
         expect(effectsCss).toContain('.g7-custom-effects-schedule-dfl-row {');
-        expect(effectsCss).toContain('grid-template-columns: 1.5rem 2.25rem repeat(7, minmax(3.2rem, 0.55fr)) minmax(1.75rem, auto)');
+        expect(effectsCss).toContain('grid-template-columns: 1.5rem 2.25rem repeat(8, minmax(3.2rem, 0.55fr)) minmax(1.75rem, auto)');
         expect(effectsCss).toContain('.g7-custom-effects-schedule-full {');
+        expect(effectsCss).toContain('> :nth-child(6) { grid-column: 7 / 9; grid-row: 1; }');
+        expect(effectsCss).toContain('> :nth-child(7) { grid-column: 9 / 11; grid-row: 1; }');
         expect(effectsCss).toContain('> :nth-child(8) { grid-column: 3; grid-row: 2; }');
         expect(effectsCss).toContain('> :nth-child(14) { grid-column: 9; grid-row: 2; }');
         expect(effectsCss).toContain('> :nth-child(15) {');
@@ -110,8 +155,10 @@ describe('plugin settings layout', () => {
         expect(effectsCss).toContain('input[type="date"]');
         expect(effectsCss).toContain('input[type="time"]');
         expect(effectsCss).toContain('content: "시작 시간"');
+        expect(effectsCss).not.toContain('content: "일"');
         expect(effectsCss).toContain('.g7-custom-effects-schedule-enabled,');
         expect(effectsCss).toContain('.g7-custom-effects-schedule-day {');
+        expect(effectsCss).toContain('nth-child(-n+14) label');
         expect(effectsCss).not.toContain('content: "사용"');
         expect(slots).toContain('"showIndex":false');
         expect(slots).toContain('g7-custom-effects-schedule-enabled-select');

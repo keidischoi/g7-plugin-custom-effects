@@ -29,11 +29,13 @@ export interface CollisionBody {
 const EFFECT_DENSITY: Record<EffectKind, number> = {
     snow: 1,
     rain: 1.25,
+    fog: 0.22,
     leaves: 0.45,
     stars: 0.55,
     stars_multicolor: 0.55,
     hearts: 0.4,
     petals: 0.65,
+    cherry_blossoms: 0.48,
     confetti: 0.75,
     bubbles: 0.4,
     bouncing_bubbles: 0.35,
@@ -52,7 +54,9 @@ const EFFECT_PALETTES: Partial<Record<EffectKind, readonly string[]>> = {
     stars_multicolor: ['#f87171', '#fb923c', '#fde047', '#86efac', '#38bdf8', '#c4b5fd', '#f9a8d4'],
     hearts: ['#fb7185', '#f43f5e', '#ec4899'],
     petals: ['#fbcfe8', '#f9a8d4', '#fda4af', '#ffffff'],
+    cherry_blossoms: ['#fbcfe8', '#f9a8d4', '#fb7185', '#ffe4e6', '#fda4af'],
     confetti: ['#f43f5e', '#facc15', '#22c55e', '#38bdf8', '#a855f7'],
+    fog: ['#e2e8f0', '#cbd5e1', '#f8fafc', '#94a3b8'],
     bubbles: ['#bae6fd', '#ddd6fe', '#fbcfe8'],
     bouncing_bubbles: ['#bae6fd', '#ddd6fe', '#fbcfe8', '#86efac'],
     fireflies: ['#fef08a', '#fde047', '#bef264'],
@@ -441,6 +445,7 @@ export class EffectsEngine {
         const speed = this.config.speed / 100;
         const effect = this.config.effect;
         const rain = effect === 'rain';
+        const fog = effect === 'fog';
         const bubbles = effect === 'bubbles';
         const bouncingBubbles = effect === 'bouncing_bubbles';
         const fireflies = effect === 'fireflies';
@@ -450,14 +455,16 @@ export class EffectsEngine {
 
         return {
             x: Math.random() * this.width,
-            y: randomPosition
+            y: randomPosition || fog
                 ? Math.random() * this.height
                 : bubbles ? this.height + 20 : -(Math.random() * 40 + 10),
             vx: fireflies || bouncingBubbles
                 ? (Math.random() - 0.5) * 30 * speed
                     + wind * (bouncingBubbles ? 0.35 : 0)
-                : wind * (rain ? 0.8 : 0.35) + (Math.random() - 0.5) * 18,
-            vy: (bubbles ? -1 : bouncingBubbles && Math.random() < 0.5 ? -1 : 1)
+                : fog
+                    ? wind * 0.55 + (Math.random() - 0.5) * 14
+                    : wind * (rain ? 0.8 : 0.35) + (Math.random() - 0.5) * 18,
+            vy: (bubbles ? -1 : (bouncingBubbles || fog) && Math.random() < 0.5 ? -1 : 1)
                 * (speedRange[0] + Math.random() * (speedRange[1] - speedRange[0]))
                 * speed,
             size,
@@ -468,9 +475,9 @@ export class EffectsEngine {
             phase: Math.random() * Math.PI * 2,
             phaseSpeed: 0.6 + Math.random() * 1.8,
             rotation: Math.random() * Math.PI * 2,
-            rotationSpeed: (Math.random() - 0.5) * 3,
+            rotationSpeed: fog ? (Math.random() - 0.5) * 0.25 : (Math.random() - 0.5) * 3,
             colorIndex: Math.floor(Math.random() * 8),
-            alpha: 0.55 + Math.random() * 0.45,
+            alpha: fog ? 0.16 + Math.random() * 0.22 : 0.55 + Math.random() * 0.45,
         };
     }
 
@@ -478,11 +485,13 @@ export class EffectsEngine {
         const ranges: Record<EffectKind, readonly [number, number]> = {
             snow: [28, 90],
             rain: [520, 880],
+            fog: [8, 22],
             leaves: [38, 82],
             stars: [24, 58],
             stars_multicolor: [24, 58],
             hearts: [26, 62],
             petals: [24, 58],
+            cherry_blossoms: [22, 52],
             confetti: [70, 145],
             bubbles: [22, 55],
             bouncing_bubbles: [28, 65],
@@ -502,11 +511,13 @@ export class EffectsEngine {
         const ranges: Record<EffectKind, readonly [number, number]> = {
             snow: [1.2, 4.4],
             rain: [10, 28],
+            fog: [52, 120],
             leaves: [7, 13],
             stars: [3.5, 7],
             stars_multicolor: [3.5, 7],
             hearts: [5, 10],
             petals: [5, 10],
+            cherry_blossoms: [9, 16],
             confetti: [4, 9],
             bubbles: [5, 14],
             bouncing_bubbles: [5, 14],
@@ -552,11 +563,13 @@ export class EffectsEngine {
 
         switch (this.config.effect) {
             case 'rain': this.drawRain(delta); break;
+            case 'fog': this.drawFog(delta); break;
             case 'leaves': this.drawLeaves(delta); break;
             case 'stars': this.drawStars(delta); break;
             case 'stars_multicolor': this.drawStars(delta); break;
             case 'hearts': this.drawHearts(delta); break;
             case 'petals': this.drawPetals(delta); break;
+            case 'cherry_blossoms': this.drawCherryBlossoms(delta); break;
             case 'confetti': this.drawConfetti(delta); break;
             case 'bubbles': this.drawBubbles(delta); break;
             case 'bouncing_bubbles': this.drawBouncingBubbles(delta); break;
@@ -706,6 +719,57 @@ export class EffectsEngine {
             this.context.moveTo(particle.x, particle.y);
             this.context.lineTo(particle.x - slant, particle.y - particle.size);
             this.context.stroke();
+        }
+    }
+
+    private drawFog(delta: number): void {
+        for (const particle of this.particles) {
+            particle.phase += particle.phaseSpeed * delta;
+            particle.rotation += particle.rotationSpeed * delta;
+            particle.x += (particle.vx + Math.sin(particle.phase) * 10) * delta;
+            particle.y += (particle.vy + Math.cos(particle.phase * 0.55) * 6) * delta;
+            if (particle.x > this.width + particle.size * 2) particle.x = -particle.size * 2;
+            if (particle.x < -particle.size * 2) particle.x = this.width + particle.size * 2;
+            if (particle.y > this.height + particle.size) particle.y = -particle.size;
+            if (particle.y < -particle.size) particle.y = this.height + particle.size;
+
+            const opacity = (this.config.opacity / 100) * particle.alpha;
+            this.context.fillStyle = this.colorFor(particle);
+            this.context.globalAlpha = opacity * 0.55;
+            this.context.beginPath();
+            this.context.ellipse(
+                particle.x,
+                particle.y,
+                particle.size * 1.35,
+                particle.size * 0.52,
+                particle.rotation * 0.2,
+                0,
+                Math.PI * 2,
+            );
+            this.context.fill();
+            this.context.globalAlpha = opacity * 0.38;
+            this.context.beginPath();
+            this.context.ellipse(
+                particle.x + particle.size * 0.42,
+                particle.y - particle.size * 0.1,
+                particle.size * 0.92,
+                particle.size * 0.4,
+                0,
+                0,
+                Math.PI * 2,
+            );
+            this.context.fill();
+            this.context.beginPath();
+            this.context.ellipse(
+                particle.x - particle.size * 0.38,
+                particle.y + particle.size * 0.08,
+                particle.size,
+                particle.size * 0.36,
+                0,
+                0,
+                Math.PI * 2,
+            );
+            this.context.fill();
         }
     }
 
@@ -899,6 +963,43 @@ export class EffectsEngine {
                     Math.PI * 2,
                 );
                 this.context.fill();
+            });
+        }
+    }
+
+    private drawCherryBlossoms(delta: number): void {
+        for (const particle of this.particles) {
+            this.advanceFalling(particle, delta, 22);
+            this.withTransform(particle, () => {
+                const size = particle.size;
+                const body = this.fixedPaletteColor(particle, '#f9a8d4');
+                this.context.globalAlpha = (this.config.opacity / 100) * particle.alpha;
+                for (let index = 0; index < 5; index += 1) {
+                    this.context.save();
+                    this.context.rotate((Math.PI * 2 * index) / 5);
+                    this.drawCherryPetalPath(size);
+                    this.context.fillStyle = body;
+                    this.context.fill();
+                    this.context.strokeStyle = 'rgba(244, 114, 182, 0.38)';
+                    this.context.lineWidth = Math.max(0.55, size * 0.045);
+                    this.context.stroke();
+                    this.context.beginPath();
+                    this.context.moveTo(0, -size * 0.14);
+                    this.context.quadraticCurveTo(0, -size * 0.48, 0, -size * 0.82);
+                    this.context.stroke();
+                    this.context.restore();
+                }
+                this.context.fillStyle = '#fde047';
+                this.fillCircle(0, 0, size * 0.13);
+                this.context.fillStyle = '#a3e635';
+                for (let index = 0; index < 5; index += 1) {
+                    const angle = (Math.PI * 2 * index) / 5 + 0.22;
+                    this.fillCircle(
+                        Math.cos(angle) * size * 0.12,
+                        Math.sin(angle) * size * 0.12,
+                        size * 0.045,
+                    );
+                }
             });
         }
     }
@@ -1409,6 +1510,29 @@ export class EffectsEngine {
                 this.context.stroke();
             });
         }
+    }
+
+    private drawCherryPetalPath(size: number): void {
+        this.context.beginPath();
+        this.context.moveTo(0, -size * 0.08);
+        this.context.bezierCurveTo(
+            size * 0.4,
+            -size * 0.16,
+            size * 0.52,
+            -size * 0.62,
+            size * 0.14,
+            -size,
+        );
+        this.context.quadraticCurveTo(0, -size * 0.78, -size * 0.14, -size);
+        this.context.bezierCurveTo(
+            -size * 0.52,
+            -size * 0.62,
+            -size * 0.4,
+            -size * 0.16,
+            0,
+            -size * 0.08,
+        );
+        this.context.closePath();
     }
 
     private drawMapleLeafPath(size: number): void {

@@ -1,5 +1,5 @@
 {
-    "version": "1.8.10",
+    "version": "1.8.11",
     "layout_name": "plugin_settings",
     "permissions": [
         "core.plugins.update"
@@ -202,6 +202,14 @@
                                                         "type": "basic",
                                                         "name": "Option",
                                                         "props": {
+                                                            "value": "fog"
+                                                        },
+                                                        "text": "$t:g7-plugin-custom-effects.settings.options.fog"
+                                                    },
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "Option",
+                                                        "props": {
                                                             "value": "leaves"
                                                         },
                                                         "text": "$t:g7-plugin-custom-effects.settings.options.leaves"
@@ -237,6 +245,14 @@
                                                             "value": "petals"
                                                         },
                                                         "text": "$t:g7-plugin-custom-effects.settings.options.petals"
+                                                    },
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "Option",
+                                                        "props": {
+                                                            "value": "cherry_blossoms"
+                                                        },
+                                                        "text": "$t:g7-plugin-custom-effects.settings.options.cherry_blossoms"
                                                     },
                                                     {
                                                         "type": "basic",
@@ -838,6 +854,10 @@
                                                                     "label": "$t:g7-plugin-custom-effects.settings.options.rain"
                                                                 },
                                                                 {
+                                                                    "value": "fog",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.fog"
+                                                                },
+                                                                {
                                                                     "value": "leaves",
                                                                     "label": "$t:g7-plugin-custom-effects.settings.options.leaves"
                                                                 },
@@ -856,6 +876,10 @@
                                                                 {
                                                                     "value": "petals",
                                                                     "label": "$t:g7-plugin-custom-effects.settings.options.petals"
+                                                                },
+                                                                {
+                                                                    "value": "cherry_blossoms",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.cherry_blossoms"
                                                                 },
                                                                 {
                                                                     "value": "confetti",
@@ -1381,11 +1405,13 @@
             "options": [
                 "snow",
                 "rain",
+                "fog",
                 "leaves",
                 "stars",
                 "stars_multicolor",
                 "hearts",
                 "petals",
+                "cherry_blossoms",
                 "confetti",
                 "bubbles",
                 "bouncing_bubbles",

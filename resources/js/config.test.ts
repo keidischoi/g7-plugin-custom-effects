@@ -247,7 +247,10 @@ describe('particleCount', () => {
         expect(particleCount(1920, 1080, 100, 'fireflies')).toBeLessThan(
             particleCount(1920, 1080, 100, 'snow'),
         );
-        expect(particleCount(1920, 1080, 100, 'maple_leaves')).toBeLessThan(
+        expect(particleCount(1920, 1080, 100, 'fog')).toBeLessThan(
+            particleCount(1920, 1080, 100, 'snow'),
+        );
+        expect(particleCount(1920, 1080, 100, 'cherry_blossoms')).toBeLessThan(
             particleCount(1920, 1080, 100, 'rain'),
         );
     });

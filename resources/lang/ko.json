@@ -22,11 +22,13 @@
         "options": {
             "snow": "눈",
             "rain": "비",
+            "fog": "안개",
             "leaves": "낙엽",
             "stars": "별",
             "stars_multicolor": "여러 색 별",
             "hearts": "하트",
             "petals": "꽃잎",
+            "cherry_blossoms": "벚꽃",
             "confetti": "색종이",
             "bubbles": "비눗방울",
             "bouncing_bubbles": "튕기는 비눗방울",

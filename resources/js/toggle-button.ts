@@ -12,11 +12,13 @@ type ToggleCallback = () => boolean;
 const EFFECT_SYMBOLS: Record<EffectKind, string> = {
     snow: '❄',
     rain: '◆',
+    fog: '🌫',
     leaves: '❧',
     stars: '★',
     stars_multicolor: '★',
     hearts: '♥',
     petals: '✿',
+    cherry_blossoms: '🌸',
     confetti: '✦',
     bubbles: '○',
     bouncing_bubbles: '◉',

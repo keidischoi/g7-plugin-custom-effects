@@ -30,11 +30,13 @@ class Plugin extends AbstractPlugin
                 'options' => [
                     'snow',
                     'rain',
+                    'fog',
                     'leaves',
                     'stars',
                     'stars_multicolor',
                     'hearts',
                     'petals',
+                    'cherry_blossoms',
                     'confetti',
                     'bubbles',
                     'bouncing_bubbles',

@@ -22,11 +22,13 @@
         "options": {
             "snow": "Snow",
             "rain": "Rain",
+            "fog": "Fog",
             "leaves": "Falling leaves",
             "stars": "Stars",
             "stars_multicolor": "Multicolor stars",
             "hearts": "Hearts",
             "petals": "Flower petals",
+            "cherry_blossoms": "Cherry blossoms",
             "confetti": "Confetti",
             "bubbles": "Bubbles",
             "bouncing_bubbles": "Bouncing bubbles",

@@ -37,7 +37,7 @@ function collectBoundControls(value: unknown, result = new Set<string>()): Set<s
     const node = value as LayoutNode;
     if (
         node.name
-        && ['Input', 'Select', 'Toggle', 'Checkbox'].includes(node.name)
+        && ['Input', 'Select', 'Toggle', 'DynamicFieldList'].includes(node.name)
         && typeof node.props?.name === 'string'
     ) {
         result.add(node.props.name.startsWith('schedules') ? 'schedules' : node.props.name);
@@ -76,17 +76,15 @@ describe('plugin settings layout', () => {
         expect(layout.schema.schedules?.type).toBe('array');
 
         const slots = JSON.stringify(layout.slots);
-        expect(slots).toContain('"type":"date"');
-        expect(slots).toContain('"type":"time"');
-        expect(slots).toContain('g7-custom-effects-schedule-row-dates');
-        expect(slots).toContain('g7-custom-effects-schedule-row-times');
-        expect(slots).not.toContain('"name":"DynamicFieldList"');
-        expect(slots).toContain('"name":"schedules.{{idx}}.start_date"');
+        expect(slots).toContain('"name":"DynamicFieldList"');
+        expect(slots).toContain('"name":"schedules"');
+        expect(slots).toContain('"placeholder":"YYYY-MM-DD"');
+        expect(slots).toContain('"placeholder":"HH:MM"');
         for (const value of [...COLOR_OPTIONS, ...TIMEZONE_OPTIONS]) {
             expect(slots).toContain(`"value":"${value}"`);
         }
         for (const day of ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat']) {
-            expect(slots).toContain(`"name":"schedules.{{idx}}.${day}"`);
+            expect(slots).toContain(`"key":"${day}"`);
         }
     });
 
@@ -94,11 +92,15 @@ describe('plugin settings layout', () => {
         const slots = JSON.stringify(layout.slots);
         expect(slots).toContain('"className":"g7-custom-effects-schedule-grid"');
         expect(slots).toContain('g7-custom-effects-schedule-list');
-        expect(slots).toContain('g7-custom-effects-schedule-card');
         expect(effectsCss).toContain('.g7-custom-effects-schedule-grid {');
         expect(effectsCss).toContain('padding: 1rem 1.5rem;');
-        expect(effectsCss).toContain('.g7-custom-effects-schedule-row-dates');
-        expect(effectsCss).toContain('.g7-custom-effects-schedule-row-times');
+        expect(effectsCss).toContain('grid-row: 2');
+        expect(effectsCss).toContain('.dynamic-field-list .flex.items-center.gap-2.py-2.px-2');
+        expect(effectsCss).toContain('grid-template-columns: 1.5rem 2rem');
+        expect(effectsCss).toContain('.g7-custom-effects-schedule-full {');
+        expect(effectsCss).toContain('grid-column: 7 / 12');
+        expect(effectsCss).toContain('input[type="date"]');
+        expect(effectsCss).toContain('input[type="time"]');
     });
 
     it('loads settings into the local form and provides a complete save flow', () => {

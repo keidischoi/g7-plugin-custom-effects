@@ -6,6 +6,7 @@ import {
     readEffectsPreference,
     writeEffectsPreference,
 } from './preference';
+import { enhanceSchedulePickers } from './schedule-fields';
 import { activeScheduledEffect } from './schedule';
 import {
     HeaderToggleMount,
@@ -96,6 +97,7 @@ function boot(): void {
         ? new HeaderToggleMount(window, currentEffect, () => userEnabled, toggle)
         : null;
     headerToggle?.start();
+    const stopSchedulePickers = isUserPage ? () => {} : enhanceSchedulePickers(window);
 
     mobileQuery.addEventListener('change', sync);
     reducedMotionQuery.addEventListener('change', sync);
@@ -114,6 +116,7 @@ function boot(): void {
             window.clearInterval(scheduleTimer);
             unregisterToggleAction();
             headerToggle?.stop();
+            stopSchedulePickers();
             engine?.stop();
             engine = null;
         },

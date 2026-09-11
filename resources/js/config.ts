@@ -99,10 +99,10 @@ function boundedInteger(value: unknown, fallback: number, min: number, max: numb
 function presetValue<const T extends readonly string[]>(
     value: unknown,
     options: T,
-    fallback: T[number],
-): T[number] {
+    fallback: string,
+): string {
     return typeof value === 'string' && options.includes(value as T[number])
-        ? value as T[number]
+        ? value
         : fallback;
 }
 

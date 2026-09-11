@@ -1382,18 +1382,7 @@
             "default": false
         },
         "schedule_start_date": {
-            "type": "enum",
-            "options": [
-                "Asia/Seoul",
-                "UTC",
-                "Asia/Tokyo",
-                "Asia/Shanghai",
-                "America/New_York",
-                "America/Los_Angeles",
-                "Europe/London",
-                "Europe/Paris",
-                "Australia/Sydney"
-            ],
+            "type": "string",
             "default": ""
         },
         "schedule_end_date": {
@@ -1414,7 +1403,18 @@
             "default": "all"
         },
         "schedule_timezone": {
-            "type": "string",
+            "type": "enum",
+            "options": [
+                "Asia/Seoul",
+                "UTC",
+                "Asia/Tokyo",
+                "Asia/Shanghai",
+                "America/New_York",
+                "America/Los_Angeles",
+                "Europe/London",
+                "Europe/Paris",
+                "Australia/Sydney"
+            ],
             "default": "Asia/Seoul"
         },
         "mobile_enabled": {

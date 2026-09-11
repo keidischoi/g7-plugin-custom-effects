@@ -14,10 +14,12 @@ const EFFECT_SYMBOLS: Record<EffectKind, string> = {
     rain: '◆',
     leaves: '❧',
     stars: '★',
+    stars_multicolor: '★',
     hearts: '♥',
     petals: '✿',
     confetti: '✦',
     bubbles: '○',
+    bouncing_bubbles: '◉',
     fireflies: '•',
 };
 

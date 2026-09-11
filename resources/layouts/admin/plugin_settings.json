@@ -1,5 +1,5 @@
 {
-    "version": "1.0.0",
+    "version": "1.0.1",
     "layout_name": "plugin_settings",
     "permissions": [
         "core.plugins.update"
@@ -9,77 +9,806 @@
         "title": "$t:g7-plugin-custom-effects.settings.title",
         "description": "$t:g7-plugin-custom-effects.settings.description"
     },
-    "pageConfig": {
-        "notice": "$t:g7-plugin-custom-effects.settings.notice"
+    "data_sources": [
+        {
+            "id": "settings",
+            "label_key": "$t:g7-plugin-custom-effects.editor.data_source.settings",
+            "type": "api",
+            "endpoint": "/api/admin/plugins/{{route.identifier}}/settings",
+            "method": "GET",
+            "auto_fetch": true,
+            "auth_required": true,
+            "initLocal": "form",
+            "refetchOnMount": true
+        }
+    ],
+    "slots": {
+        "content": [
+            {
+                "id": "plugin_settings_content",
+                "type": "basic",
+                "name": "Div",
+                "dataKey": "form",
+                "trackChanges": true,
+                "props": {
+                    "className": "admin-page-content-responsive"
+                },
+                "children": [
+                    {
+                        "id": "page_header",
+                        "type": "composite",
+                        "name": "PageHeader",
+                        "props": {
+                            "title": "$t:g7-plugin-custom-effects.settings.title",
+                            "description": "$t:g7-plugin-custom-effects.settings.description",
+                            "backPath": "/admin/plugins",
+                            "backLabel": "$t:admin.plugins.back_to_list"
+                        }
+                    },
+                    {
+                        "id": "settings_notice",
+                        "type": "basic",
+                        "name": "Div",
+                        "props": {
+                            "className": "mt-6 rounded-lg border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-800 dark:border-blue-800 dark:bg-blue-950 dark:text-blue-200"
+                        },
+                        "text": "$t:g7-plugin-custom-effects.settings.notice"
+                    },
+                    {
+                        "id": "effect_settings_card",
+                        "type": "basic",
+                        "name": "Div",
+                        "props": {
+                            "className": "mt-6 bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700"
+                        },
+                        "children": [
+                            {
+                                "id": "effect_settings_header",
+                                "type": "basic",
+                                "name": "Div",
+                                "props": {
+                                    "className": "panel-header-row"
+                                },
+                                "children": [
+                                    {
+                                        "type": "basic",
+                                        "name": "H3",
+                                        "props": {
+                                            "className": "text-body font-semibold"
+                                        },
+                                        "text": "$t:g7-plugin-custom-effects.settings.sections.effect"
+                                    }
+                                ]
+                            },
+                            {
+                                "id": "effect_settings_fields",
+                                "type": "basic",
+                                "name": "Div",
+                                "props": {
+                                    "className": "divide-y divide-gray-100 dark:divide-gray-700"
+                                },
+                                "children": [
+                                    {
+                                        "id": "field_enabled",
+                                        "type": "basic",
+                                        "name": "Div",
+                                        "props": {
+                                            "className": "grid-2col lg:grid-cols-3 items-center px-6 py-4"
+                                        },
+                                        "children": [
+                                            {
+                                                "type": "basic",
+                                                "name": "Div",
+                                                "props": {
+                                                    "className": "lg:col-span-2"
+                                                },
+                                                "children": [
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "Label",
+                                                        "props": {
+                                                            "className": "form-label"
+                                                        },
+                                                        "text": "$t:g7-plugin-custom-effects.settings.fields.enabled.label"
+                                                    },
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "P",
+                                                        "props": {
+                                                            "className": "form-hint"
+                                                        },
+                                                        "text": "$t:g7-plugin-custom-effects.settings.fields.enabled.hint"
+                                                    }
+                                                ]
+                                            },
+                                            {
+                                                "type": "basic",
+                                                "name": "Div",
+                                                "props": {
+                                                    "className": "lg:col-span-1 flex justify-end"
+                                                },
+                                                "children": [
+                                                    {
+                                                        "type": "composite",
+                                                        "name": "Toggle",
+                                                        "props": {
+                                                            "name": "enabled"
+                                                        }
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "id": "field_effect",
+                                        "type": "basic",
+                                        "name": "Div",
+                                        "props": {
+                                            "className": "grid-2col lg:grid-cols-3 items-center px-6 py-4"
+                                        },
+                                        "children": [
+                                            {
+                                                "type": "basic",
+                                                "name": "Div",
+                                                "props": {
+                                                    "className": "lg:col-span-2"
+                                                },
+                                                "children": [
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "Label",
+                                                        "props": {
+                                                            "className": "form-label",
+                                                            "htmlFor": "effect"
+                                                        },
+                                                        "text": "$t:g7-plugin-custom-effects.settings.fields.effect.label"
+                                                    },
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "P",
+                                                        "props": {
+                                                            "className": "form-hint"
+                                                        },
+                                                        "text": "$t:g7-plugin-custom-effects.settings.fields.effect.hint"
+                                                    }
+                                                ]
+                                            },
+                                            {
+                                                "type": "basic",
+                                                "name": "Select",
+                                                "props": {
+                                                    "id": "effect",
+                                                    "name": "effect",
+                                                    "className": "lg:col-span-1 w-full"
+                                                },
+                                                "children": [
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "Option",
+                                                        "props": {
+                                                            "value": "snow"
+                                                        },
+                                                        "text": "$t:g7-plugin-custom-effects.settings.options.snow"
+                                                    },
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "Option",
+                                                        "props": {
+                                                            "value": "rain"
+                                                        },
+                                                        "text": "$t:g7-plugin-custom-effects.settings.options.rain"
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "id": "field_intensity",
+                                        "type": "basic",
+                                        "name": "Div",
+                                        "props": {
+                                            "className": "grid-2col lg:grid-cols-3 items-center px-6 py-4"
+                                        },
+                                        "children": [
+                                            {
+                                                "type": "basic",
+                                                "name": "Div",
+                                                "props": {
+                                                    "className": "lg:col-span-2"
+                                                },
+                                                "children": [
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "Label",
+                                                        "props": {
+                                                            "className": "form-label",
+                                                            "htmlFor": "intensity"
+                                                        },
+                                                        "text": "$t:g7-plugin-custom-effects.settings.fields.intensity.label"
+                                                    },
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "P",
+                                                        "props": {
+                                                            "className": "form-hint"
+                                                        },
+                                                        "text": "$t:g7-plugin-custom-effects.settings.fields.intensity.hint"
+                                                    }
+                                                ]
+                                            },
+                                            {
+                                                "type": "basic",
+                                                "name": "Input",
+                                                "props": {
+                                                    "id": "intensity",
+                                                    "type": "number",
+                                                    "name": "intensity",
+                                                    "min": 10,
+                                                    "max": 200,
+                                                    "step": 10,
+                                                    "className": "lg:col-span-1 w-full"
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "id": "field_speed",
+                                        "type": "basic",
+                                        "name": "Div",
+                                        "props": {
+                                            "className": "grid-2col lg:grid-cols-3 items-center px-6 py-4"
+                                        },
+                                        "children": [
+                                            {
+                                                "type": "basic",
+                                                "name": "Div",
+                                                "props": {
+                                                    "className": "lg:col-span-2"
+                                                },
+                                                "children": [
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "Label",
+                                                        "props": {
+                                                            "className": "form-label",
+                                                            "htmlFor": "speed"
+                                                        },
+                                                        "text": "$t:g7-plugin-custom-effects.settings.fields.speed.label"
+                                                    },
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "P",
+                                                        "props": {
+                                                            "className": "form-hint"
+                                                        },
+                                                        "text": "$t:g7-plugin-custom-effects.settings.fields.speed.hint"
+                                                    }
+                                                ]
+                                            },
+                                            {
+                                                "type": "basic",
+                                                "name": "Input",
+                                                "props": {
+                                                    "id": "speed",
+                                                    "type": "number",
+                                                    "name": "speed",
+                                                    "min": 25,
+                                                    "max": 300,
+                                                    "step": 25,
+                                                    "className": "lg:col-span-1 w-full"
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "id": "field_opacity",
+                                        "type": "basic",
+                                        "name": "Div",
+                                        "props": {
+                                            "className": "grid-2col lg:grid-cols-3 items-center px-6 py-4"
+                                        },
+                                        "children": [
+                                            {
+                                                "type": "basic",
+                                                "name": "Div",
+                                                "props": {
+                                                    "className": "lg:col-span-2"
+                                                },
+                                                "children": [
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "Label",
+                                                        "props": {
+                                                            "className": "form-label",
+                                                            "htmlFor": "opacity"
+                                                        },
+                                                        "text": "$t:g7-plugin-custom-effects.settings.fields.opacity.label"
+                                                    }
+                                                ]
+                                            },
+                                            {
+                                                "type": "basic",
+                                                "name": "Input",
+                                                "props": {
+                                                    "id": "opacity",
+                                                    "type": "number",
+                                                    "name": "opacity",
+                                                    "min": 10,
+                                                    "max": 100,
+                                                    "step": 5,
+                                                    "className": "lg:col-span-1 w-full"
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "id": "field_wind",
+                                        "type": "basic",
+                                        "name": "Div",
+                                        "props": {
+                                            "className": "grid-2col lg:grid-cols-3 items-center px-6 py-4"
+                                        },
+                                        "children": [
+                                            {
+                                                "type": "basic",
+                                                "name": "Div",
+                                                "props": {
+                                                    "className": "lg:col-span-2"
+                                                },
+                                                "children": [
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "Label",
+                                                        "props": {
+                                                            "className": "form-label",
+                                                            "htmlFor": "wind"
+                                                        },
+                                                        "text": "$t:g7-plugin-custom-effects.settings.fields.wind.label"
+                                                    },
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "P",
+                                                        "props": {
+                                                            "className": "form-hint"
+                                                        },
+                                                        "text": "$t:g7-plugin-custom-effects.settings.fields.wind.hint"
+                                                    }
+                                                ]
+                                            },
+                                            {
+                                                "type": "basic",
+                                                "name": "Input",
+                                                "props": {
+                                                    "id": "wind",
+                                                    "type": "number",
+                                                    "name": "wind",
+                                                    "min": -100,
+                                                    "max": 100,
+                                                    "step": 10,
+                                                    "className": "lg:col-span-1 w-full"
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "id": "field_color",
+                                        "type": "basic",
+                                        "name": "Div",
+                                        "props": {
+                                            "className": "grid-2col lg:grid-cols-3 items-center px-6 py-4"
+                                        },
+                                        "children": [
+                                            {
+                                                "type": "basic",
+                                                "name": "Div",
+                                                "props": {
+                                                    "className": "lg:col-span-2"
+                                                },
+                                                "children": [
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "Label",
+                                                        "props": {
+                                                            "className": "form-label",
+                                                            "htmlFor": "color"
+                                                        },
+                                                        "text": "$t:g7-plugin-custom-effects.settings.fields.color.label"
+                                                    },
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "P",
+                                                        "props": {
+                                                            "className": "form-hint"
+                                                        },
+                                                        "text": "$t:g7-plugin-custom-effects.settings.fields.color.hint"
+                                                    }
+                                                ]
+                                            },
+                                            {
+                                                "type": "basic",
+                                                "name": "Input",
+                                                "props": {
+                                                    "id": "color",
+                                                    "type": "text",
+                                                    "name": "color",
+                                                    "placeholder": "#ffffff",
+                                                    "className": "lg:col-span-1 w-full"
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "id": "scope_settings_card",
+                        "type": "basic",
+                        "name": "Div",
+                        "props": {
+                            "className": "mt-6 bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700"
+                        },
+                        "children": [
+                            {
+                                "id": "scope_settings_header",
+                                "type": "basic",
+                                "name": "Div",
+                                "props": {
+                                    "className": "panel-header-row"
+                                },
+                                "children": [
+                                    {
+                                        "type": "basic",
+                                        "name": "H3",
+                                        "props": {
+                                            "className": "text-body font-semibold"
+                                        },
+                                        "text": "$t:g7-plugin-custom-effects.settings.sections.scope"
+                                    }
+                                ]
+                            },
+                            {
+                                "id": "scope_settings_fields",
+                                "type": "basic",
+                                "name": "Div",
+                                "props": {
+                                    "className": "divide-y divide-gray-100 dark:divide-gray-700"
+                                },
+                                "children": [
+                                    {
+                                        "id": "field_mobile_enabled",
+                                        "type": "basic",
+                                        "name": "Div",
+                                        "props": {
+                                            "className": "grid-2col lg:grid-cols-3 items-center px-6 py-4"
+                                        },
+                                        "children": [
+                                            {
+                                                "type": "basic",
+                                                "name": "Div",
+                                                "props": {
+                                                    "className": "lg:col-span-2"
+                                                },
+                                                "children": [
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "Label",
+                                                        "props": {
+                                                            "className": "form-label"
+                                                        },
+                                                        "text": "$t:g7-plugin-custom-effects.settings.fields.mobile_enabled.label"
+                                                    },
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "P",
+                                                        "props": {
+                                                            "className": "form-hint"
+                                                        },
+                                                        "text": "$t:g7-plugin-custom-effects.settings.fields.mobile_enabled.hint"
+                                                    }
+                                                ]
+                                            },
+                                            {
+                                                "type": "basic",
+                                                "name": "Div",
+                                                "props": {
+                                                    "className": "lg:col-span-1 flex justify-end"
+                                                },
+                                                "children": [
+                                                    {
+                                                        "type": "composite",
+                                                        "name": "Toggle",
+                                                        "props": {
+                                                            "name": "mobile_enabled"
+                                                        }
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "id": "field_admin_enabled",
+                                        "type": "basic",
+                                        "name": "Div",
+                                        "props": {
+                                            "className": "grid-2col lg:grid-cols-3 items-center px-6 py-4"
+                                        },
+                                        "children": [
+                                            {
+                                                "type": "basic",
+                                                "name": "Div",
+                                                "props": {
+                                                    "className": "lg:col-span-2"
+                                                },
+                                                "children": [
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "Label",
+                                                        "props": {
+                                                            "className": "form-label"
+                                                        },
+                                                        "text": "$t:g7-plugin-custom-effects.settings.fields.admin_enabled.label"
+                                                    },
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "P",
+                                                        "props": {
+                                                            "className": "form-hint"
+                                                        },
+                                                        "text": "$t:g7-plugin-custom-effects.settings.fields.admin_enabled.hint"
+                                                    }
+                                                ]
+                                            },
+                                            {
+                                                "type": "basic",
+                                                "name": "Div",
+                                                "props": {
+                                                    "className": "lg:col-span-1 flex justify-end"
+                                                },
+                                                "children": [
+                                                    {
+                                                        "type": "composite",
+                                                        "name": "Toggle",
+                                                        "props": {
+                                                            "name": "admin_enabled"
+                                                        }
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "id": "field_respect_reduced_motion",
+                                        "type": "basic",
+                                        "name": "Div",
+                                        "props": {
+                                            "className": "grid-2col lg:grid-cols-3 items-center px-6 py-4"
+                                        },
+                                        "children": [
+                                            {
+                                                "type": "basic",
+                                                "name": "Div",
+                                                "props": {
+                                                    "className": "lg:col-span-2"
+                                                },
+                                                "children": [
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "Label",
+                                                        "props": {
+                                                            "className": "form-label"
+                                                        },
+                                                        "text": "$t:g7-plugin-custom-effects.settings.fields.respect_reduced_motion.label"
+                                                    },
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "P",
+                                                        "props": {
+                                                            "className": "form-hint"
+                                                        },
+                                                        "text": "$t:g7-plugin-custom-effects.settings.fields.respect_reduced_motion.hint"
+                                                    }
+                                                ]
+                                            },
+                                            {
+                                                "type": "basic",
+                                                "name": "Div",
+                                                "props": {
+                                                    "className": "lg:col-span-1 flex justify-end"
+                                                },
+                                                "children": [
+                                                    {
+                                                        "type": "composite",
+                                                        "name": "Toggle",
+                                                        "props": {
+                                                            "name": "respect_reduced_motion"
+                                                        }
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "id": "footer_buttons",
+                        "type": "basic",
+                        "name": "Div",
+                        "props": {
+                            "className": "sticky-footer-buttons"
+                        },
+                        "children": [
+                            {
+                                "id": "cancel_button",
+                                "type": "basic",
+                                "name": "Button",
+                                "props": {
+                                    "type": "button",
+                                    "className": "btn btn-secondary"
+                                },
+                                "actions": [
+                                    {
+                                        "type": "click",
+                                        "handler": "navigate",
+                                        "params": {
+                                            "path": "/admin/plugins"
+                                        }
+                                    }
+                                ],
+                                "children": [
+                                    {
+                                        "type": "basic",
+                                        "name": "Span",
+                                        "text": "$t:common.cancel"
+                                    }
+                                ]
+                            },
+                            {
+                                "id": "save_button",
+                                "type": "basic",
+                                "name": "Button",
+                                "props": {
+                                    "type": "button",
+                                    "disabled": "{{!_local.hasChanges || _local.isSaving}}",
+                                    "className": "btn btn-primary flex-center gap-1.5"
+                                },
+                                "actions": [
+                                    {
+                                        "type": "click",
+                                        "handler": "sequence",
+                                        "actions": [
+                                            {
+                                                "handler": "setState",
+                                                "params": {
+                                                    "target": "local",
+                                                    "isSaving": true,
+                                                    "errors": null
+                                                }
+                                            },
+                                            {
+                                                "handler": "apiCall",
+                                                "auth_required": true,
+                                                "target": "/api/admin/plugins/{{route.identifier}}/settings",
+                                                "params": {
+                                                    "method": "PUT",
+                                                    "body": "{{_local.form}}"
+                                                },
+                                                "onSuccess": [
+                                                    {
+                                                        "handler": "setState",
+                                                        "params": {
+                                                            "target": "local",
+                                                            "isSaving": false,
+                                                            "hasChanges": false
+                                                        }
+                                                    },
+                                                    {
+                                                        "handler": "toast",
+                                                        "params": {
+                                                            "type": "success",
+                                                            "message": "$t:admin.plugins.settings.save_success"
+                                                        }
+                                                    },
+                                                    {
+                                                        "handler": "refetchDataSource",
+                                                        "params": {
+                                                            "dataSourceId": "settings"
+                                                        }
+                                                    }
+                                                ],
+                                                "onError": [
+                                                    {
+                                                        "handler": "setState",
+                                                        "params": {
+                                                            "target": "local",
+                                                            "isSaving": false,
+                                                            "errors": "{{error.errors}}"
+                                                        }
+                                                    },
+                                                    {
+                                                        "handler": "toast",
+                                                        "params": {
+                                                            "type": "error",
+                                                            "message": "{{error.message ?? '$t:admin.plugins.settings.save_error'}}"
+                                                        }
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "children": [
+                                    {
+                                        "type": "basic",
+                                        "name": "Span",
+                                        "if": "{{!_local.isSaving}}",
+                                        "text": "$t:common.save"
+                                    },
+                                    {
+                                        "type": "basic",
+                                        "name": "Span",
+                                        "if": "{{_local.isSaving}}",
+                                        "text": "$t:common.saving"
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
     },
     "schema": {
         "enabled": {
             "type": "boolean",
-            "default": true,
-            "label": "$t:g7-plugin-custom-effects.settings.fields.enabled.label",
-            "hint": "$t:g7-plugin-custom-effects.settings.fields.enabled.hint"
+            "default": true
         },
         "effect": {
             "type": "enum",
             "options": ["snow", "rain"],
-            "default": "snow",
-            "label": "$t:g7-plugin-custom-effects.settings.fields.effect.label",
-            "hint": "$t:g7-plugin-custom-effects.settings.fields.effect.hint"
+            "default": "snow"
         },
         "intensity": {
             "type": "integer",
             "min": 10,
             "max": 200,
-            "default": 100,
-            "label": "$t:g7-plugin-custom-effects.settings.fields.intensity.label",
-            "hint": "$t:g7-plugin-custom-effects.settings.fields.intensity.hint"
+            "default": 100
         },
         "speed": {
             "type": "integer",
             "min": 25,
             "max": 300,
-            "default": 100,
-            "label": "$t:g7-plugin-custom-effects.settings.fields.speed.label",
-            "hint": "$t:g7-plugin-custom-effects.settings.fields.speed.hint"
+            "default": 100
         },
         "opacity": {
             "type": "integer",
             "min": 10,
             "max": 100,
-            "default": 75,
-            "label": "$t:g7-plugin-custom-effects.settings.fields.opacity.label"
+            "default": 75
         },
         "wind": {
             "type": "integer",
             "min": -100,
             "max": 100,
-            "default": 0,
-            "label": "$t:g7-plugin-custom-effects.settings.fields.wind.label",
-            "hint": "$t:g7-plugin-custom-effects.settings.fields.wind.hint"
+            "default": 0
         },
         "color": {
             "type": "string",
-            "default": "#ffffff",
-            "label": "$t:g7-plugin-custom-effects.settings.fields.color.label",
-            "hint": "$t:g7-plugin-custom-effects.settings.fields.color.hint"
+            "default": "#ffffff"
         },
         "mobile_enabled": {
             "type": "boolean",
-            "default": false,
-            "label": "$t:g7-plugin-custom-effects.settings.fields.mobile_enabled.label",
-            "hint": "$t:g7-plugin-custom-effects.settings.fields.mobile_enabled.hint"
+            "default": false
         },
         "admin_enabled": {
             "type": "boolean",
-            "default": false,
-            "label": "$t:g7-plugin-custom-effects.settings.fields.admin_enabled.label",
-            "hint": "$t:g7-plugin-custom-effects.settings.fields.admin_enabled.hint"
+            "default": false
         },
         "respect_reduced_motion": {
             "type": "boolean",
-            "default": true,
-            "label": "$t:g7-plugin-custom-effects.settings.fields.respect_reduced_motion.label",
-            "hint": "$t:g7-plugin-custom-effects.settings.fields.respect_reduced_motion.hint"
+            "default": true
         }
     }
 }

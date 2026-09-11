@@ -1,10 +1,23 @@
 {
+    "editor": {
+        "data_source": {
+            "settings": "Custom effects settings"
+        }
+    },
     "name": "Custom Effects",
     "description": "Displays snow or rain effects on Gnuboard7 pages.",
     "settings": {
         "title": "Custom Effects Settings",
         "description": "Configure the weather effect, density, and where it runs.",
         "notice": "Refresh a visitor page after saving to apply your changes.",
+        "sections": {
+            "effect": "Appearance and movement",
+            "scope": "Display scope and accessibility"
+        },
+        "options": {
+            "snow": "Snow",
+            "rain": "Rain"
+        },
         "fields": {
             "enabled": {
                 "label": "Enable effects",

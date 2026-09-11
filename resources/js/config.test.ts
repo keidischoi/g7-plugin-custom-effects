@@ -22,6 +22,7 @@ import {
     addToPile,
     bounceRainAtFloor,
     heightAtPile,
+    nestleOnPile,
     settleOnPile,
 } from './engine';
 
@@ -418,7 +419,15 @@ describe('ground piles', () => {
         };
         expect(settleOnPile(later, 200, pile, 4)).toBe(true);
         expect(later.y).toBeLessThan(flake.y);
+        expect(later.y + 4).toBeGreaterThan(flake.y - 4);
         expect(flake.y).toBe(196);
+    });
+
+    it('nests a landing flake sideways and slightly into the pile', () => {
+        const flake = { x: 40, y: 180, size: 8 };
+        nestleOnPile(flake, 200, 8, () => 0.25);
+        expect(flake.x).toBeCloseTo(36.4);
+        expect(flake.y).toBeCloseTo(181.1);
     });
 
     it('leaves airborne flakes falling', () => {

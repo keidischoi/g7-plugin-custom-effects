@@ -3,6 +3,13 @@ const DAY_LABELS = {
     en: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
 } as const;
 
+const OBSERVE_OPTIONS: MutationObserverInit = {
+    childList: true,
+    subtree: true,
+    attributes: true,
+    attributeFilter: ['type', 'placeholder'],
+};
+
 function dayLabels(target: Window): readonly string[] {
     return (target.document.documentElement.lang || '').toLowerCase().startsWith('en')
         ? DAY_LABELS.en
@@ -12,8 +19,7 @@ function dayLabels(target: Window): readonly string[] {
 function scheduleRoot(target: Window): Element | null {
     const document = target.document;
     return document.querySelector('.g7-custom-effects-schedule-list')
-        ?? document.querySelector('.g7-custom-effects-schedule-grid .dynamic-field-list')
-        ?? document.querySelector('.g7-custom-effects-schedule-grid');
+        ?? document.querySelector('.g7-custom-effects-schedule-grid .dynamic-field-list');
 }
 
 function rowChild(element: Element, row: HTMLElement): Element | null {
@@ -47,22 +53,18 @@ function enhanceTrueFalseCheckbox(
     kind: 'enabled' | 'day',
 ): void {
     if (select.dataset.g7Checkbox) return;
+    if (select.parentElement?.querySelector(`:scope > input.${className}`)) {
+        select.dataset.g7Checkbox = kind;
+        return;
+    }
 
     const parent = select.parentElement;
     if (!parent) return;
 
     select.dataset.g7Checkbox = kind;
-    if (kind === 'enabled') {
-        select.classList.add('g7-custom-effects-schedule-enabled-select');
-    } else {
-        select.classList.add('g7-custom-effects-schedule-day-select');
-    }
 
     let host = parent;
-    if (
-        parent.classList.contains('g7-custom-effects-schedule-dfl-row')
-        || parent.tagName === 'TR'
-    ) {
+    if (parent.classList.contains('g7-custom-effects-schedule-dfl-row')) {
         const wrapper = select.ownerDocument.createElement('span');
         wrapper.className = kind === 'enabled'
             ? 'g7-custom-effects-schedule-enabled-host'
@@ -93,16 +95,6 @@ function enhanceTrueFalseCheckbox(
     host.insertBefore(checkbox, select);
 }
 
-function hideScheduleHeader(root: Element): void {
-    root.querySelectorAll('thead').forEach((header) => {
-        header.setAttribute('hidden', 'true');
-        (header as HTMLElement).style.display = 'none';
-    });
-    root.querySelectorAll('.g7-custom-effects-schedule-dfl-header').forEach((header) => {
-        if (header instanceof HTMLElement) header.style.display = 'none';
-    });
-}
-
 function isScheduleDataRow(element: Element): element is HTMLElement {
     if (!(element instanceof HTMLElement)) return false;
     if (element.classList.contains('g7-custom-effects-schedule-dfl-row')) return true;
@@ -125,7 +117,7 @@ function enhancePickers(root: Element): void {
     root.querySelectorAll('input').forEach((element) => {
         if (!(element instanceof HTMLInputElement)) return;
         const placeholder = element.getAttribute('placeholder') ?? '';
-        if ((placeholder.includes('YYYY-MM-DD') || placeholder.includes('YYYY')) && element.type !== 'date') {
+        if (placeholder.includes('YYYY-MM-DD') && element.type !== 'date') {
             element.type = 'date';
         }
         if (placeholder.includes('HH:MM') && element.type !== 'time') {
@@ -135,49 +127,60 @@ function enhancePickers(root: Element): void {
     });
 }
 
+function enhanceRows(root: Element, labels: readonly string[]): void {
+    for (const row of scheduleRows(root)) {
+        row.querySelectorAll('select').forEach((element) => {
+            if (isEnabledSelect(element, row)) {
+                enhanceTrueFalseCheckbox(
+                    element,
+                    'g7-custom-effects-schedule-enabled',
+                    '사용',
+                    'enabled',
+                );
+                return;
+            }
+            if (isDaySelect(element, row)) {
+                const cell = rowChild(element, row);
+                const index = cell ? [...row.children].indexOf(cell) : -1;
+                enhanceTrueFalseCheckbox(
+                    element,
+                    'g7-custom-effects-schedule-day',
+                    labels[Math.max(0, index - 7)] ?? '요일',
+                    'day',
+                );
+            }
+        });
+    }
+}
+
 export function enhanceSchedulePickers(target: Window = window): () => void {
+    let queued = false;
+
     const apply = (): void => {
         const root = scheduleRoot(target);
         if (!root) return;
-
-        hideScheduleHeader(root);
         enhancePickers(root);
-
-        const labels = dayLabels(target);
-        for (const row of scheduleRows(root)) {
-            row.classList.add('g7-custom-effects-schedule-dfl-row');
-
-            row.querySelectorAll('select').forEach((element) => {
-                if (isEnabledSelect(element, row)) {
-                    enhanceTrueFalseCheckbox(
-                        element,
-                        'g7-custom-effects-schedule-enabled',
-                        '사용',
-                        'enabled',
-                    );
-                    return;
-                }
-                if (isDaySelect(element, row)) {
-                    const cell = rowChild(element, row);
-                    const index = cell ? [...row.children].indexOf(cell) : -1;
-                    enhanceTrueFalseCheckbox(
-                        element,
-                        'g7-custom-effects-schedule-day',
-                        labels[Math.max(0, index - 7)] ?? '요일',
-                        'day',
-                    );
-                }
-            });
-        }
+        enhanceRows(root, dayLabels(target));
     };
 
-    apply();
-    const observer = new MutationObserver(apply);
-    observer.observe(target.document.documentElement, {
-        childList: true,
-        subtree: true,
-        attributes: true,
-        attributeFilter: ['type', 'placeholder', 'class'],
+    const observer = new MutationObserver(() => {
+        if (queued) return;
+        queued = true;
+        queueMicrotask(() => {
+            queued = false;
+            observer.disconnect();
+            try {
+                apply();
+            } finally {
+                observer.observe(target.document.documentElement, OBSERVE_OPTIONS);
+            }
+        });
     });
-    return () => observer.disconnect();
+
+    apply();
+    observer.observe(target.document.documentElement, OBSERVE_OPTIONS);
+    return () => {
+        queued = true;
+        observer.disconnect();
+    };
 }

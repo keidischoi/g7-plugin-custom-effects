@@ -142,7 +142,7 @@ describe('enhanceSchedulePickers', () => {
         stop();
     });
 
-    it('converts a native DynamicFieldList table into the two-row checkbox layout', () => {
+    it('converts a native DynamicFieldList table into weekday checkboxes', () => {
         const days = ['일', '월', '화', '수', '목', '금', '토'];
         const dayCells = days.map((day) => `
             <td>
@@ -153,7 +153,7 @@ describe('enhanceSchedulePickers', () => {
             </td>
         `).join('');
         document.body.innerHTML = `
-            <div class="g7-custom-effects-schedule-grid">
+            <div class="g7-custom-effects-schedule-list">
                 <table>
                     <thead>
                         <tr>
@@ -184,18 +184,42 @@ describe('enhanceSchedulePickers', () => {
         `;
 
         const stop = enhanceSchedulePickers(window);
-        const header = document.querySelector('thead') as HTMLElement;
         const row = document.querySelector('tbody tr') as HTMLElement;
         const boxes = row.querySelectorAll('input.g7-custom-effects-schedule-day');
 
-        expect(header.hidden).toBe(true);
-        expect(row.classList.contains('g7-custom-effects-schedule-dfl-row')).toBe(true);
+        expect(row.classList.contains('g7-custom-effects-schedule-dfl-row')).toBe(false);
         expect(row.children).toHaveLength(15);
         expect(row.querySelector('input.g7-custom-effects-schedule-enabled')).toBeTruthy();
         expect(boxes).toHaveLength(7);
         expect(boxes[0]?.getAttribute('aria-label')).toBe('일');
         expect(row.querySelectorAll('input[type="date"]')).toHaveLength(2);
         expect(row.querySelectorAll('input[type="time"]')).toHaveLength(2);
+        stop();
+    });
+
+    it('does not keep inserting checkboxes when the page updates classes', async () => {
+        document.body.innerHTML = `
+            <div class="g7-custom-effects-schedule-list">
+                <div class="g7-custom-effects-schedule-dfl-row">
+                    <div>⋮⋮</div>
+                    <div>
+                        <select class="g7-custom-effects-schedule-enabled-select">
+                            <option value="true">사용</option>
+                            <option value="false">안함</option>
+                        </select>
+                    </div>
+                    <div><select><option>눈</option></select></div>
+                </div>
+            </div>
+        `;
+
+        const stop = enhanceSchedulePickers(window);
+        document.documentElement.classList.add('dark', 'loading');
+        document.documentElement.classList.remove('loading');
+        document.body.className = 'admin-ready';
+
+        await new Promise((resolve) => setTimeout(resolve, 0));
+        expect(document.querySelectorAll('input.g7-custom-effects-schedule-enabled')).toHaveLength(1);
         stop();
     });
 

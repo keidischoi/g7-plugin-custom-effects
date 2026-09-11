@@ -103,6 +103,8 @@ describe('plugin settings layout', () => {
         expect(effectsCss).toContain('.g7-custom-effects-schedule-full {');
         expect(effectsCss).toContain('> :nth-child(8) { grid-column: 3; grid-row: 2; }');
         expect(effectsCss).toContain('> :nth-child(14) { grid-column: 9; grid-row: 2; }');
+        expect(effectsCss).toContain('tbody tr');
+        expect(effectsCss).toContain('input.g7-custom-effects-schedule-enabled + select');
         expect(effectsCss).not.toContain('.g7-custom-effects-schedule-days {');
         expect(effectsCss).not.toContain('> :nth-child(16) {');
         expect(effectsCss).toContain('input[type="date"]');

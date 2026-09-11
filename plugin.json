@@ -16,8 +16,8 @@
         "modules": {},
         "plugins": {}
     },
-    "github_url": "https://github.com/keidischoi/g7-module-custom-effects",
-    "github_changelog_url": "https://github.com/keidischoi/g7-module-custom-effects/blob/main/CHANGELOG.md",
+    "github_url": "https://github.com/keidischoi/g7-plugin-custom-effects",
+    "github_changelog_url": "https://github.com/keidischoi/g7-plugin-custom-effects/blob/main/CHANGELOG.md",
     "assets": {
         "js": {
             "entry": "resources/js/index.ts",

@@ -29,6 +29,9 @@
             "confetti": "색종이",
             "bubbles": "비눗방울",
             "fireflies": "반딧불",
+            "wind_none": "바람 없음",
+            "wind_left": "왼쪽",
+            "wind_right": "오른쪽",
             "days_all": "매일",
             "days_weekdays": "평일",
             "days_weekends": "주말"
@@ -55,7 +58,11 @@
             },
             "wind": {
                 "label": "바람 세기",
-                "hint": "음수는 왼쪽, 양수는 오른쪽으로 입자를 이동합니다."
+                "hint": "선택한 방향으로 입자를 미는 세기를 설정합니다."
+            },
+            "wind_direction": {
+                "label": "바람 방향",
+                "hint": "바람 없음, 왼쪽 또는 오른쪽을 선택합니다."
             },
             "color": {
                 "label": "입자 색상",

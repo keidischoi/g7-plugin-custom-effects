@@ -29,6 +29,9 @@
             "confetti": "Confetti",
             "bubbles": "Bubbles",
             "fireflies": "Fireflies",
+            "wind_none": "No wind",
+            "wind_left": "Left",
+            "wind_right": "Right",
             "days_all": "Every day",
             "days_weekdays": "Weekdays",
             "days_weekends": "Weekends"
@@ -55,7 +58,11 @@
             },
             "wind": {
                 "label": "Wind",
-                "hint": "Negative values move particles left; positive values move them right."
+                "hint": "Controls how strongly particles move in the selected direction."
+            },
+            "wind_direction": {
+                "label": "Wind direction",
+                "hint": "Choose no wind, left, or right."
             },
             "color": {
                 "label": "Particle color",

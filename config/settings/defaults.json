@@ -1,6 +1,6 @@
 {
     "_meta": {
-        "version": "1.3.0",
+        "version": "1.4.0",
         "description": "날씨 및 장식 화면 효과 플러그인 기본값과 프론트엔드 공개 설정"
     },
     "defaults": {
@@ -10,6 +10,7 @@
         "speed": 100,
         "opacity": 75,
         "wind": 0,
+        "wind_direction": "none",
         "color": "#ffffff",
         "mobile_enabled": false,
         "admin_enabled": false,
@@ -29,6 +30,7 @@
         "speed": { "type": "integer", "expose": true },
         "opacity": { "type": "integer", "expose": true },
         "wind": { "type": "integer", "expose": true },
+        "wind_direction": { "type": "string", "expose": true },
         "color": { "type": "string", "expose": true },
         "mobile_enabled": { "type": "boolean", "expose": true },
         "admin_enabled": { "type": "boolean", "expose": true },

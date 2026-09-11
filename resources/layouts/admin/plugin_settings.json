@@ -1,5 +1,5 @@
 {
-    "version": "1.4.0",
+    "version": "1.5.0",
     "layout_name": "plugin_settings",
     "permissions": [
         "core.plugins.update"
@@ -218,6 +218,14 @@
                                                         "type": "basic",
                                                         "name": "Option",
                                                         "props": {
+                                                            "value": "stars_multicolor"
+                                                        },
+                                                        "text": "$t:g7-plugin-custom-effects.settings.options.stars_multicolor"
+                                                    },
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "Option",
+                                                        "props": {
                                                             "value": "hearts"
                                                         },
                                                         "text": "$t:g7-plugin-custom-effects.settings.options.hearts"
@@ -245,6 +253,14 @@
                                                             "value": "bubbles"
                                                         },
                                                         "text": "$t:g7-plugin-custom-effects.settings.options.bubbles"
+                                                    },
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "Option",
+                                                        "props": {
+                                                            "value": "bouncing_bubbles"
+                                                        },
+                                                        "text": "$t:g7-plugin-custom-effects.settings.options.bouncing_bubbles"
                                                     },
                                                     {
                                                         "type": "basic",
@@ -512,6 +528,14 @@
                                                             "value": "right"
                                                         },
                                                         "text": "$t:g7-plugin-custom-effects.settings.options.wind_right"
+                                                    },
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "Option",
+                                                        "props": {
+                                                            "value": "random"
+                                                        },
+                                                        "text": "$t:g7-plugin-custom-effects.settings.options.wind_random"
                                                     }
                                                 ]
                                             }
@@ -553,14 +577,62 @@
                                             },
                                             {
                                                 "type": "basic",
-                                                "name": "Input",
+                                                "name": "Select",
                                                 "props": {
                                                     "id": "color",
-                                                    "type": "text",
                                                     "name": "color",
-                                                    "placeholder": "#ffffff",
                                                     "className": "lg:col-span-1 w-full"
-                                                }
+                                                },
+                                                "children": [
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "Option",
+                                                        "props": { "value": "#ffffff" },
+                                                        "text": "$t:g7-plugin-custom-effects.settings.options.color_white"
+                                                    },
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "Option",
+                                                        "props": { "value": "#bae6fd" },
+                                                        "text": "$t:g7-plugin-custom-effects.settings.options.color_sky"
+                                                    },
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "Option",
+                                                        "props": { "value": "#f9a8d4" },
+                                                        "text": "$t:g7-plugin-custom-effects.settings.options.color_pink"
+                                                    },
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "Option",
+                                                        "props": { "value": "#fde047" },
+                                                        "text": "$t:g7-plugin-custom-effects.settings.options.color_yellow"
+                                                    },
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "Option",
+                                                        "props": { "value": "#86efac" },
+                                                        "text": "$t:g7-plugin-custom-effects.settings.options.color_green"
+                                                    },
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "Option",
+                                                        "props": { "value": "#c4b5fd" },
+                                                        "text": "$t:g7-plugin-custom-effects.settings.options.color_purple"
+                                                    },
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "Option",
+                                                        "props": { "value": "#fb923c" },
+                                                        "text": "$t:g7-plugin-custom-effects.settings.options.color_orange"
+                                                    },
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "Option",
+                                                        "props": { "value": "#f87171" },
+                                                        "text": "$t:g7-plugin-custom-effects.settings.options.color_red"
+                                                    }
+                                                ]
                                             }
                                         ]
                                     }
@@ -852,14 +924,68 @@
                                             },
                                             {
                                                 "type": "basic",
-                                                "name": "Input",
+                                                "name": "Select",
                                                 "props": {
                                                     "id": "schedule_timezone",
-                                                    "type": "text",
                                                     "name": "schedule_timezone",
-                                                    "placeholder": "Asia/Seoul",
                                                     "className": "w-full mt-2"
-                                                }
+                                                },
+                                                "children": [
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "Option",
+                                                        "props": { "value": "Asia/Seoul" },
+                                                        "text": "$t:g7-plugin-custom-effects.settings.options.timezone_seoul"
+                                                    },
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "Option",
+                                                        "props": { "value": "UTC" },
+                                                        "text": "$t:g7-plugin-custom-effects.settings.options.timezone_utc"
+                                                    },
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "Option",
+                                                        "props": { "value": "Asia/Tokyo" },
+                                                        "text": "$t:g7-plugin-custom-effects.settings.options.timezone_tokyo"
+                                                    },
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "Option",
+                                                        "props": { "value": "Asia/Shanghai" },
+                                                        "text": "$t:g7-plugin-custom-effects.settings.options.timezone_shanghai"
+                                                    },
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "Option",
+                                                        "props": { "value": "America/New_York" },
+                                                        "text": "$t:g7-plugin-custom-effects.settings.options.timezone_new_york"
+                                                    },
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "Option",
+                                                        "props": { "value": "America/Los_Angeles" },
+                                                        "text": "$t:g7-plugin-custom-effects.settings.options.timezone_los_angeles"
+                                                    },
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "Option",
+                                                        "props": { "value": "Europe/London" },
+                                                        "text": "$t:g7-plugin-custom-effects.settings.options.timezone_london"
+                                                    },
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "Option",
+                                                        "props": { "value": "Europe/Paris" },
+                                                        "text": "$t:g7-plugin-custom-effects.settings.options.timezone_paris"
+                                                    },
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "Option",
+                                                        "props": { "value": "Australia/Sydney" },
+                                                        "text": "$t:g7-plugin-custom-effects.settings.options.timezone_sydney"
+                                                    }
+                                                ]
                                             }
                                         ]
                                     }
@@ -1198,10 +1324,12 @@
                 "rain",
                 "leaves",
                 "stars",
+                "stars_multicolor",
                 "hearts",
                 "petals",
                 "confetti",
                 "bubbles",
+                "bouncing_bubbles",
                 "fireflies"
             ],
             "default": "snow"
@@ -1232,11 +1360,21 @@
         },
         "wind_direction": {
             "type": "enum",
-            "options": ["none", "left", "right"],
+            "options": ["none", "left", "right", "random"],
             "default": "none"
         },
         "color": {
-            "type": "string",
+            "type": "enum",
+            "options": [
+                "#ffffff",
+                "#bae6fd",
+                "#f9a8d4",
+                "#fde047",
+                "#86efac",
+                "#c4b5fd",
+                "#fb923c",
+                "#f87171"
+            ],
             "default": "#ffffff"
         },
         "schedule_enabled": {
@@ -1265,7 +1403,18 @@
             "default": "all"
         },
         "schedule_timezone": {
-            "type": "string",
+            "type": "enum",
+            "options": [
+                "Asia/Seoul",
+                "UTC",
+                "Asia/Tokyo",
+                "Asia/Shanghai",
+                "America/New_York",
+                "America/Los_Angeles",
+                "Europe/London",
+                "Europe/Paris",
+                "Australia/Sydney"
+            ],
             "default": "Asia/Seoul"
         },
         "mobile_enabled": {

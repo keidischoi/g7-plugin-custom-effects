@@ -24,14 +24,34 @@
             "rain": "비",
             "leaves": "낙엽",
             "stars": "별",
+            "stars_multicolor": "여러 색 별",
             "hearts": "하트",
             "petals": "꽃잎",
             "confetti": "색종이",
             "bubbles": "비눗방울",
+            "bouncing_bubbles": "튕기는 비눗방울",
             "fireflies": "반딧불",
             "wind_none": "바람 없음",
             "wind_left": "왼쪽",
             "wind_right": "오른쪽",
+            "wind_random": "무작위",
+            "color_white": "흰색 (#ffffff)",
+            "color_sky": "하늘색 (#bae6fd)",
+            "color_pink": "분홍색 (#f9a8d4)",
+            "color_yellow": "노란색 (#fde047)",
+            "color_green": "초록색 (#86efac)",
+            "color_purple": "보라색 (#c4b5fd)",
+            "color_orange": "주황색 (#fb923c)",
+            "color_red": "빨간색 (#f87171)",
+            "timezone_seoul": "서울 (Asia/Seoul)",
+            "timezone_utc": "협정 세계시 (UTC)",
+            "timezone_tokyo": "도쿄 (Asia/Tokyo)",
+            "timezone_shanghai": "상하이 (Asia/Shanghai)",
+            "timezone_new_york": "뉴욕 (America/New_York)",
+            "timezone_los_angeles": "로스앤젤레스 (America/Los_Angeles)",
+            "timezone_london": "런던 (Europe/London)",
+            "timezone_paris": "파리 (Europe/Paris)",
+            "timezone_sydney": "시드니 (Australia/Sydney)",
             "days_all": "매일",
             "days_weekdays": "평일",
             "days_weekends": "주말"
@@ -62,11 +82,11 @@
             },
             "wind_direction": {
                 "label": "바람 방향",
-                "hint": "바람 없음, 왼쪽 또는 오른쪽을 선택합니다."
+                "hint": "바람 없음, 왼쪽, 오른쪽 또는 입자별 무작위를 선택합니다."
             },
             "color": {
                 "label": "입자 색상",
-                "hint": "CSS 색상값을 입력합니다. 예: #ffffff"
+                "hint": "미리 준비된 샘플 색상 중 하나를 선택합니다."
             },
             "schedule_enabled": {
                 "label": "예약 사용",
@@ -93,7 +113,7 @@
             },
             "schedule_timezone": {
                 "label": "기준 타임존",
-                "hint": "IANA 타임존을 입력합니다. 예: Asia/Seoul"
+                "hint": "예약 시간을 계산할 기준 지역을 선택합니다."
             },
             "mobile_enabled": {
                 "label": "모바일에서 사용",

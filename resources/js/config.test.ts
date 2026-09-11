@@ -1,5 +1,12 @@
 import { describe, expect, it } from 'vitest';
-import { DEFAULT_CONFIG, EFFECT_KINDS, normalizeConfig, shouldStart } from './config';
+import {
+    COLOR_OPTIONS,
+    DEFAULT_CONFIG,
+    EFFECT_KINDS,
+    TIMEZONE_OPTIONS,
+    normalizeConfig,
+    shouldStart,
+} from './config';
 import { particleCount, signedWind } from './engine';
 
 describe('normalizeConfig', () => {
@@ -32,8 +39,12 @@ describe('normalizeConfig', () => {
         });
     });
 
-    it('rejects color values that could escape a style context', () => {
+    it('accepts preset colors and rejects values outside the dropdown', () => {
+        for (const color of COLOR_OPTIONS) {
+            expect(normalizeConfig({ color }).color).toBe(color);
+        }
         expect(normalizeConfig({ color: 'red; display:none' }).color).toBe('#ffffff');
+        expect(normalizeConfig({ color: '#123456' }).color).toBe('#ffffff');
     });
 
     it('uses an explicit wind direction with a positive strength', () => {
@@ -83,6 +94,15 @@ describe('normalizeConfig', () => {
             scheduleDays: 'weekends',
             scheduleTimezone: 'America/New_York',
         });
+    });
+
+    it('accepts preset timezones and rejects values outside the dropdown', () => {
+        for (const timezone of TIMEZONE_OPTIONS) {
+            expect(normalizeConfig({ schedule_timezone: timezone }).scheduleTimezone)
+                .toBe(timezone);
+        }
+        expect(normalizeConfig({ schedule_timezone: 'Invalid/Zone' }).scheduleTimezone)
+            .toBe('Asia/Seoul');
     });
 });
 
@@ -138,5 +158,10 @@ describe('signedWind', () => {
         expect(signedWind(50, 'left')).toBe(-50);
         expect(signedWind(50, 'right')).toBe(50);
         expect(signedWind(50, 'none')).toBe(0);
+    });
+
+    it('chooses a deterministic direction for random wind per particle', () => {
+        expect(signedWind(50, 'random', () => 0.2)).toBe(-50);
+        expect(signedWind(50, 'random', () => 0.8)).toBe(50);
     });
 });

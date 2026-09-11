@@ -24,14 +24,34 @@
             "rain": "Rain",
             "leaves": "Falling leaves",
             "stars": "Stars",
+            "stars_multicolor": "Multicolor stars",
             "hearts": "Hearts",
             "petals": "Flower petals",
             "confetti": "Confetti",
             "bubbles": "Bubbles",
+            "bouncing_bubbles": "Bouncing bubbles",
             "fireflies": "Fireflies",
             "wind_none": "No wind",
             "wind_left": "Left",
             "wind_right": "Right",
+            "wind_random": "Random",
+            "color_white": "White (#ffffff)",
+            "color_sky": "Sky blue (#bae6fd)",
+            "color_pink": "Pink (#f9a8d4)",
+            "color_yellow": "Yellow (#fde047)",
+            "color_green": "Green (#86efac)",
+            "color_purple": "Purple (#c4b5fd)",
+            "color_orange": "Orange (#fb923c)",
+            "color_red": "Red (#f87171)",
+            "timezone_seoul": "Seoul (Asia/Seoul)",
+            "timezone_utc": "Coordinated Universal Time (UTC)",
+            "timezone_tokyo": "Tokyo (Asia/Tokyo)",
+            "timezone_shanghai": "Shanghai (Asia/Shanghai)",
+            "timezone_new_york": "New York (America/New_York)",
+            "timezone_los_angeles": "Los Angeles (America/Los_Angeles)",
+            "timezone_london": "London (Europe/London)",
+            "timezone_paris": "Paris (Europe/Paris)",
+            "timezone_sydney": "Sydney (Australia/Sydney)",
             "days_all": "Every day",
             "days_weekdays": "Weekdays",
             "days_weekends": "Weekends"
@@ -62,11 +82,11 @@
             },
             "wind_direction": {
                 "label": "Wind direction",
-                "hint": "Choose no wind, left, or right."
+                "hint": "Choose no wind, left, right, or a random direction per particle."
             },
             "color": {
                 "label": "Particle color",
-                "hint": "Enter a CSS color value, such as #ffffff."
+                "hint": "Choose one of the preset sample colors."
             },
             "schedule_enabled": {
                 "label": "Enable scheduling",
@@ -93,7 +113,7 @@
             },
             "schedule_timezone": {
                 "label": "Timezone",
-                "hint": "Enter an IANA timezone, such as Asia/Seoul."
+                "hint": "Choose the region used to calculate scheduled times."
             },
             "mobile_enabled": {
                 "label": "Enable on mobile",

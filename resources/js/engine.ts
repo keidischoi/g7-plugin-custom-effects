@@ -247,11 +247,10 @@ export function burstStarOnHit(particle: StarBody): void {
     particle.sparkle = 1;
 }
 
+export const PILE_MAX_HEIGHT = 110;
 export const PILE_RECYCLE_AGE = 18;
-export const PILE_GRAVITY = 520;
-export const PILE_HIT = 0.88;
-export const PILE_SETTLE_GAP = 0.62;
-export const PILE_BOUNCE = 0.52;
+export const PILE_NEST = 0.55;
+export const PILE_UNSUPPORTED_SLACK = 1.5;
 export const RAIN_GRAVITY = 1700;
 export const RAIN_MAX_BOUNCES = 3;
 
@@ -265,51 +264,44 @@ export interface SettlingBody {
     settled: number;
 }
 
-export function bounceOffPile(
-    particle: CollisionBody,
-    other: CollisionBody,
-    otherFixed: boolean,
-): boolean {
-    const dx = particle.x - other.x;
-    const dy = particle.y - other.y;
-    const minimumDistance = (particle.size + other.size) * PILE_HIT;
-    const distanceSquared = dx * dx + dy * dy;
-    if (distanceSquared === 0) {
-        particle.x += 0.6;
-        return false;
+export function supportYFromSettled(
+    x: number,
+    size: number,
+    floorY: number,
+    restInset: number,
+    settled: readonly { x: number; y: number; size: number }[],
+    belowY?: number,
+): number {
+    let restY = floorY - restInset;
+    for (const other of settled) {
+        if (belowY !== undefined && other.y <= belowY) continue;
+        const dx = x - other.x;
+        const nested = (size + other.size) * PILE_NEST;
+        if (Math.abs(dx) >= nested) continue;
+        const rise = Math.sqrt(Math.max(0, nested * nested - dx * dx));
+        restY = Math.min(restY, other.y - rise);
     }
-    if (distanceSquared >= minimumDistance * minimumDistance) return false;
-
-    const distance = Math.sqrt(distanceSquared);
-    const normalX = dx / distance;
-    const normalY = dy / distance;
-    const overlap = minimumDistance - distance;
-    particle.x += normalX * overlap * (otherFixed ? 1 : 0.5);
-    particle.y += normalY * overlap * (otherFixed ? 1 : 0.5);
-    if (!otherFixed) {
-        other.x -= normalX * overlap * 0.5;
-        other.y -= normalY * overlap * 0.5;
-    }
-
-    const relativeVelocity = (particle.vx - other.vx) * normalX
-        + (particle.vy - other.vy) * normalY;
-    if (relativeVelocity >= 0) return true;
-
-    const impulse = -(1 + PILE_BOUNCE) * relativeVelocity;
-    particle.vx += impulse * normalX;
-    particle.vy += impulse * normalY;
-    if (!otherFixed) {
-        other.vx -= impulse * normalX;
-        other.vy -= impulse * normalY;
-    }
-    if (otherFixed && Math.abs(normalX) < 0.42) {
-        particle.vx += (normalX >= 0 ? 1 : -1) * 58;
-        particle.vy = -Math.abs(particle.vy) * 0.4 - 38;
-    }
-    return true;
+    return restY;
 }
 
-export function settleOnFloor(
+export function isUnsupported(
+    particle: { x: number; y: number; size: number },
+    floorY: number,
+    restInset: number,
+    settled: readonly { x: number; y: number; size: number }[],
+): boolean {
+    const restY = supportYFromSettled(
+        particle.x,
+        particle.size,
+        floorY,
+        restInset,
+        settled,
+        particle.y,
+    );
+    return particle.y + PILE_UNSUPPORTED_SLACK < restY;
+}
+
+export function settleWhereHit(
     particle: SettlingBody,
     floorY: number,
     restInset: number,
@@ -319,23 +311,11 @@ export function settleOnFloor(
         particle.vx = 0;
         particle.vy = 0;
         particle.rotationSpeed = 0;
-        particle.y = floorY - restInset;
         return false;
     }
-    if (particle.y < floorY - restInset) return false;
-    particle.y = floorY - restInset;
-
-    for (const other of settled) {
-        const dx = particle.x - other.x;
-        const minimumDistance = (particle.size + other.size) * PILE_SETTLE_GAP;
-        if (dx * dx >= minimumDistance * minimumDistance) continue;
-        const sign = dx === 0 ? 1 : Math.sign(dx);
-        particle.vx = sign * (48 + particle.size * 6);
-        particle.vy = -55;
-        particle.y -= 1.2;
-        return false;
-    }
-
+    const restY = supportYFromSettled(particle.x, particle.size, floorY, restInset, settled);
+    if (particle.y < restY) return false;
+    particle.y = restY;
     particle.vx = 0;
     particle.vy = 0;
     particle.rotationSpeed = 0;
@@ -606,9 +586,6 @@ export class EffectsEngine {
     }
 
     private pileRestInset(particle: Particle): number {
-        if (this.config.effect === 'leaves') return particle.size * 0.58;
-        if (this.config.effect === 'maple_leaves') return particle.size * 0.82;
-        if (this.config.effect === 'petals') return particle.size;
         return particle.size;
     }
 
@@ -622,6 +599,25 @@ export class EffectsEngine {
             if (particle.settled >= PILE_RECYCLE_AGE) this.resetParticle(particle);
         }
         this.pilingSettled = this.particles.filter((particle) => particle.settled > 0);
+        this.releaseUnsupportedPiles();
+    }
+
+    private releaseUnsupportedPiles(): void {
+        const stacked = [...this.pilingSettled].sort((first, second) => second.y - first.y);
+        for (const particle of stacked) {
+            if (particle.settled <= 0) continue;
+            const others = this.pilingSettled.filter((other) => other !== particle && other.settled > 0);
+            if (!isUnsupported(particle, this.height, this.pileRestInset(particle), others)) continue;
+            particle.settled = 0;
+            this.releaseFallSpeed(particle);
+        }
+        this.pilingSettled = this.particles.filter((particle) => particle.settled > 0);
+    }
+
+    private releaseFallSpeed(particle: Particle): void {
+        const [min, max] = this.speedRange(this.config.effect);
+        particle.vy = (min + (max - min) * 0.45) * (this.config.speed / 100);
+        particle.rotationSpeed = (Math.random() - 0.5) * 2.4;
     }
 
     private advancePiling(particle: Particle, delta: number, sway: number): void {
@@ -629,27 +625,28 @@ export class EffectsEngine {
 
         particle.phase += particle.phaseSpeed * delta;
         particle.rotation += particle.rotationSpeed * delta;
-        particle.vy += PILE_GRAVITY * delta;
         particle.x += (particle.vx + Math.sin(particle.phase) * sway) * delta;
         particle.y += particle.vy * delta;
         this.wrapHorizontally(particle);
 
-        for (const other of this.pilingSettled) {
-            bounceOffPile(particle, other, true);
-        }
-
         const restInset = this.pileRestInset(particle);
+        const restY = supportYFromSettled(
+            particle.x,
+            particle.size,
+            this.height,
+            restInset,
+            this.pilingSettled,
+        );
+        if (particle.y < restY) return;
+
         const maxSettled = Math.max(4, Math.floor(this.particles.length * 0.72));
-        if (this.pilingSettled.length >= maxSettled && particle.y >= this.height - restInset) {
+        if (restY < this.height - PILE_MAX_HEIGHT || this.pilingSettled.length >= maxSettled) {
             this.resetParticle(particle);
             return;
         }
 
-        if (!settleOnFloor(particle, this.height, restInset, this.pilingSettled)) return;
+        if (!settleWhereHit(particle, this.height, restInset, this.pilingSettled)) return;
         this.pilingSettled.push(particle);
-        if (this.config.effect !== 'snow') {
-            particle.rotation = (Math.random() - 0.5) * 1.35;
-        }
     }
 
     private wrapHorizontally(particle: Particle): void {
@@ -713,9 +710,8 @@ export class EffectsEngine {
     }
 
     private drawLeaves(delta: number): void {
-        this.beginPilingFrame(delta);
         for (const particle of this.particles) {
-            this.advancePiling(particle, delta, 32);
+            this.advanceFalling(particle, delta, 32);
             this.prepareParticle(particle);
             this.withTransform(particle, () => {
                 const size = particle.size;
@@ -888,9 +884,8 @@ export class EffectsEngine {
     }
 
     private drawPetals(delta: number): void {
-        this.beginPilingFrame(delta);
         for (const particle of this.particles) {
-            this.advancePiling(particle, delta, 25);
+            this.advanceFalling(particle, delta, 25);
             this.prepareParticle(particle);
             this.withTransform(particle, () => {
                 this.context.beginPath();
@@ -1382,9 +1377,8 @@ export class EffectsEngine {
     }
 
     private drawMapleLeaves(delta: number): void {
-        this.beginPilingFrame(delta);
         for (const particle of this.particles) {
-            this.advancePiling(particle, delta, 28);
+            this.advanceFalling(particle, delta, 28);
             this.withTransform(particle, () => {
                 const size = particle.size;
                 const body = this.fixedPaletteColor(particle, '#dc2626');

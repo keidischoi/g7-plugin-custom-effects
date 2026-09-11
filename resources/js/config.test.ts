@@ -20,8 +20,8 @@ import {
     burstStarOnHit,
     resolveStarCollision,
     bounceRainAtFloor,
-    bounceOffPile,
-    settleOnFloor,
+    isUnsupported,
+    settleWhereHit,
 } from './engine';
 
 describe('normalizeConfig', () => {
@@ -396,31 +396,33 @@ describe('ground piles', () => {
             settled: 0,
         };
 
-        expect(settleOnFloor(flake, 200, 4, [])).toBe(true);
+        expect(settleWhereHit(flake, 200, 4, [])).toBe(true);
         expect(flake.settled).toBe(1);
         expect(flake.vy).toBe(0);
         expect(flake.x).toBe(16);
         expect(flake.y).toBe(196);
     });
 
-    it('bounces off a settled flake instead of stacking on top', () => {
-        const lower = { x: 40, y: 196, vx: 0, vy: 0, size: 4 };
+    it('rests on a particle it hits, overlapping without moving sideways', () => {
+        const lower = { x: 40, y: 196, size: 4 };
         const falling = {
             x: 40,
-            y: 190,
+            y: 196,
             vx: 0,
-            vy: 30,
+            vy: 20,
             size: 4,
+            rotationSpeed: 0,
+            settled: 0,
         };
 
-        expect(bounceOffPile(falling, lower, true)).toBe(true);
+        expect(settleWhereHit(falling, 200, 4, [lower])).toBe(true);
+        expect(falling.x).toBe(40);
         expect(falling.y).toBeLessThan(lower.y);
-        expect(falling.vx).not.toBe(0);
-        expect(falling.vy).toBeLessThan(0);
+        expect(falling.y + 4).toBeGreaterThan(lower.y - 4);
     });
 
-    it('keeps a distant flake landing on the floor at its own x', () => {
-        const lower = { x: 200, y: 196, size: 8 };
+    it('does not pull a flake toward a distant pile', () => {
+        const lower = { x: 200, y: 160, size: 8 };
         const falling = {
             x: 10,
             y: 200,
@@ -431,27 +433,17 @@ describe('ground piles', () => {
             settled: 0,
         };
 
-        expect(settleOnFloor(falling, 200, 4, [lower])).toBe(true);
+        expect(settleWhereHit(falling, 200, 4, [lower])).toBe(true);
         expect(falling.x).toBe(10);
         expect(falling.y).toBe(196);
     });
 
-    it('bounces aside instead of settling inside another floor flake', () => {
+    it('lets a stacked flake fall when its support is gone', () => {
         const lower = { x: 40, y: 196, size: 4 };
-        const falling = {
-            x: 40,
-            y: 200,
-            vx: 0,
-            vy: 20,
-            size: 4,
-            rotationSpeed: 0,
-            settled: 0,
-        };
+        const upper = { x: 40, y: 191, size: 4 };
 
-        expect(settleOnFloor(falling, 200, 4, [lower])).toBe(false);
-        expect(falling.settled).toBe(0);
-        expect(falling.vx).not.toBe(0);
-        expect(falling.vy).toBeLessThan(0);
+        expect(isUnsupported(upper, 200, 4, [lower])).toBe(false);
+        expect(isUnsupported(upper, 200, 4, [])).toBe(true);
     });
 
     it('leaves airborne flakes falling', () => {
@@ -465,7 +457,7 @@ describe('ground piles', () => {
             settled: 0,
         };
 
-        expect(settleOnFloor(flake, 200, 4, [])).toBe(false);
+        expect(settleWhereHit(flake, 200, 4, [])).toBe(false);
         expect(flake.settled).toBe(0);
         expect(flake.vy).toBe(30);
     });

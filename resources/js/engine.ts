@@ -266,7 +266,12 @@ export function heightAtPile(
     x: number,
     cellWidth: number = PILE_CELL,
 ): number {
-    return pile[pileColumn(x, pile.length, cellWidth)] ?? 0;
+    if (pile.length === 0) return 0;
+    const scaled = x / cellWidth;
+    const left = Math.min(pile.length - 1, Math.max(0, Math.floor(scaled)));
+    const right = Math.min(pile.length - 1, left + 1);
+    const mix = scaled - Math.floor(scaled);
+    return (pile[left] ?? 0) * (1 - mix) + (pile[right] ?? 0) * mix;
 }
 
 export function addToPile(
@@ -277,7 +282,7 @@ export function addToPile(
     cellWidth: number = PILE_CELL,
 ): void {
     const center = pileColumn(x, pile.length, cellWidth);
-    const weights = [0.12, 0.76, 0.12] as const;
+    const weights = [0.22, 0.56, 0.22] as const;
     for (let offset = -1; offset <= 1; offset += 1) {
         const column = center + offset;
         if (column < 0 || column >= pile.length) continue;
@@ -292,7 +297,7 @@ export function removeFromPile(
     cellWidth: number = PILE_CELL,
 ): void {
     const center = pileColumn(x, pile.length, cellWidth);
-    const weights = [0.12, 0.76, 0.12] as const;
+    const weights = [0.22, 0.56, 0.22] as const;
     for (let offset = -1; offset <= 1; offset += 1) {
         const column = center + offset;
         if (column < 0 || column >= pile.length) continue;
@@ -330,6 +335,18 @@ export function settleOnPile(
     particle.rotationSpeed = 0;
     particle.settled = 1;
     return true;
+}
+
+export function nestleOnPile(
+    particle: { x: number; y: number; size: number },
+    floorY: number,
+    restInset: number,
+    random: () => number = Math.random,
+): void {
+    particle.x += (random() - 0.5) * particle.size * 1.8;
+    const sunk = particle.y + random() * restInset * 0.55;
+    const floor = floorY - restInset * 0.28;
+    particle.y = Math.min(floor, sunk);
 }
 
 export interface RainBody {
@@ -611,10 +628,10 @@ export class EffectsEngine {
     }
 
     private pileDeposit(particle: Particle): number {
-        if (this.config.effect === 'leaves') return particle.size * 2.4;
-        if (this.config.effect === 'maple_leaves') return particle.size * 2.2;
-        if (this.config.effect === 'petals') return particle.size * 2.6;
-        return Math.max(8, particle.size * 9.5);
+        if (this.config.effect === 'leaves') return particle.size * 0.45;
+        if (this.config.effect === 'maple_leaves') return particle.size * 0.48;
+        if (this.config.effect === 'petals') return particle.size * 0.4;
+        return particle.size * 0.62;
     }
 
     private advancePiling(particle: Particle, delta: number, sway: number): void {
@@ -646,10 +663,11 @@ export class EffectsEngine {
         }
 
         if (!settleOnPile(particle, this.height, this.pile, this.pileRestInset(particle))) return;
+        nestleOnPile(particle, this.height, this.pileRestInset(particle));
         addToPile(this.pile, particle.x, this.pileDeposit(particle));
         this.grounded += 1;
         if (this.config.effect !== 'snow') {
-            particle.rotation = (Math.random() - 0.5) * 0.8;
+            particle.rotation = (Math.random() - 0.5) * 1.35;
         }
     }
 

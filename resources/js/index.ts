@@ -1,5 +1,5 @@
 import '../css/effects.css';
-import { readInlineConfig, shouldStart, type EffectKind } from './config';
+import { readInlineConfig, shouldStart, type EffectConfig, type EffectKind } from './config';
 import { EffectsEngine } from './engine';
 import {
     EFFECTS_PREFERENCE_KEY,
@@ -7,7 +7,7 @@ import {
     writeEffectsPreference,
 } from './preference';
 import { enhanceSchedulePickers } from './schedule-fields';
-import { activeScheduledEffect } from './schedule';
+import { activeScheduledEffect, resolveActiveConfig } from './schedule';
 import {
     HeaderToggleMount,
     PREFERENCE_EVENT,
@@ -36,33 +36,47 @@ function boot(): void {
     let headerToggle: HeaderToggleMount | null = null;
 
     const currentEffect = (): EffectKind => activeScheduledEffect(config) ?? config.effect;
+    let runningSignature = '';
+
+    const visualSignature = (item: EffectConfig): string => [
+        item.effect,
+        item.intensity,
+        item.speed,
+        item.opacity,
+        item.wind,
+        item.windDirection,
+        item.color,
+    ].join(':');
 
     const sync = (): void => {
-        const scheduledEffect = activeScheduledEffect(config);
+        const resolved = resolveActiveConfig(config);
         const eligible = userEnabled
-            && scheduledEffect !== null
-            && shouldStart(config, {
+            && resolved !== null
+            && shouldStart(resolved, {
                 pathname: window.location.pathname,
                 mobile: mobileQuery.matches,
                 reducedMotion: reducedMotionQuery.matches,
             });
 
-        if (!eligible) {
+        if (!eligible || !resolved) {
             engine?.stop();
             engine = null;
             runningEffect = null;
+            runningSignature = '';
             headerToggle?.refresh();
             return;
         }
 
-        if (engine && runningEffect !== scheduledEffect) {
+        const signature = visualSignature(resolved);
+        if (engine && runningSignature !== signature) {
             engine.stop();
             engine = null;
         }
 
         if (!engine) {
-            engine = EffectsEngine.start({ ...config, effect: scheduledEffect }, window);
-            runningEffect = scheduledEffect;
+            engine = EffectsEngine.start(resolved, window);
+            runningEffect = resolved.effect;
+            runningSignature = signature;
         }
 
         headerToggle?.refresh();

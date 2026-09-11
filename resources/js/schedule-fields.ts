@@ -1,3 +1,6 @@
+import { readSiteTimezone } from './config';
+import { getZonedClock } from './schedule';
+
 const DAY_LABELS = {
     ko: ['일', '월', '화', '수', '목', '금', '토'],
     en: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
@@ -11,27 +14,20 @@ function dayLabels(target: Window): readonly string[] {
         : DAY_LABELS.ko;
 }
 
-function rowChild(element: Element, row: HTMLElement): Element | null {
-    let current: Element | null = element;
-    while (current && current.parentElement !== row) {
-        current = current.parentElement;
-    }
-    return current;
-}
-
 function dayName(select: HTMLSelectElement, target: Window): string {
     const labels = dayLabels(target);
-    const row = select.closest('.g7-custom-effects-schedule-dfl-row');
-    if (row instanceof HTMLElement) {
-        const cell = rowChild(select, row);
-        const index = cell ? [...row.children].indexOf(cell) : -1;
-        if (index >= 7 && index <= 13) return labels[index - 7] ?? labels[0];
-    }
-
     const existing = select.parentElement?.querySelector('label')?.textContent?.trim() ?? '';
     if (KNOWN_DAY_NAMES.has(existing)) return existing;
     const aria = select.getAttribute('aria-label')?.trim() ?? '';
     if (KNOWN_DAY_NAMES.has(aria)) return aria;
+
+    const row = select.closest('.g7-custom-effects-schedule-dfl-row');
+    if (row instanceof HTMLElement) {
+        const days = [...row.querySelectorAll('select.g7-custom-effects-schedule-day-select')];
+        const index = days.indexOf(select);
+        if (days.length === 7 && index >= 0) return labels[index];
+    }
+
     return labels[0];
 }
 
@@ -125,6 +121,73 @@ function enhanceTrueFalseToggle(
     host.insertBefore(checkbox, select);
 }
 
+function formValue(target: Window, name: string): string {
+    const control = target.document.querySelector(`[name="${name}"]`);
+    return control instanceof HTMLInputElement || control instanceof HTMLSelectElement
+        ? control.value.trim()
+        : '';
+}
+
+function assignValue(
+    element: HTMLInputElement | HTMLSelectElement,
+    next: string,
+    force = false,
+): void {
+    if (!next || (!force && element.value) || element.value === next) return;
+    element.value = next;
+    element.dispatchEvent(new Event('input', { bubbles: true }));
+    element.dispatchEvent(new Event('change', { bubbles: true }));
+}
+
+export function fillEmptyScheduleRow(row: HTMLElement, target: Window = window): void {
+    const effect = row.children[2]?.querySelector('select');
+    if (!(effect instanceof HTMLSelectElement) || effect.value) return;
+
+    const clock = getZonedClock(new Date(), readSiteTimezone(target));
+    const defaults = {
+        effect: formValue(target, 'effect') || 'snow',
+        intensity: formValue(target, 'intensity') || '100',
+        speed: formValue(target, 'speed') || '100',
+        opacity: formValue(target, 'opacity') || '75',
+        wind: formValue(target, 'wind') || '0',
+        wind_direction: formValue(target, 'wind_direction') || 'none',
+        color: formValue(target, 'color') || '#ffffff',
+    };
+
+    assignValue(effect, defaults.effect, true);
+
+    [...row.querySelectorAll('input')].forEach((input) => {
+        if (!(input instanceof HTMLInputElement)) return;
+        const placeholder = input.getAttribute('placeholder') ?? '';
+        if (input.type === 'date' || placeholder.includes('YYYY-MM-DD')) {
+            assignValue(input, clock.date, true);
+            return;
+        }
+        if (input.type === 'time' || placeholder.includes('HH:MM')) {
+            assignValue(input, clock.time, true);
+        }
+    });
+
+    const numbers = [...row.querySelectorAll('input[type="number"]')];
+    (['intensity', 'speed', 'opacity', 'wind'] as const).forEach((key, index) => {
+        const input = numbers[index];
+        if (input instanceof HTMLInputElement) assignValue(input, defaults[key], true);
+    });
+
+    const extraSelects = [...row.querySelectorAll('select')].filter((select) => (
+        select !== effect
+        && !select.classList.contains('g7-custom-effects-schedule-enabled-select')
+        && !select.classList.contains('g7-custom-effects-schedule-day-select')
+    ));
+    if (extraSelects[0]) assignValue(extraSelects[0], defaults.wind_direction, true);
+    if (extraSelects[1]) assignValue(extraSelects[1], defaults.color, true);
+}
+
+function isAddScheduleButton(button: Element): boolean {
+    const label = button.textContent?.replace(/\s+/g, ' ').trim() ?? '';
+    return /예약 추가|Add schedule/i.test(label);
+}
+
 export function enhanceSchedulePickers(target: Window = window): () => void {
     let observer: MutationObserver | null = null;
 
@@ -172,13 +235,34 @@ export function enhanceSchedulePickers(target: Window = window): () => void {
     const watch = (root: Element): void => {
         apply();
         observer?.disconnect();
-        observer = new MutationObserver(apply);
+        observer = new MutationObserver(() => {
+            apply();
+            const rows = root.querySelectorAll('.g7-custom-effects-schedule-dfl-row');
+            const last = rows[rows.length - 1];
+            if (last instanceof HTMLElement) fillEmptyScheduleRow(last, target);
+        });
         observer.observe(root, {
             childList: true,
             subtree: true,
             attributes: true,
             attributeFilter: ['type', 'placeholder'],
         });
+        root.addEventListener('click', onAddClick);
+    };
+
+    const onAddClick = (event: Event): void => {
+        const clicked = event.target;
+        if (!(clicked instanceof Element)) return;
+        const button = clicked.closest('button');
+        if (!button || !isAddScheduleButton(button)) return;
+        const fillLast = (): void => {
+            const root = target.document.querySelector('.g7-custom-effects-schedule-list');
+            const rows = root?.querySelectorAll('.g7-custom-effects-schedule-dfl-row');
+            const last = rows?.[rows.length - 1];
+            if (last instanceof HTMLElement) fillEmptyScheduleRow(last, target);
+        };
+        target.setTimeout(fillLast, 0);
+        target.setTimeout(fillLast, 50);
     };
 
     const finder = new MutationObserver(() => {
@@ -198,5 +282,7 @@ export function enhanceSchedulePickers(target: Window = window): () => void {
     return () => {
         finder.disconnect();
         observer?.disconnect();
+        target.document.querySelector('.g7-custom-effects-schedule-list')
+            ?.removeEventListener('click', onAddClick);
     };
 }

@@ -159,6 +159,57 @@ describe('normalizeConfig', () => {
             endTime: '23:00',
             timezone: 'Asia/Tokyo',
             days: [1, 3, 5, 6],
+            intensity: 100,
+            speed: 100,
+            opacity: 75,
+            wind: 0,
+            windDirection: 'none',
+            color: '#ffffff',
+        });
+    });
+
+    it('lets a schedule override the default visual settings', () => {
+        const config = normalizeConfig({
+            intensity: 150,
+            speed: 80,
+            opacity: 40,
+            wind: 20,
+            wind_direction: 'left',
+            color: '#f87171',
+            schedules: [{
+                effect: 'rain',
+                intensity: 60,
+                speed: 200,
+                opacity: 90,
+                wind: 10,
+                wind_direction: 'right',
+                color: '#bae6fd',
+            }],
+        });
+
+        expect(config.schedules[0]).toMatchObject({
+            effect: 'rain',
+            intensity: 60,
+            speed: 200,
+            opacity: 90,
+            wind: 10,
+            windDirection: 'right',
+            color: '#bae6fd',
+        });
+    });
+
+    it('inherits visual settings when a schedule omits them', () => {
+        expect(normalizeConfig({
+            intensity: 150,
+            wind: 40,
+            wind_direction: 'left',
+            color: '#86efac',
+            schedules: [{ effect: 'rain' }],
+        }).schedules[0]).toMatchObject({
+            intensity: 150,
+            wind: 40,
+            windDirection: 'left',
+            color: '#86efac',
         });
     });
 

@@ -1,5 +1,5 @@
 {
-    "version": "1.8.17",
+    "version": "1.8.18",
     "layout_name": "plugin_settings",
     "permissions": [
         "core.plugins.update"
@@ -953,6 +953,100 @@
                                                             "placeholder": "HH:MM"
                                                         },
                                                         {
+                                                            "key": "intensity",
+                                                            "type": "number",
+                                                            "label": "$t:g7-plugin-custom-effects.settings.fields.intensity.label",
+                                                            "min": 10,
+                                                            "max": 200,
+                                                            "step": 10
+                                                        },
+                                                        {
+                                                            "key": "speed",
+                                                            "type": "number",
+                                                            "label": "$t:g7-plugin-custom-effects.settings.fields.speed.label",
+                                                            "min": 25,
+                                                            "max": 300,
+                                                            "step": 25
+                                                        },
+                                                        {
+                                                            "key": "opacity",
+                                                            "type": "number",
+                                                            "label": "$t:g7-plugin-custom-effects.settings.fields.opacity.label",
+                                                            "min": 10,
+                                                            "max": 100,
+                                                            "step": 5
+                                                        },
+                                                        {
+                                                            "key": "wind",
+                                                            "type": "number",
+                                                            "label": "$t:g7-plugin-custom-effects.settings.fields.wind.label",
+                                                            "min": 0,
+                                                            "max": 100,
+                                                            "step": 10
+                                                        },
+                                                        {
+                                                            "key": "wind_direction",
+                                                            "type": "select",
+                                                            "label": "$t:g7-plugin-custom-effects.settings.fields.wind_direction.label",
+                                                            "options": [
+                                                                {
+                                                                    "value": "none",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.wind_none"
+                                                                },
+                                                                {
+                                                                    "value": "left",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.wind_left"
+                                                                },
+                                                                {
+                                                                    "value": "right",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.wind_right"
+                                                                },
+                                                                {
+                                                                    "value": "random",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.wind_random"
+                                                                }
+                                                            ]
+                                                        },
+                                                        {
+                                                            "key": "color",
+                                                            "type": "select",
+                                                            "label": "$t:g7-plugin-custom-effects.settings.fields.color.label",
+                                                            "options": [
+                                                                {
+                                                                    "value": "#ffffff",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.color_white"
+                                                                },
+                                                                {
+                                                                    "value": "#bae6fd",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.color_sky"
+                                                                },
+                                                                {
+                                                                    "value": "#f9a8d4",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.color_pink"
+                                                                },
+                                                                {
+                                                                    "value": "#fde047",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.color_yellow"
+                                                                },
+                                                                {
+                                                                    "value": "#86efac",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.color_green"
+                                                                },
+                                                                {
+                                                                    "value": "#c4b5fd",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.color_purple"
+                                                                },
+                                                                {
+                                                                    "value": "#fb923c",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.color_orange"
+                                                                },
+                                                                {
+                                                                    "value": "#f87171",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.color_red"
+                                                                }
+                                                            ]
+                                                        },
+                                                        {
                                                             "key": "sun",
                                                             "type": "select",
                                                             "className": "g7-custom-effects-schedule-day-select",
@@ -1073,6 +1167,14 @@
                                                         "params": {
                                                             "target": "local",
                                                             "form.schedules": "{{$args[0]}}"
+                                                        }
+                                                    },
+                                                    {
+                                                        "event": "onAddItem",
+                                                        "handler": "setState",
+                                                        "params": {
+                                                            "target": "local",
+                                                            "form.schedules": "{{(_local.form.schedules ?? []).map((row, index, rows) => { if (index !== rows.length - 1) return row; const stamp = new Date().toLocaleString('sv-SE', { hourCycle: 'h23' }); const date = stamp.slice(0, 10); const time = stamp.slice(11, 16); return { enabled: row.enabled ?? true, sun: row.sun ?? true, mon: row.mon ?? true, tue: row.tue ?? true, wed: row.wed ?? true, thu: row.thu ?? true, fri: row.fri ?? true, sat: row.sat ?? true, effect: row.effect || (_local.form.effect ?? 'snow'), intensity: row.intensity ?? (_local.form.intensity ?? 100), speed: row.speed ?? (_local.form.speed ?? 100), opacity: row.opacity ?? (_local.form.opacity ?? 75), wind: row.wind ?? (_local.form.wind ?? 0), wind_direction: row.wind_direction || (_local.form.wind_direction ?? 'none'), color: row.color || (_local.form.color ?? '#ffffff'), start_date: row.start_date || date, end_date: row.end_date || date, start_time: row.start_time || time, end_time: row.end_time || time }; })}}"
                                                         }
                                                     }
                                                 ]
@@ -1507,7 +1609,7 @@
             "handler": "setState",
             "params": {
                 "target": "local",
-                "form.schedules": "{{Array.isArray(_local.form.schedules) ? _local.form.schedules : [{enabled:true,effect:(_local.form.effect ?? \"snow\"),start_date:(_local.form.schedule_start_date ?? \"\"),end_date:(_local.form.schedule_end_date ?? \"\"),start_time:(_local.form.schedule_start_time ?? \"\"),end_time:(_local.form.schedule_end_time ?? \"\"),timezone:(_local.form.schedule_timezone ?? \"Asia/Seoul\"),sun:(_local.form.schedule_days !== \"weekdays\"),mon:(_local.form.schedule_days !== \"weekends\"),tue:(_local.form.schedule_days !== \"weekends\"),wed:(_local.form.schedule_days !== \"weekends\"),thu:(_local.form.schedule_days !== \"weekends\"),fri:(_local.form.schedule_days !== \"weekends\"),sat:(_local.form.schedule_days !== \"weekdays\")}]}}"
+                "form.schedules": "{{Array.isArray(_local.form.schedules) ? _local.form.schedules : [{enabled:true,effect:(_local.form.effect ?? \"snow\"),intensity:(_local.form.intensity ?? 100),speed:(_local.form.speed ?? 100),opacity:(_local.form.opacity ?? 75),wind:(_local.form.wind ?? 0),wind_direction:(_local.form.wind_direction ?? \"none\"),color:(_local.form.color ?? \"#ffffff\"),start_date:(_local.form.schedule_start_date ?? \"\"),end_date:(_local.form.schedule_end_date ?? \"\"),start_time:(_local.form.schedule_start_time ?? \"\"),end_time:(_local.form.schedule_end_time ?? \"\"),timezone:(_local.form.schedule_timezone ?? \"Asia/Seoul\"),sun:(_local.form.schedule_days !== \"weekdays\"),mon:(_local.form.schedule_days !== \"weekends\"),tue:(_local.form.schedule_days !== \"weekends\"),wed:(_local.form.schedule_days !== \"weekends\"),thu:(_local.form.schedule_days !== \"weekends\"),fri:(_local.form.schedule_days !== \"weekends\"),sat:(_local.form.schedule_days !== \"weekdays\")}]}}"
             }
         }
     ]

@@ -107,10 +107,11 @@
 }
 
 .g7-custom-effects-schedule-dfl-row {
+    --g7-schedule-col-gap: 0.5rem;
     display: grid !important;
     grid-template-columns: 1.5rem 2.25rem minmax(8rem, 1fr) max-content max-content max-content max-content minmax(1.75rem, auto);
     align-items: start;
-    column-gap: 0.5rem;
+    column-gap: var(--g7-schedule-col-gap);
     row-gap: 0.75rem;
     isolation: isolate;
 }
@@ -164,16 +165,16 @@
     grid-column: 3 / 8;
     grid-row: 2;
     justify-self: start;
-    width: calc(100% / 6);
+    width: calc((100% - (5 * var(--g7-schedule-col-gap))) / 6);
     position: relative;
     box-sizing: border-box;
 }
 .g7-custom-effects-schedule-dfl-row > :nth-child(8) { transform: none; }
-.g7-custom-effects-schedule-dfl-row > :nth-child(9) { transform: translateX(100%); }
-.g7-custom-effects-schedule-dfl-row > :nth-child(10) { transform: translateX(200%); }
-.g7-custom-effects-schedule-dfl-row > :nth-child(11) { transform: translateX(300%); }
-.g7-custom-effects-schedule-dfl-row > :nth-child(12) { transform: translateX(400%); }
-.g7-custom-effects-schedule-dfl-row > :nth-child(13) { transform: translateX(500%); }
+.g7-custom-effects-schedule-dfl-row > :nth-child(9) { transform: translateX(calc(100% + var(--g7-schedule-col-gap))); }
+.g7-custom-effects-schedule-dfl-row > :nth-child(10) { transform: translateX(calc(2 * (100% + var(--g7-schedule-col-gap)))); }
+.g7-custom-effects-schedule-dfl-row > :nth-child(11) { transform: translateX(calc(3 * (100% + var(--g7-schedule-col-gap)))); }
+.g7-custom-effects-schedule-dfl-row > :nth-child(12) { transform: translateX(calc(4 * (100% + var(--g7-schedule-col-gap)))); }
+.g7-custom-effects-schedule-dfl-row > :nth-child(13) { transform: translateX(calc(5 * (100% + var(--g7-schedule-col-gap)))); }
 .g7-custom-effects-schedule-dfl-row > :has(.g7-custom-effects-schedule-day-select),
 .g7-custom-effects-schedule-dfl-row > :has(.g7-custom-effects-schedule-day) {
     grid-column: 3 / 8;
@@ -209,8 +210,8 @@
 
 .g7-custom-effects-schedule-dfl-row > :nth-child(3)::before { content: "효과 종류"; }
 .g7-custom-effects-schedule-dfl-row > :nth-child(4)::before { content: "시작 날짜"; }
-.g7-custom-effects-schedule-dfl-row > :nth-child(5)::before { content: "종료 날짜"; }
-.g7-custom-effects-schedule-dfl-row > :nth-child(6)::before { content: "시작 시간"; }
+.g7-custom-effects-schedule-dfl-row > :nth-child(5)::before { content: "시작 시간"; }
+.g7-custom-effects-schedule-dfl-row > :nth-child(6)::before { content: "종료 날짜"; }
 .g7-custom-effects-schedule-dfl-row > :nth-child(7)::before { content: "종료 시간"; }
 .g7-custom-effects-schedule-dfl-row > :nth-child(8)::before { content: "효과 밀도"; }
 .g7-custom-effects-schedule-dfl-row > :nth-child(9)::before { content: "낙하 속도"; }
@@ -221,8 +222,8 @@
 
 :lang(en) .g7-custom-effects-schedule-dfl-row > :nth-child(3)::before { content: "Effect"; }
 :lang(en) .g7-custom-effects-schedule-dfl-row > :nth-child(4)::before { content: "Start date"; }
-:lang(en) .g7-custom-effects-schedule-dfl-row > :nth-child(5)::before { content: "End date"; }
-:lang(en) .g7-custom-effects-schedule-dfl-row > :nth-child(6)::before { content: "Start time"; }
+:lang(en) .g7-custom-effects-schedule-dfl-row > :nth-child(5)::before { content: "Start time"; }
+:lang(en) .g7-custom-effects-schedule-dfl-row > :nth-child(6)::before { content: "End date"; }
 :lang(en) .g7-custom-effects-schedule-dfl-row > :nth-child(7)::before { content: "End time"; }
 :lang(en) .g7-custom-effects-schedule-dfl-row > :nth-child(8)::before { content: "Density"; }
 :lang(en) .g7-custom-effects-schedule-dfl-row > :nth-child(9)::before { content: "Speed"; }

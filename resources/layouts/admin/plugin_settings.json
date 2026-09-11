@@ -1,5 +1,5 @@
 {
-    "version": "1.8.24",
+    "version": "1.8.25",
     "layout_name": "plugin_settings",
     "permissions": [
         "core.plugins.update"
@@ -935,16 +935,16 @@
                                                             "placeholder": "YYYY-MM-DD"
                                                         },
                                                         {
-                                                            "key": "end_date",
-                                                            "type": "input",
-                                                            "label": "$t:g7-plugin-custom-effects.settings.fields.schedule_end_date.label",
-                                                            "placeholder": "YYYY-MM-DD"
-                                                        },
-                                                        {
                                                             "key": "start_time",
                                                             "type": "input",
                                                             "label": "$t:g7-plugin-custom-effects.settings.fields.schedule_start_time.label",
                                                             "placeholder": "HH:MM"
+                                                        },
+                                                        {
+                                                            "key": "end_date",
+                                                            "type": "input",
+                                                            "label": "$t:g7-plugin-custom-effects.settings.fields.schedule_end_date.label",
+                                                            "placeholder": "YYYY-MM-DD"
                                                         },
                                                         {
                                                             "key": "end_time",

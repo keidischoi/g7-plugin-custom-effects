@@ -106,37 +106,32 @@
 }
 
 .g7-custom-effects-schedule-dfl-row {
-    display: flex !important;
-    flex-wrap: wrap;
+    display: grid !important;
+    grid-template-columns: 1.5rem 2.25rem minmax(8rem, 1fr) max-content max-content max-content max-content minmax(1.75rem, auto);
     align-items: start;
     column-gap: 0.5rem;
     row-gap: 0.75rem;
 }
 
-.g7-custom-effects-schedule-dfl-row::before {
-    content: "";
-    flex-basis: 100%;
-    width: 100%;
-    order: 2;
-    height: 0;
-}
-
 .g7-custom-effects-schedule-dfl-row > * {
     min-width: 0;
-    order: 1;
+}
+
+.g7-custom-effects-schedule-dfl-row > :nth-child(1),
+.g7-custom-effects-schedule-dfl-row > :nth-child(2) {
+    grid-row: 1 / 4;
+    align-self: center;
 }
 
 .g7-custom-effects-schedule-dfl-row > :nth-child(1) {
-    flex: 0 0 1.5rem;
-    align-self: center;
+    grid-column: 1;
 }
 
 .g7-custom-effects-schedule-dfl-row > :nth-child(2) {
     display: flex;
-    flex: 0 0 2.25rem;
+    grid-column: 2;
     align-items: center;
     justify-content: center;
-    align-self: center;
     position: relative;
 }
 
@@ -145,22 +140,54 @@
     display: none;
 }
 
-.g7-custom-effects-schedule-dfl-row > :nth-child(3) {
-    flex: 1 1 8rem;
-    min-width: 8rem;
-}
-
-.g7-custom-effects-schedule-dfl-row > :nth-child(n+4) {
-    flex: 0 1 auto;
-    width: max-content;
+.g7-custom-effects-schedule-dfl-row > :nth-child(3) { grid-column: 3; grid-row: 1; }
+.g7-custom-effects-schedule-dfl-row > :nth-child(4),
+.g7-custom-effects-schedule-dfl-row > :nth-child(5),
+.g7-custom-effects-schedule-dfl-row > :nth-child(6),
+.g7-custom-effects-schedule-dfl-row > :nth-child(7) {
+    grid-row: 1;
     min-width: max-content;
 }
-
+.g7-custom-effects-schedule-dfl-row > :nth-child(4) { grid-column: 4; }
+.g7-custom-effects-schedule-dfl-row > :nth-child(5) { grid-column: 5; }
+.g7-custom-effects-schedule-dfl-row > :nth-child(6) { grid-column: 6; }
+.g7-custom-effects-schedule-dfl-row > :nth-child(7) { grid-column: 7; }
+.g7-custom-effects-schedule-dfl-row > :nth-child(n+8):nth-child(-n+13) {
+    grid-column: 3 / 8;
+    grid-row: 2;
+    justify-self: start;
+    width: calc(100% / 6);
+    position: relative;
+    box-sizing: border-box;
+}
+.g7-custom-effects-schedule-dfl-row > :nth-child(8) { transform: none; }
+.g7-custom-effects-schedule-dfl-row > :nth-child(9) { transform: translateX(100%); }
+.g7-custom-effects-schedule-dfl-row > :nth-child(10) { transform: translateX(200%); }
+.g7-custom-effects-schedule-dfl-row > :nth-child(11) { transform: translateX(300%); }
+.g7-custom-effects-schedule-dfl-row > :nth-child(12) { transform: translateX(400%); }
+.g7-custom-effects-schedule-dfl-row > :nth-child(13) { transform: translateX(500%); }
+.g7-custom-effects-schedule-dfl-row > :has(.g7-custom-effects-schedule-day-select),
+.g7-custom-effects-schedule-dfl-row > :has(.g7-custom-effects-schedule-day) {
+    grid-column: 3 / 8;
+    grid-row: 3;
+    justify-self: start;
+    width: calc(100% / 7);
+    position: relative;
+    box-sizing: border-box;
+}
+.g7-custom-effects-schedule-dfl-row > :nth-child(14) { transform: none; }
+.g7-custom-effects-schedule-dfl-row > :nth-child(15) { transform: translateX(100%); }
+.g7-custom-effects-schedule-dfl-row > :nth-child(16) { transform: translateX(200%); }
+.g7-custom-effects-schedule-dfl-row > :nth-child(17) { transform: translateX(300%); }
+.g7-custom-effects-schedule-dfl-row > :nth-child(18) { transform: translateX(400%); }
+.g7-custom-effects-schedule-dfl-row > :nth-child(19) { transform: translateX(500%); }
+.g7-custom-effects-schedule-dfl-row > :nth-child(20) { transform: translateX(600%); }
 .g7-custom-effects-schedule-dfl-row > :last-child {
-    flex: 0 0 1.75rem;
-    min-width: 1.75rem;
-    margin-left: auto;
+    grid-column: 8;
+    grid-row: 1 / 4;
     align-self: center;
+    min-width: 1.75rem;
+    justify-self: center;
 }
 
 .g7-custom-effects-schedule-dfl-row > :nth-child(n+3):nth-child(-n+13)::before {
@@ -212,13 +239,8 @@
 .g7-custom-effects-schedule-dfl-row > :has(.g7-custom-effects-schedule-day-select),
 .g7-custom-effects-schedule-dfl-row > :has(.g7-custom-effects-schedule-day) {
     display: flex;
-    flex: 1 1 0;
     flex-direction: column;
     align-items: center;
-    order: 3;
-    width: auto;
-    min-width: 2rem;
-    position: relative;
 }
 
 .g7-custom-effects-schedule-dfl-row > :has(.g7-custom-effects-schedule-day-select)::before,
@@ -272,6 +294,11 @@ select.g7-custom-effects-schedule-day-select {
 }
 
 .g7-custom-effects-schedule-dfl-row > :nth-child(3) select {
+    width: 100%;
+}
+
+.g7-custom-effects-schedule-dfl-row > :nth-child(n+8):nth-child(-n+13) input,
+.g7-custom-effects-schedule-dfl-row > :nth-child(n+8):nth-child(-n+13) select {
     width: 100%;
 }
 

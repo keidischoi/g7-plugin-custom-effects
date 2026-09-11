@@ -9,6 +9,14 @@ import {
 import { enhanceSchedulePickers } from './schedule-fields';
 import { activeScheduledEffect, resolveActiveConfig, SCHEDULE_SYNC_MS } from './schedule';
 import {
+    SETTINGS_POLL_MS,
+    listenForSettingsRevision,
+    pingSettingsRevision,
+    pullRemoteConfig,
+    settingsSignature,
+    watchAdminSettingsSave,
+} from './live-settings';
+import {
     HeaderToggleMount,
     PREFERENCE_EVENT,
     registerToggleAction,
@@ -24,10 +32,15 @@ declare global {
     }
 }
 
+let bootGeneration = 0;
+let lastSettingsSignature = '';
+
 function boot(): void {
+    const generation = ++bootGeneration;
     window.__g7CustomEffects?.stop();
 
     const config = readInlineConfig(window);
+    lastSettingsSignature = settingsSignature(config);
     const mobileQuery = window.matchMedia('(max-width: 768px), (pointer: coarse)');
     const reducedMotionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
     let userEnabled = readEffectsPreference(window.localStorage);
@@ -131,6 +144,27 @@ function boot(): void {
     document.addEventListener('visibilitychange', sync);
     const scheduleTimer = window.setInterval(sync, SCHEDULE_SYNC_MS);
 
+    const pullSettings = async (): Promise<void> => {
+        if (generation !== bootGeneration) return;
+        const next = await pullRemoteConfig(window);
+        if (!next || generation !== bootGeneration) return;
+        const signature = settingsSignature(next);
+        if (signature === lastSettingsSignature) return;
+        lastSettingsSignature = signature;
+        boot();
+    };
+
+    const settingsTimer = window.setInterval(pullSettings, SETTINGS_POLL_MS);
+    const stopRevisionListener = listenForSettingsRevision(window, () => {
+        void pullSettings();
+    });
+    const stopAdminSaveWatch = isPluginSettingsPage
+        ? watchAdminSettingsSave(window, () => {
+            pingSettingsRevision(window);
+            void pullSettings();
+        })
+        : () => {};
+
     window.__g7CustomEffects = {
         stop: () => {
             mobileQuery.removeEventListener('change', sync);
@@ -140,6 +174,9 @@ function boot(): void {
             window.removeEventListener('storage', handleStorage);
             document.removeEventListener('visibilitychange', sync);
             window.clearInterval(scheduleTimer);
+            window.clearInterval(settingsTimer);
+            stopRevisionListener();
+            stopAdminSaveWatch();
             unregisterToggleAction();
             headerToggle?.stop();
             stopSchedulePickers();
@@ -149,6 +186,7 @@ function boot(): void {
     };
 
     sync();
+    void pullSettings();
 }
 
 if (document.readyState === 'loading') {

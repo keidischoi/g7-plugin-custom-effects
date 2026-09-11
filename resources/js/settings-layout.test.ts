@@ -37,10 +37,10 @@ function collectBoundControls(value: unknown, result = new Set<string>()): Set<s
     const node = value as LayoutNode;
     if (
         node.name
-        && ['Input', 'Select', 'Toggle', 'DynamicFieldList'].includes(node.name)
+        && ['Input', 'Select', 'Toggle', 'Checkbox'].includes(node.name)
         && typeof node.props?.name === 'string'
     ) {
-        result.add(node.props.name);
+        result.add(node.props.name.startsWith('schedules') ? 'schedules' : node.props.name);
     }
 
     Object.values(node).forEach((item) => collectBoundControls(item, result));
@@ -76,13 +76,17 @@ describe('plugin settings layout', () => {
         expect(layout.schema.schedules?.type).toBe('array');
 
         const slots = JSON.stringify(layout.slots);
-        expect(slots).toContain('"name":"DynamicFieldList"');
-        expect(slots).toContain('"name":"schedules"');
+        expect(slots).toContain('"type":"date"');
+        expect(slots).toContain('"type":"time"');
+        expect(slots).toContain('g7-custom-effects-schedule-row-dates');
+        expect(slots).toContain('g7-custom-effects-schedule-row-times');
+        expect(slots).not.toContain('"name":"DynamicFieldList"');
+        expect(slots).toContain('"name":"schedules.{{idx}}.start_date"');
         for (const value of [...COLOR_OPTIONS, ...TIMEZONE_OPTIONS]) {
             expect(slots).toContain(`"value":"${value}"`);
         }
         for (const day of ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat']) {
-            expect(slots).toContain(`"key":"${day}"`);
+            expect(slots).toContain(`"name":"schedules.{{idx}}.${day}"`);
         }
     });
 
@@ -90,9 +94,11 @@ describe('plugin settings layout', () => {
         const slots = JSON.stringify(layout.slots);
         expect(slots).toContain('"className":"g7-custom-effects-schedule-grid"');
         expect(slots).toContain('g7-custom-effects-schedule-list');
+        expect(slots).toContain('g7-custom-effects-schedule-card');
         expect(effectsCss).toContain('.g7-custom-effects-schedule-grid {');
         expect(effectsCss).toContain('padding: 1rem 1.5rem;');
-        expect(effectsCss).toContain('grid-template-columns: repeat(2, minmax(0, 1fr));');
+        expect(effectsCss).toContain('.g7-custom-effects-schedule-row-dates');
+        expect(effectsCss).toContain('.g7-custom-effects-schedule-row-times');
     });
 
     it('loads settings into the local form and provides a complete save flow', () => {

@@ -5,7 +5,7 @@
         "ko": "사용자 화면 효과",
         "en": "Custom Effects"
     },
-    "version": "1.7.0",
+    "version": "1.7.1",
     "license": "MIT",
     "description": {
         "ko": "그누보드7 화면에 성능과 접근성을 고려한 날씨 및 장식 효과를 표시합니다.",

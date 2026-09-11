@@ -19,11 +19,8 @@ import {
     resolveCheeseCollision,
     burstStarOnHit,
     resolveStarCollision,
-    addToPile,
     bounceRainAtFloor,
-    heightAtPile,
-    nestleOnPile,
-    settleOnPile,
+    settleWhereHit,
 } from './engine';
 
 describe('normalizeConfig', () => {
@@ -387,8 +384,7 @@ describe('multicolor star collisions', () => {
 });
 
 describe('ground piles', () => {
-    it('lands a falling flake on the floor and raises nearby pile height', () => {
-        const pile = new Float32Array(12);
+    it('lands a falling flake on the floor when nothing is in the way', () => {
         const flake = {
             x: 16,
             y: 200,
@@ -399,17 +395,17 @@ describe('ground piles', () => {
             settled: 0,
         };
 
-        expect(settleOnPile(flake, 200, pile, 4)).toBe(true);
+        expect(settleWhereHit(flake, 200, 4, [])).toBe(true);
         expect(flake.settled).toBe(1);
         expect(flake.vy).toBe(0);
+        expect(flake.x).toBe(16);
         expect(flake.y).toBe(196);
+    });
 
-        addToPile(pile, 16, 5);
-        expect(heightAtPile(pile, 16)).toBeGreaterThan(0);
-        expect(heightAtPile(pile, 16)).toBeGreaterThan(heightAtPile(pile, 8));
-
-        const later = {
-            x: 16,
+    it('rests on a particle it hits, overlapping without moving sideways', () => {
+        const lower = { x: 40, y: 196, size: 4 };
+        const falling = {
+            x: 40,
             y: 196,
             vx: 0,
             vy: 20,
@@ -417,21 +413,31 @@ describe('ground piles', () => {
             rotationSpeed: 0,
             settled: 0,
         };
-        expect(settleOnPile(later, 200, pile, 4)).toBe(true);
-        expect(later.y).toBeLessThan(flake.y);
-        expect(later.y + 4).toBeGreaterThan(flake.y - 4);
-        expect(flake.y).toBe(196);
+
+        expect(settleWhereHit(falling, 200, 4, [lower])).toBe(true);
+        expect(falling.x).toBe(40);
+        expect(falling.y).toBeLessThan(lower.y);
+        expect(falling.y + 4).toBeGreaterThan(lower.y - 4);
     });
 
-    it('nests a landing flake sideways and slightly into the pile', () => {
-        const flake = { x: 40, y: 180, size: 8 };
-        nestleOnPile(flake, 200, 8, () => 0.25);
-        expect(flake.x).toBeCloseTo(36.4);
-        expect(flake.y).toBeCloseTo(181.1);
+    it('does not pull a flake toward a distant pile', () => {
+        const lower = { x: 200, y: 160, size: 8 };
+        const falling = {
+            x: 10,
+            y: 200,
+            vx: 0,
+            vy: 20,
+            size: 4,
+            rotationSpeed: 0,
+            settled: 0,
+        };
+
+        expect(settleWhereHit(falling, 200, 4, [lower])).toBe(true);
+        expect(falling.x).toBe(10);
+        expect(falling.y).toBe(196);
     });
 
     it('leaves airborne flakes falling', () => {
-        const pile = new Float32Array(8);
         const flake = {
             x: 8,
             y: 20,
@@ -442,7 +448,7 @@ describe('ground piles', () => {
             settled: 0,
         };
 
-        expect(settleOnPile(flake, 200, pile, 4)).toBe(false);
+        expect(settleWhereHit(flake, 200, 4, [])).toBe(false);
         expect(flake.settled).toBe(0);
         expect(flake.vy).toBe(30);
     });

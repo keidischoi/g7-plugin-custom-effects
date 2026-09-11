@@ -1,5 +1,5 @@
 {
-    "version": "1.7.1",
+    "version": "1.7.2",
     "layout_name": "plugin_settings",
     "permissions": [
         "core.plugins.update"
@@ -738,671 +738,266 @@
                                         },
                                         "children": [
                                             {
-                                                "type": "basic",
-                                                "name": "P",
-                                                "if": "{{!(_local.form.schedules && _local.form.schedules.length)}}",
+                                                "type": "composite",
+                                                "name": "DynamicFieldList",
                                                 "props": {
-                                                    "className": "form-hint"
-                                                },
-                                                "text": "$t:g7-plugin-custom-effects.settings.fields.schedules.empty"
-                                            },
-                                            {
-                                                "id": "schedule_cards",
-                                                "type": "basic",
-                                                "name": "Div",
-                                                "props": {
-                                                    "className": "g7-custom-effects-schedule-list-items"
-                                                },
-                                                "iteration": {
-                                                    "source": "{{_local.form.schedules ?? []}}",
-                                                    "item_var": "schedule",
-                                                    "index_var": "idx"
-                                                },
-                                                "children": [
-                                                    {
-                                                        "type": "basic",
-                                                        "name": "Div",
-                                                        "props": {
-                                                            "className": "g7-custom-effects-schedule-card"
+                                                    "name": "schedules",
+                                                    "items": "{{_local.form.schedules ?? []}}",
+                                                    "addLabel": "$t:g7-plugin-custom-effects.settings.fields.schedules.add",
+                                                    "emptyMessage": "$t:g7-plugin-custom-effects.settings.fields.schedules.empty",
+                                                    "enableDrag": true,
+                                                    "showIndex": true,
+                                                    "minItems": 0,
+                                                    "maxItems": 20,
+                                                    "columns": [
+                                                        {
+                                                            "key": "enabled",
+                                                            "type": "select",
+                                                            "label": "$t:g7-plugin-custom-effects.settings.fields.schedules.enabled",
+                                                            "options": [
+                                                                {
+                                                                    "value": "true",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.schedule_on"
+                                                                },
+                                                                {
+                                                                    "value": "false",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.schedule_off"
+                                                                }
+                                                            ]
                                                         },
-                                                        "children": [
-                                                            {
-                                                                "type": "basic",
-                                                                "name": "Div",
-                                                                "props": {
-                                                                    "className": "g7-custom-effects-schedule-row g7-custom-effects-schedule-row-meta"
+                                                        {
+                                                            "key": "effect",
+                                                            "type": "select",
+                                                            "label": "$t:g7-plugin-custom-effects.settings.fields.effect.label",
+                                                            "options": [
+                                                                {
+                                                                    "value": "snow",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.snow"
                                                                 },
-                                                                "children": [
-                                                                    {
-                                                                        "type": "basic",
-                                                                        "name": "Div",
-                                                                        "children": [
-                                                                            {
-                                                                                "type": "basic",
-                                                                                "name": "Label",
-                                                                                "props": {
-                                                                                    "className": "form-label"
-                                                                                },
-                                                                                "text": "$t:g7-plugin-custom-effects.settings.fields.schedules.enabled"
-                                                                            },
-                                                                            {
-                                                                                "type": "composite",
-                                                                                "name": "Toggle",
-                                                                                "props": {
-                                                                                    "name": "schedules.{{idx}}.enabled",
-                                                                                    "value": "{{schedule.enabled !== false && schedule.enabled !== \"false\"}}"
-                                                                                },
-                                                                                "actions": [
-                                                                                    {
-                                                                                        "event": "onChange",
-                                                                                        "handler": "setState",
-                                                                                        "params": {
-                                                                                            "target": "local",
-                                                                                            "form.schedules": "{{(_local.form.schedules ?? []).map((row, i) => i === idx ? Object.assign({}, row, {enabled: ($args[0] && $args[0].target ? $args[0].target.checked : $args[0])}) : row)}}"
-                                                                                        }
-                                                                                    }
-                                                                                ]
-                                                                            }
-                                                                        ]
-                                                                    },
-                                                                    {
-                                                                        "id": "schedule_effect_{{idx}}",
-                                                                        "type": "basic",
-                                                                        "name": "Div",
-                                                                        "children": [
-                                                                            {
-                                                                                "type": "basic",
-                                                                                "name": "Label",
-                                                                                "props": {
-                                                                                    "className": "form-label",
-                                                                                    "htmlFor": "schedule_effect_{{idx}}"
-                                                                                },
-                                                                                "text": "$t:g7-plugin-custom-effects.settings.fields.effect.label"
-                                                                            },
-                                                                            {
-                                                                                "type": "basic",
-                                                                                "name": "Select",
-                                                                                "props": {
-                                                                                    "id": "schedule_effect_{{idx}}",
-                                                                                    "name": "schedules.{{idx}}.effect",
-                                                                                    "className": "w-full mt-2",
-                                                                                    "value": "{{schedule.effect ?? \"snow\"}}"
-                                                                                },
-                                                                                "children": [
-                                                                                    {
-                                                                                        "type": "basic",
-                                                                                        "name": "Option",
-                                                                                        "props": {
-                                                                                            "value": "snow"
-                                                                                        },
-                                                                                        "text": "$t:g7-plugin-custom-effects.settings.options.snow"
-                                                                                    },
-                                                                                    {
-                                                                                        "type": "basic",
-                                                                                        "name": "Option",
-                                                                                        "props": {
-                                                                                            "value": "rain"
-                                                                                        },
-                                                                                        "text": "$t:g7-plugin-custom-effects.settings.options.rain"
-                                                                                    },
-                                                                                    {
-                                                                                        "type": "basic",
-                                                                                        "name": "Option",
-                                                                                        "props": {
-                                                                                            "value": "leaves"
-                                                                                        },
-                                                                                        "text": "$t:g7-plugin-custom-effects.settings.options.leaves"
-                                                                                    },
-                                                                                    {
-                                                                                        "type": "basic",
-                                                                                        "name": "Option",
-                                                                                        "props": {
-                                                                                            "value": "stars"
-                                                                                        },
-                                                                                        "text": "$t:g7-plugin-custom-effects.settings.options.stars"
-                                                                                    },
-                                                                                    {
-                                                                                        "type": "basic",
-                                                                                        "name": "Option",
-                                                                                        "props": {
-                                                                                            "value": "stars_multicolor"
-                                                                                        },
-                                                                                        "text": "$t:g7-plugin-custom-effects.settings.options.stars_multicolor"
-                                                                                    },
-                                                                                    {
-                                                                                        "type": "basic",
-                                                                                        "name": "Option",
-                                                                                        "props": {
-                                                                                            "value": "hearts"
-                                                                                        },
-                                                                                        "text": "$t:g7-plugin-custom-effects.settings.options.hearts"
-                                                                                    },
-                                                                                    {
-                                                                                        "type": "basic",
-                                                                                        "name": "Option",
-                                                                                        "props": {
-                                                                                            "value": "petals"
-                                                                                        },
-                                                                                        "text": "$t:g7-plugin-custom-effects.settings.options.petals"
-                                                                                    },
-                                                                                    {
-                                                                                        "type": "basic",
-                                                                                        "name": "Option",
-                                                                                        "props": {
-                                                                                            "value": "confetti"
-                                                                                        },
-                                                                                        "text": "$t:g7-plugin-custom-effects.settings.options.confetti"
-                                                                                    },
-                                                                                    {
-                                                                                        "type": "basic",
-                                                                                        "name": "Option",
-                                                                                        "props": {
-                                                                                            "value": "bubbles"
-                                                                                        },
-                                                                                        "text": "$t:g7-plugin-custom-effects.settings.options.bubbles"
-                                                                                    },
-                                                                                    {
-                                                                                        "type": "basic",
-                                                                                        "name": "Option",
-                                                                                        "props": {
-                                                                                            "value": "bouncing_bubbles"
-                                                                                        },
-                                                                                        "text": "$t:g7-plugin-custom-effects.settings.options.bouncing_bubbles"
-                                                                                    },
-                                                                                    {
-                                                                                        "type": "basic",
-                                                                                        "name": "Option",
-                                                                                        "props": {
-                                                                                            "value": "fireflies"
-                                                                                        },
-                                                                                        "text": "$t:g7-plugin-custom-effects.settings.options.fireflies"
-                                                                                    }
-                                                                                ],
-                                                                                "actions": [
-                                                                                    {
-                                                                                        "event": "onChange",
-                                                                                        "handler": "setState",
-                                                                                        "params": {
-                                                                                            "target": "local",
-                                                                                            "form.schedules": "{{(_local.form.schedules ?? []).map((row, i) => i === idx ? Object.assign({}, row, {effect: ($args[0] && $args[0].target ? $args[0].target.value : $args[0])}) : row)}}"
-                                                                                        }
-                                                                                    }
-                                                                                ]
-                                                                            }
-                                                                        ]
-                                                                    },
-                                                                    {
-                                                                        "id": "schedule_timezone_{{idx}}",
-                                                                        "type": "basic",
-                                                                        "name": "Div",
-                                                                        "children": [
-                                                                            {
-                                                                                "type": "basic",
-                                                                                "name": "Label",
-                                                                                "props": {
-                                                                                    "className": "form-label",
-                                                                                    "htmlFor": "schedule_timezone_{{idx}}"
-                                                                                },
-                                                                                "text": "$t:g7-plugin-custom-effects.settings.fields.schedule_timezone.label"
-                                                                            },
-                                                                            {
-                                                                                "type": "basic",
-                                                                                "name": "Select",
-                                                                                "props": {
-                                                                                    "id": "schedule_timezone_{{idx}}",
-                                                                                    "name": "schedules.{{idx}}.timezone",
-                                                                                    "className": "w-full mt-2",
-                                                                                    "value": "{{schedule.timezone ?? \"Asia/Seoul\"}}"
-                                                                                },
-                                                                                "children": [
-                                                                                    {
-                                                                                        "type": "basic",
-                                                                                        "name": "Option",
-                                                                                        "props": {
-                                                                                            "value": "Asia/Seoul"
-                                                                                        },
-                                                                                        "text": "$t:g7-plugin-custom-effects.settings.options.timezone_seoul"
-                                                                                    },
-                                                                                    {
-                                                                                        "type": "basic",
-                                                                                        "name": "Option",
-                                                                                        "props": {
-                                                                                            "value": "UTC"
-                                                                                        },
-                                                                                        "text": "$t:g7-plugin-custom-effects.settings.options.timezone_utc"
-                                                                                    },
-                                                                                    {
-                                                                                        "type": "basic",
-                                                                                        "name": "Option",
-                                                                                        "props": {
-                                                                                            "value": "Asia/Tokyo"
-                                                                                        },
-                                                                                        "text": "$t:g7-plugin-custom-effects.settings.options.timezone_tokyo"
-                                                                                    },
-                                                                                    {
-                                                                                        "type": "basic",
-                                                                                        "name": "Option",
-                                                                                        "props": {
-                                                                                            "value": "Asia/Shanghai"
-                                                                                        },
-                                                                                        "text": "$t:g7-plugin-custom-effects.settings.options.timezone_shanghai"
-                                                                                    },
-                                                                                    {
-                                                                                        "type": "basic",
-                                                                                        "name": "Option",
-                                                                                        "props": {
-                                                                                            "value": "America/New_York"
-                                                                                        },
-                                                                                        "text": "$t:g7-plugin-custom-effects.settings.options.timezone_new_york"
-                                                                                    },
-                                                                                    {
-                                                                                        "type": "basic",
-                                                                                        "name": "Option",
-                                                                                        "props": {
-                                                                                            "value": "America/Los_Angeles"
-                                                                                        },
-                                                                                        "text": "$t:g7-plugin-custom-effects.settings.options.timezone_los_angeles"
-                                                                                    },
-                                                                                    {
-                                                                                        "type": "basic",
-                                                                                        "name": "Option",
-                                                                                        "props": {
-                                                                                            "value": "Europe/London"
-                                                                                        },
-                                                                                        "text": "$t:g7-plugin-custom-effects.settings.options.timezone_london"
-                                                                                    },
-                                                                                    {
-                                                                                        "type": "basic",
-                                                                                        "name": "Option",
-                                                                                        "props": {
-                                                                                            "value": "Europe/Paris"
-                                                                                        },
-                                                                                        "text": "$t:g7-plugin-custom-effects.settings.options.timezone_paris"
-                                                                                    },
-                                                                                    {
-                                                                                        "type": "basic",
-                                                                                        "name": "Option",
-                                                                                        "props": {
-                                                                                            "value": "Australia/Sydney"
-                                                                                        },
-                                                                                        "text": "$t:g7-plugin-custom-effects.settings.options.timezone_sydney"
-                                                                                    }
-                                                                                ],
-                                                                                "actions": [
-                                                                                    {
-                                                                                        "event": "onChange",
-                                                                                        "handler": "setState",
-                                                                                        "params": {
-                                                                                            "target": "local",
-                                                                                            "form.schedules": "{{(_local.form.schedules ?? []).map((row, i) => i === idx ? Object.assign({}, row, {timezone: ($args[0] && $args[0].target ? $args[0].target.value : $args[0])}) : row)}}"
-                                                                                        }
-                                                                                    }
-                                                                                ]
-                                                                            }
-                                                                        ]
-                                                                    },
-                                                                    {
-                                                                        "type": "basic",
-                                                                        "name": "Button",
-                                                                        "props": {
-                                                                            "type": "button",
-                                                                            "className": "btn btn-secondary"
-                                                                        },
-                                                                        "text": "$t:g7-plugin-custom-effects.settings.fields.schedules.remove",
-                                                                        "actions": [
-                                                                            {
-                                                                                "type": "click",
-                                                                                "handler": "setState",
-                                                                                "params": {
-                                                                                    "target": "local",
-                                                                                    "form.schedules": "{{(_local.form.schedules ?? []).filter((_, i) => i !== idx)}}"
-                                                                                }
-                                                                            }
-                                                                        ]
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "type": "basic",
-                                                                "name": "Div",
-                                                                "props": {
-                                                                    "className": "g7-custom-effects-schedule-row g7-custom-effects-schedule-row-dates"
+                                                                {
+                                                                    "value": "rain",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.rain"
                                                                 },
-                                                                "children": [
-                                                                    {
-                                                                        "id": "schedule_start_date_{{idx}}",
-                                                                        "type": "basic",
-                                                                        "name": "Div",
-                                                                        "children": [
-                                                                            {
-                                                                                "type": "basic",
-                                                                                "name": "Label",
-                                                                                "props": {
-                                                                                    "className": "form-label",
-                                                                                    "htmlFor": "schedule_start_date_{{idx}}"
-                                                                                },
-                                                                                "text": "$t:g7-plugin-custom-effects.settings.fields.schedule_start_date.label"
-                                                                            },
-                                                                            {
-                                                                                "type": "basic",
-                                                                                "name": "Input",
-                                                                                "props": {
-                                                                                    "id": "schedule_start_date_{{idx}}",
-                                                                                    "type": "date",
-                                                                                    "name": "schedules.{{idx}}.start_date",
-                                                                                    "className": "w-full mt-2",
-                                                                                    "value": "{{schedule.start_date ?? \"\"}}"
-                                                                                },
-                                                                                "actions": [
-                                                                                    {
-                                                                                        "event": "onChange",
-                                                                                        "handler": "setState",
-                                                                                        "params": {
-                                                                                            "target": "local",
-                                                                                            "form.schedules": "{{(_local.form.schedules ?? []).map((row, i) => i === idx ? Object.assign({}, row, {start_date: ($args[0] && $args[0].target ? $args[0].target.value : $args[0])}) : row)}}"
-                                                                                        }
-                                                                                    }
-                                                                                ]
-                                                                            }
-                                                                        ]
-                                                                    },
-                                                                    {
-                                                                        "id": "schedule_end_date_{{idx}}",
-                                                                        "type": "basic",
-                                                                        "name": "Div",
-                                                                        "children": [
-                                                                            {
-                                                                                "type": "basic",
-                                                                                "name": "Label",
-                                                                                "props": {
-                                                                                    "className": "form-label",
-                                                                                    "htmlFor": "schedule_end_date_{{idx}}"
-                                                                                },
-                                                                                "text": "$t:g7-plugin-custom-effects.settings.fields.schedule_end_date.label"
-                                                                            },
-                                                                            {
-                                                                                "type": "basic",
-                                                                                "name": "Input",
-                                                                                "props": {
-                                                                                    "id": "schedule_end_date_{{idx}}",
-                                                                                    "type": "date",
-                                                                                    "name": "schedules.{{idx}}.end_date",
-                                                                                    "className": "w-full mt-2",
-                                                                                    "value": "{{schedule.end_date ?? \"\"}}"
-                                                                                },
-                                                                                "actions": [
-                                                                                    {
-                                                                                        "event": "onChange",
-                                                                                        "handler": "setState",
-                                                                                        "params": {
-                                                                                            "target": "local",
-                                                                                            "form.schedules": "{{(_local.form.schedules ?? []).map((row, i) => i === idx ? Object.assign({}, row, {end_date: ($args[0] && $args[0].target ? $args[0].target.value : $args[0])}) : row)}}"
-                                                                                        }
-                                                                                    }
-                                                                                ]
-                                                                            }
-                                                                        ]
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "type": "basic",
-                                                                "name": "Div",
-                                                                "props": {
-                                                                    "className": "g7-custom-effects-schedule-row g7-custom-effects-schedule-row-times"
+                                                                {
+                                                                    "value": "leaves",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.leaves"
                                                                 },
-                                                                "children": [
-                                                                    {
-                                                                        "id": "schedule_start_time_{{idx}}",
-                                                                        "type": "basic",
-                                                                        "name": "Div",
-                                                                        "children": [
-                                                                            {
-                                                                                "type": "basic",
-                                                                                "name": "Label",
-                                                                                "props": {
-                                                                                    "className": "form-label",
-                                                                                    "htmlFor": "schedule_start_time_{{idx}}"
-                                                                                },
-                                                                                "text": "$t:g7-plugin-custom-effects.settings.fields.schedule_start_time.label"
-                                                                            },
-                                                                            {
-                                                                                "type": "basic",
-                                                                                "name": "Input",
-                                                                                "props": {
-                                                                                    "id": "schedule_start_time_{{idx}}",
-                                                                                    "type": "time",
-                                                                                    "name": "schedules.{{idx}}.start_time",
-                                                                                    "className": "w-full mt-2",
-                                                                                    "value": "{{schedule.start_time ?? \"\"}}"
-                                                                                },
-                                                                                "actions": [
-                                                                                    {
-                                                                                        "event": "onChange",
-                                                                                        "handler": "setState",
-                                                                                        "params": {
-                                                                                            "target": "local",
-                                                                                            "form.schedules": "{{(_local.form.schedules ?? []).map((row, i) => i === idx ? Object.assign({}, row, {start_time: ($args[0] && $args[0].target ? $args[0].target.value : $args[0])}) : row)}}"
-                                                                                        }
-                                                                                    }
-                                                                                ]
-                                                                            }
-                                                                        ]
-                                                                    },
-                                                                    {
-                                                                        "id": "schedule_end_time_{{idx}}",
-                                                                        "type": "basic",
-                                                                        "name": "Div",
-                                                                        "children": [
-                                                                            {
-                                                                                "type": "basic",
-                                                                                "name": "Label",
-                                                                                "props": {
-                                                                                    "className": "form-label",
-                                                                                    "htmlFor": "schedule_end_time_{{idx}}"
-                                                                                },
-                                                                                "text": "$t:g7-plugin-custom-effects.settings.fields.schedule_end_time.label"
-                                                                            },
-                                                                            {
-                                                                                "type": "basic",
-                                                                                "name": "Input",
-                                                                                "props": {
-                                                                                    "id": "schedule_end_time_{{idx}}",
-                                                                                    "type": "time",
-                                                                                    "name": "schedules.{{idx}}.end_time",
-                                                                                    "className": "w-full mt-2",
-                                                                                    "value": "{{schedule.end_time ?? \"\"}}"
-                                                                                },
-                                                                                "actions": [
-                                                                                    {
-                                                                                        "event": "onChange",
-                                                                                        "handler": "setState",
-                                                                                        "params": {
-                                                                                            "target": "local",
-                                                                                            "form.schedules": "{{(_local.form.schedules ?? []).map((row, i) => i === idx ? Object.assign({}, row, {end_time: ($args[0] && $args[0].target ? $args[0].target.value : $args[0])}) : row)}}"
-                                                                                        }
-                                                                                    }
-                                                                                ]
-                                                                            }
-                                                                        ]
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "type": "basic",
-                                                                "name": "Div",
-                                                                "children": [
-                                                                    {
-                                                                        "type": "basic",
-                                                                        "name": "P",
-                                                                        "props": {
-                                                                            "className": "form-label"
-                                                                        },
-                                                                        "text": "$t:g7-plugin-custom-effects.settings.fields.schedule_days.label"
-                                                                    },
-                                                                    {
-                                                                        "type": "basic",
-                                                                        "name": "Div",
-                                                                        "props": {
-                                                                            "className": "g7-custom-effects-schedule-days"
-                                                                        },
-                                                                        "children": [
-                                                                            {
-                                                                                "type": "basic",
-                                                                                "name": "Checkbox",
-                                                                                "props": {
-                                                                                    "name": "schedules.{{idx}}.sun",
-                                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.day_sun",
-                                                                                    "checked": "{{schedule.sun !== false && schedule.sun !== \"false\"}}"
-                                                                                },
-                                                                                "actions": [
-                                                                                    {
-                                                                                        "event": "onChange",
-                                                                                        "handler": "setState",
-                                                                                        "params": {
-                                                                                            "target": "local",
-                                                                                            "form.schedules": "{{(_local.form.schedules ?? []).map((row, i) => i === idx ? Object.assign({}, row, {sun: ($args[0] && $args[0].target ? $args[0].target.checked : $args[0])}) : row)}}"
-                                                                                        }
-                                                                                    }
-                                                                                ]
-                                                                            },
-                                                                            {
-                                                                                "type": "basic",
-                                                                                "name": "Checkbox",
-                                                                                "props": {
-                                                                                    "name": "schedules.{{idx}}.mon",
-                                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.day_mon",
-                                                                                    "checked": "{{schedule.mon !== false && schedule.mon !== \"false\"}}"
-                                                                                },
-                                                                                "actions": [
-                                                                                    {
-                                                                                        "event": "onChange",
-                                                                                        "handler": "setState",
-                                                                                        "params": {
-                                                                                            "target": "local",
-                                                                                            "form.schedules": "{{(_local.form.schedules ?? []).map((row, i) => i === idx ? Object.assign({}, row, {mon: ($args[0] && $args[0].target ? $args[0].target.checked : $args[0])}) : row)}}"
-                                                                                        }
-                                                                                    }
-                                                                                ]
-                                                                            },
-                                                                            {
-                                                                                "type": "basic",
-                                                                                "name": "Checkbox",
-                                                                                "props": {
-                                                                                    "name": "schedules.{{idx}}.tue",
-                                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.day_tue",
-                                                                                    "checked": "{{schedule.tue !== false && schedule.tue !== \"false\"}}"
-                                                                                },
-                                                                                "actions": [
-                                                                                    {
-                                                                                        "event": "onChange",
-                                                                                        "handler": "setState",
-                                                                                        "params": {
-                                                                                            "target": "local",
-                                                                                            "form.schedules": "{{(_local.form.schedules ?? []).map((row, i) => i === idx ? Object.assign({}, row, {tue: ($args[0] && $args[0].target ? $args[0].target.checked : $args[0])}) : row)}}"
-                                                                                        }
-                                                                                    }
-                                                                                ]
-                                                                            },
-                                                                            {
-                                                                                "type": "basic",
-                                                                                "name": "Checkbox",
-                                                                                "props": {
-                                                                                    "name": "schedules.{{idx}}.wed",
-                                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.day_wed",
-                                                                                    "checked": "{{schedule.wed !== false && schedule.wed !== \"false\"}}"
-                                                                                },
-                                                                                "actions": [
-                                                                                    {
-                                                                                        "event": "onChange",
-                                                                                        "handler": "setState",
-                                                                                        "params": {
-                                                                                            "target": "local",
-                                                                                            "form.schedules": "{{(_local.form.schedules ?? []).map((row, i) => i === idx ? Object.assign({}, row, {wed: ($args[0] && $args[0].target ? $args[0].target.checked : $args[0])}) : row)}}"
-                                                                                        }
-                                                                                    }
-                                                                                ]
-                                                                            },
-                                                                            {
-                                                                                "type": "basic",
-                                                                                "name": "Checkbox",
-                                                                                "props": {
-                                                                                    "name": "schedules.{{idx}}.thu",
-                                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.day_thu",
-                                                                                    "checked": "{{schedule.thu !== false && schedule.thu !== \"false\"}}"
-                                                                                },
-                                                                                "actions": [
-                                                                                    {
-                                                                                        "event": "onChange",
-                                                                                        "handler": "setState",
-                                                                                        "params": {
-                                                                                            "target": "local",
-                                                                                            "form.schedules": "{{(_local.form.schedules ?? []).map((row, i) => i === idx ? Object.assign({}, row, {thu: ($args[0] && $args[0].target ? $args[0].target.checked : $args[0])}) : row)}}"
-                                                                                        }
-                                                                                    }
-                                                                                ]
-                                                                            },
-                                                                            {
-                                                                                "type": "basic",
-                                                                                "name": "Checkbox",
-                                                                                "props": {
-                                                                                    "name": "schedules.{{idx}}.fri",
-                                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.day_fri",
-                                                                                    "checked": "{{schedule.fri !== false && schedule.fri !== \"false\"}}"
-                                                                                },
-                                                                                "actions": [
-                                                                                    {
-                                                                                        "event": "onChange",
-                                                                                        "handler": "setState",
-                                                                                        "params": {
-                                                                                            "target": "local",
-                                                                                            "form.schedules": "{{(_local.form.schedules ?? []).map((row, i) => i === idx ? Object.assign({}, row, {fri: ($args[0] && $args[0].target ? $args[0].target.checked : $args[0])}) : row)}}"
-                                                                                        }
-                                                                                    }
-                                                                                ]
-                                                                            },
-                                                                            {
-                                                                                "type": "basic",
-                                                                                "name": "Checkbox",
-                                                                                "props": {
-                                                                                    "name": "schedules.{{idx}}.sat",
-                                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.day_sat",
-                                                                                    "checked": "{{schedule.sat !== false && schedule.sat !== \"false\"}}"
-                                                                                },
-                                                                                "actions": [
-                                                                                    {
-                                                                                        "event": "onChange",
-                                                                                        "handler": "setState",
-                                                                                        "params": {
-                                                                                            "target": "local",
-                                                                                            "form.schedules": "{{(_local.form.schedules ?? []).map((row, i) => i === idx ? Object.assign({}, row, {sat: ($args[0] && $args[0].target ? $args[0].target.checked : $args[0])}) : row)}}"
-                                                                                        }
-                                                                                    }
-                                                                                ]
-                                                                            }
-                                                                        ]
-                                                                    }
-                                                                ]
-                                                            }
-                                                        ]
-                                                    }
-                                                ]
-                                            },
-                                            {
-                                                "type": "basic",
-                                                "name": "Button",
-                                                "props": {
-                                                    "type": "button",
-                                                    "className": "btn btn-secondary"
+                                                                {
+                                                                    "value": "stars",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.stars"
+                                                                },
+                                                                {
+                                                                    "value": "stars_multicolor",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.stars_multicolor"
+                                                                },
+                                                                {
+                                                                    "value": "hearts",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.hearts"
+                                                                },
+                                                                {
+                                                                    "value": "petals",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.petals"
+                                                                },
+                                                                {
+                                                                    "value": "confetti",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.confetti"
+                                                                },
+                                                                {
+                                                                    "value": "bubbles",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.bubbles"
+                                                                },
+                                                                {
+                                                                    "value": "bouncing_bubbles",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.bouncing_bubbles"
+                                                                },
+                                                                {
+                                                                    "value": "fireflies",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.fireflies"
+                                                                }
+                                                            ],
+                                                            "required": true
+                                                        },
+                                                        {
+                                                            "key": "start_date",
+                                                            "type": "input",
+                                                            "label": "$t:g7-plugin-custom-effects.settings.fields.schedule_start_date.label",
+                                                            "placeholder": "YYYY-MM-DD"
+                                                        },
+                                                        {
+                                                            "key": "end_date",
+                                                            "type": "input",
+                                                            "label": "$t:g7-plugin-custom-effects.settings.fields.schedule_end_date.label",
+                                                            "placeholder": "YYYY-MM-DD"
+                                                        },
+                                                        {
+                                                            "key": "start_time",
+                                                            "type": "input",
+                                                            "label": "$t:g7-plugin-custom-effects.settings.fields.schedule_start_time.label",
+                                                            "placeholder": "HH:MM"
+                                                        },
+                                                        {
+                                                            "key": "end_time",
+                                                            "type": "input",
+                                                            "label": "$t:g7-plugin-custom-effects.settings.fields.schedule_end_time.label",
+                                                            "placeholder": "HH:MM"
+                                                        },
+                                                        {
+                                                            "key": "sun",
+                                                            "type": "select",
+                                                            "label": "$t:g7-plugin-custom-effects.settings.options.day_sun",
+                                                            "options": [
+                                                                {
+                                                                    "value": "true",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.day_on"
+                                                                },
+                                                                {
+                                                                    "value": "false",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.day_off"
+                                                                }
+                                                            ]
+                                                        },
+                                                        {
+                                                            "key": "mon",
+                                                            "type": "select",
+                                                            "label": "$t:g7-plugin-custom-effects.settings.options.day_mon",
+                                                            "options": [
+                                                                {
+                                                                    "value": "true",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.day_on"
+                                                                },
+                                                                {
+                                                                    "value": "false",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.day_off"
+                                                                }
+                                                            ]
+                                                        },
+                                                        {
+                                                            "key": "tue",
+                                                            "type": "select",
+                                                            "label": "$t:g7-plugin-custom-effects.settings.options.day_tue",
+                                                            "options": [
+                                                                {
+                                                                    "value": "true",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.day_on"
+                                                                },
+                                                                {
+                                                                    "value": "false",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.day_off"
+                                                                }
+                                                            ]
+                                                        },
+                                                        {
+                                                            "key": "wed",
+                                                            "type": "select",
+                                                            "label": "$t:g7-plugin-custom-effects.settings.options.day_wed",
+                                                            "options": [
+                                                                {
+                                                                    "value": "true",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.day_on"
+                                                                },
+                                                                {
+                                                                    "value": "false",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.day_off"
+                                                                }
+                                                            ]
+                                                        },
+                                                        {
+                                                            "key": "thu",
+                                                            "type": "select",
+                                                            "label": "$t:g7-plugin-custom-effects.settings.options.day_thu",
+                                                            "options": [
+                                                                {
+                                                                    "value": "true",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.day_on"
+                                                                },
+                                                                {
+                                                                    "value": "false",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.day_off"
+                                                                }
+                                                            ]
+                                                        },
+                                                        {
+                                                            "key": "fri",
+                                                            "type": "select",
+                                                            "label": "$t:g7-plugin-custom-effects.settings.options.day_fri",
+                                                            "options": [
+                                                                {
+                                                                    "value": "true",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.day_on"
+                                                                },
+                                                                {
+                                                                    "value": "false",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.day_off"
+                                                                }
+                                                            ]
+                                                        },
+                                                        {
+                                                            "key": "sat",
+                                                            "type": "select",
+                                                            "label": "$t:g7-plugin-custom-effects.settings.options.day_sat",
+                                                            "options": [
+                                                                {
+                                                                    "value": "true",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.day_on"
+                                                                },
+                                                                {
+                                                                    "value": "false",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.day_off"
+                                                                }
+                                                            ]
+                                                        },
+                                                        {
+                                                            "key": "timezone",
+                                                            "type": "select",
+                                                            "label": "$t:g7-plugin-custom-effects.settings.fields.schedule_timezone.label",
+                                                            "options": [
+                                                                {
+                                                                    "value": "Asia/Seoul",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.timezone_seoul"
+                                                                },
+                                                                {
+                                                                    "value": "UTC",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.timezone_utc"
+                                                                },
+                                                                {
+                                                                    "value": "Asia/Tokyo",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.timezone_tokyo"
+                                                                },
+                                                                {
+                                                                    "value": "Asia/Shanghai",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.timezone_shanghai"
+                                                                },
+                                                                {
+                                                                    "value": "America/New_York",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.timezone_new_york"
+                                                                },
+                                                                {
+                                                                    "value": "America/Los_Angeles",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.timezone_los_angeles"
+                                                                },
+                                                                {
+                                                                    "value": "Europe/London",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.timezone_london"
+                                                                },
+                                                                {
+                                                                    "value": "Europe/Paris",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.timezone_paris"
+                                                                },
+                                                                {
+                                                                    "value": "Australia/Sydney",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.timezone_sydney"
+                                                                }
+                                                            ]
+                                                        }
+                                                    ]
                                                 },
-                                                "text": "$t:g7-plugin-custom-effects.settings.fields.schedules.add",
                                                 "actions": [
                                                     {
-                                                        "type": "click",
+                                                        "event": "onChange",
                                                         "handler": "setState",
                                                         "params": {
                                                             "target": "local",
-                                                            "form.schedules": "{{[...(_local.form.schedules ?? []), {enabled:true,effect:(_local.form.effect ?? \"snow\"),start_date:\"\",end_date:\"\",start_time:\"\",end_time:\"\",timezone:\"Asia/Seoul\",sun:true,mon:true,tue:true,wed:true,thu:true,fri:true,sat:true}]}}"
+                                                            "form.schedules": "{{$args[0]}}"
                                                         }
                                                     }
                                                 ]

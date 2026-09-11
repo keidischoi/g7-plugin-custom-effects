@@ -254,8 +254,8 @@ export class EffectsEngine {
             bubbles: [5, 14],
             bouncing_bubbles: [5, 14],
             fireflies: [1.5, 3.5],
-            cheese: [8, 16],
-            poop: [8, 15],
+            cheese: [11, 20],
+            poop: [11, 19],
             ice_cream: [9, 16],
             bills: [8, 14],
             coins: [6, 12],
@@ -574,37 +574,119 @@ export class EffectsEngine {
     private drawCheese(delta: number): void {
         for (const particle of this.particles) {
             this.advanceFalling(particle, delta, 16);
-            this.prepareParticle(particle);
             this.withTransform(particle, () => {
                 const size = particle.size;
+                const body = this.fixedPaletteColor(particle, '#facc15');
+                const crust = '#d97706';
+                const side = '#f59e0b';
+                const hole = '#b45309';
+                const holeInner = '#78350f';
+                this.context.globalAlpha = (this.config.opacity / 100) * particle.alpha;
+
+                this.context.fillStyle = crust;
                 this.context.beginPath();
-                this.context.moveTo(-size, size * 0.7);
-                this.context.lineTo(size, size * 0.7);
-                this.context.lineTo(size * 0.12, -size);
+                this.context.moveTo(-size * 1.05, size * 0.78);
+                this.context.lineTo(size * 0.98, size * 0.78);
+                this.context.lineTo(size * 0.18, -size * 1.05);
                 this.context.closePath();
                 this.context.fill();
-                this.context.fillStyle = 'rgba(180, 83, 9, 0.35)';
-                this.fillCircle(-size * 0.22, size * 0.18, size * 0.18);
-                this.fillCircle(size * 0.28, size * 0.32, size * 0.14);
-                this.fillCircle(size * 0.02, -size * 0.22, size * 0.12);
+
+                this.context.fillStyle = side;
+                this.context.beginPath();
+                this.context.moveTo(size * 0.82, size * 0.62);
+                this.context.lineTo(size * 1.08, size * 0.38);
+                this.context.lineTo(size * 0.32, -size * 0.92);
+                this.context.lineTo(size * 0.12, -size * 0.78);
+                this.context.closePath();
+                this.context.fill();
+
+                this.context.fillStyle = body;
+                this.context.beginPath();
+                this.context.moveTo(-size * 0.92, size * 0.62);
+                this.context.lineTo(size * 0.82, size * 0.62);
+                this.context.lineTo(size * 0.12, -size * 0.78);
+                this.context.closePath();
+                this.context.fill();
+
+                this.drawCheeseHole(-size * 0.28, size * 0.22, size * 0.2, hole, holeInner);
+                this.drawCheeseHole(size * 0.22, size * 0.28, size * 0.16, hole, holeInner);
+                this.drawCheeseHole(size * 0.02, -size * 0.18, size * 0.14, hole, holeInner);
+                this.drawCheeseHole(-size * 0.08, size * 0.48, size * 0.1, hole, holeInner);
             });
         }
+    }
+
+    private drawCheeseHole(
+        x: number,
+        y: number,
+        radius: number,
+        hole: string,
+        holeInner: string,
+    ): void {
+        this.context.fillStyle = hole;
+        this.fillEllipse(x, y, radius, radius * 0.78);
+        this.context.fillStyle = holeInner;
+        this.fillEllipse(x + radius * 0.12, y + radius * 0.1, radius * 0.55, radius * 0.42);
+        this.context.fillStyle = 'rgba(254, 243, 199, 0.55)';
+        this.fillEllipse(x - radius * 0.28, y - radius * 0.22, radius * 0.22, radius * 0.16);
     }
 
     private drawPoop(delta: number): void {
         for (const particle of this.particles) {
             this.advanceFalling(particle, delta, 14);
-            this.prepareParticle(particle);
             this.withTransform(particle, () => {
                 const size = particle.size;
-                this.fillCircle(0, size * 0.42, size * 0.72);
-                this.fillCircle(-size * 0.08, -size * 0.08, size * 0.5);
-                this.fillCircle(size * 0.12, -size * 0.52, size * 0.32);
+                const body = this.fixedPaletteColor(particle, '#92400e');
+                const shade = '#78350f';
+                this.context.globalAlpha = (this.config.opacity / 100) * particle.alpha;
+
+                this.context.fillStyle = shade;
+                this.fillEllipse(size * 0.08, size * 0.5, size * 0.92, size * 0.42);
+                this.context.fillStyle = body;
+                this.fillEllipse(0, size * 0.42, size * 0.95, size * 0.48);
+
+                this.context.fillStyle = shade;
+                this.fillEllipse(size * 0.06, size * 0.02, size * 0.68, size * 0.34);
+                this.context.fillStyle = body;
+                this.fillEllipse(-size * 0.04, -size * 0.08, size * 0.72, size * 0.4);
+
+                this.context.fillStyle = shade;
+                this.fillEllipse(size * 0.18, -size * 0.5, size * 0.4, size * 0.24);
+                this.context.fillStyle = body;
+                this.fillEllipse(size * 0.06, -size * 0.58, size * 0.46, size * 0.3);
+                this.fillEllipse(size * 0.28, -size * 0.82, size * 0.18, size * 0.14);
+
+                this.context.fillStyle = 'rgba(254, 243, 199, 0.28)';
+                this.fillEllipse(-size * 0.28, size * 0.28, size * 0.22, size * 0.14);
+                this.fillEllipse(-size * 0.22, -size * 0.18, size * 0.16, size * 0.1);
+
+                this.context.fillStyle = '#fff7ed';
+                this.fillCircle(-size * 0.18, -size * 0.16, size * 0.16);
+                this.fillCircle(size * 0.2, -size * 0.12, size * 0.16);
                 this.context.fillStyle = '#1f2937';
-                this.fillCircle(-size * 0.18, -size * 0.12, size * 0.08);
-                this.fillCircle(size * 0.16, -size * 0.08, size * 0.08);
+                this.fillCircle(-size * 0.14, -size * 0.14, size * 0.075);
+                this.fillCircle(size * 0.24, -size * 0.1, size * 0.075);
+
+                this.context.strokeStyle = '#1f2937';
+                this.context.lineWidth = Math.max(0.8, size * 0.08);
+                this.context.lineCap = 'round';
+                this.context.beginPath();
+                this.context.arc(size * 0.02, size * 0.08, size * 0.22, 0.15 * Math.PI, 0.85 * Math.PI);
+                this.context.stroke();
             });
         }
+    }
+
+    private fixedPaletteColor(particle: Particle, fallback: string): string {
+        const palette = EFFECT_PALETTES[this.config.effect];
+        if (!palette) return fallback;
+        return palette[particle.colorIndex % palette.length] ?? fallback;
+    }
+
+    private fillEllipse(x: number, y: number, rx: number, ry: number): void {
+        this.context.beginPath();
+        this.context.ellipse(x, y, Math.max(0.35, rx), Math.max(0.35, ry), 0, 0, Math.PI * 2);
+        this.context.fill();
     }
 
     private drawIceCream(delta: number): void {

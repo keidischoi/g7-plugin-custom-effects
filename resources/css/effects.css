@@ -57,6 +57,13 @@
     opacity: 0.42;
 }
 
+.g7-custom-effects-detail-input {
+    box-sizing: border-box;
+    width: 50% !important;
+    min-width: 6.5rem;
+    justify-self: end;
+}
+
 .g7-custom-effects-schedule-grid {
     box-sizing: border-box;
     display: grid;

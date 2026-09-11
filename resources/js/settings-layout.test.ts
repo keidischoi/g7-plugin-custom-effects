@@ -134,7 +134,9 @@ describe('plugin settings layout', () => {
 
     it('keeps schedule controls within plugin-owned equal padding', () => {
         const slots = JSON.stringify(layout.slots);
-        expect(slots).toContain('"className":"g7-custom-effects-schedule-grid"');
+        expect(slots).toContain('g7-custom-effects-detail-input');
+        expect(effectsCss).toContain('.g7-custom-effects-detail-input {');
+        expect(effectsCss).toContain('width: 50% !important;');
         expect(slots).toContain('g7-custom-effects-schedule-list');
         expect(effectsCss).toContain('.g7-custom-effects-schedule-grid {');
         expect(effectsCss).toContain('padding: 1rem 1.5rem;');

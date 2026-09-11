@@ -474,7 +474,7 @@ export class EffectsEngine {
             phaseSpeed: 0.6 + Math.random() * 1.8,
             rotation: Math.random() * Math.PI * 2,
             rotationSpeed: sunflower
-                ? (Math.random() < 0.5 ? -1 : 1) * (2.4 + Math.random() * 2.8)
+                ? (Math.random() < 0.5 ? -1 : 1) * (0.35 + Math.random() * 0.55)
                 : (Math.random() - 0.5) * 3,
             colorIndex: Math.floor(Math.random() * 8),
             alpha: 0.55 + Math.random() * 0.45,

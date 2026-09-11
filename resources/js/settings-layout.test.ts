@@ -94,13 +94,16 @@ describe('plugin settings layout', () => {
         expect(slots).toContain('g7-custom-effects-schedule-list');
         expect(effectsCss).toContain('.g7-custom-effects-schedule-grid {');
         expect(effectsCss).toContain('padding: 1rem 1.5rem;');
+        expect(slots).toContain('g7-custom-effects-schedule-dfl-header');
+        expect(slots).toContain('g7-custom-effects-schedule-dfl-row');
         expect(effectsCss).toContain('grid-row: 2');
-        expect(effectsCss).toContain('.dynamic-field-list .flex.items-center.gap-2.py-2.px-2');
+        expect(effectsCss).toContain('.g7-custom-effects-schedule-dfl-row {');
         expect(effectsCss).toContain('grid-template-columns: 1.5rem 2rem');
         expect(effectsCss).toContain('.g7-custom-effects-schedule-full {');
         expect(effectsCss).toContain('grid-column: 7 / 12');
         expect(effectsCss).toContain('input[type="date"]');
         expect(effectsCss).toContain('input[type="time"]');
+        expect(effectsCss).toContain('content: "시작 시간"');
     });
 
     it('loads settings into the local form and provides a complete save flow', () => {

@@ -1,5 +1,5 @@
 {
-    "version": "1.7.2",
+    "version": "1.7.3",
     "layout_name": "plugin_settings",
     "permissions": [
         "core.plugins.update"
@@ -747,6 +747,8 @@
                                                     "emptyMessage": "$t:g7-plugin-custom-effects.settings.fields.schedules.empty",
                                                     "enableDrag": true,
                                                     "showIndex": true,
+                                                    "headerClassName": "g7-custom-effects-schedule-dfl-header",
+                                                    "rowClassName": "g7-custom-effects-schedule-dfl-row",
                                                     "minItems": 0,
                                                     "maxItems": 20,
                                                     "columns": [

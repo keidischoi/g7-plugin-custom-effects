@@ -20,6 +20,7 @@ import {
     burstStarOnHit,
     resolveStarCollision,
     bounceRainAtFloor,
+    isUnsupported,
     settleWhereHit,
 } from './engine';
 
@@ -435,6 +436,14 @@ describe('ground piles', () => {
         expect(settleWhereHit(falling, 200, 4, [lower])).toBe(true);
         expect(falling.x).toBe(10);
         expect(falling.y).toBe(196);
+    });
+
+    it('lets a stacked flake fall when its support is gone', () => {
+        const lower = { x: 40, y: 196, size: 4 };
+        const upper = { x: 40, y: 191, size: 4 };
+
+        expect(isUnsupported(upper, 200, 4, [lower])).toBe(false);
+        expect(isUnsupported(upper, 200, 4, [])).toBe(true);
     });
 
     it('leaves airborne flakes falling', () => {

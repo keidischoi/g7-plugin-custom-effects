@@ -49,9 +49,11 @@ export function updateToggleButton(
     enabled: boolean,
     effect: EffectKind,
     target: Window = window,
+    active: boolean = enabled,
 ): void {
     const label = translatedLabel(target, enabled);
     button.dataset.enabled = String(enabled);
+    button.dataset.active = String(active);
     button.setAttribute('aria-pressed', String(enabled));
     button.setAttribute('aria-label', label);
     button.title = label;
@@ -101,6 +103,7 @@ export class HeaderToggleMount {
         private readonly effect: EffectKind | (() => EffectKind),
         private readonly getEnabled: () => boolean,
         private readonly onToggle: ToggleCallback,
+        private readonly getActive: () => boolean = getEnabled,
     ) {}
 
     start(): void {
@@ -138,6 +141,7 @@ export class HeaderToggleMount {
                 enabled,
                 this.currentEffect(),
                 this.target,
+                this.getActive(),
             ));
     }
 
@@ -166,15 +170,20 @@ export class HeaderToggleMount {
             ));
             if (mounted) return;
 
-            host.insertBefore(
-                createToggleButton(
-                    this.getEnabled(),
-                    this.currentEffect(),
-                    this.onToggle,
-                    this.target,
-                ),
-                themeWrapper,
+            const button = createToggleButton(
+                this.getEnabled(),
+                this.currentEffect(),
+                this.onToggle,
+                this.target,
             );
+            updateToggleButton(
+                button,
+                this.getEnabled(),
+                this.currentEffect(),
+                this.target,
+                this.getActive(),
+            );
+            host.insertBefore(button, themeWrapper);
         });
     }
 }

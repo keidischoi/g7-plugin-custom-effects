@@ -1,5 +1,8 @@
 import type { EffectConfig, EffectKind, EffectSchedule } from './config';
 
+/** How often to re-check whether a schedule should start or stop. */
+export const SCHEDULE_SYNC_MS = 1_000;
+
 interface ZonedClock {
     date: string;
     time: string;

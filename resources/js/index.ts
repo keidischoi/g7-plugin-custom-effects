@@ -7,7 +7,7 @@ import {
     writeEffectsPreference,
 } from './preference';
 import { enhanceSchedulePickers } from './schedule-fields';
-import { activeScheduledEffect, resolveActiveConfig } from './schedule';
+import { activeScheduledEffect, resolveActiveConfig, SCHEDULE_SYNC_MS } from './schedule';
 import {
     HeaderToggleMount,
     PREFERENCE_EVENT,
@@ -110,7 +110,13 @@ function boot(): void {
         ? registerToggleAction(window, toggle)
         : () => {};
     headerToggle = isUserPage && config.enabled
-        ? new HeaderToggleMount(window, currentEffect, () => userEnabled, toggle)
+        ? new HeaderToggleMount(
+            window,
+            currentEffect,
+            () => userEnabled,
+            toggle,
+            () => engine !== null,
+        )
         : null;
     headerToggle?.start();
     const stopSchedulePickers = !isUserPage && isPluginSettingsPage
@@ -120,15 +126,17 @@ function boot(): void {
     mobileQuery.addEventListener('change', sync);
     reducedMotionQuery.addEventListener('change', sync);
     window.addEventListener('popstate', sync);
+    window.addEventListener('focus', sync);
     window.addEventListener('storage', handleStorage);
     document.addEventListener('visibilitychange', sync);
-    const scheduleTimer = window.setInterval(sync, 30_000);
+    const scheduleTimer = window.setInterval(sync, SCHEDULE_SYNC_MS);
 
     window.__g7CustomEffects = {
         stop: () => {
             mobileQuery.removeEventListener('change', sync);
             reducedMotionQuery.removeEventListener('change', sync);
             window.removeEventListener('popstate', sync);
+            window.removeEventListener('focus', sync);
             window.removeEventListener('storage', handleStorage);
             document.removeEventListener('visibilitychange', sync);
             window.clearInterval(scheduleTimer);

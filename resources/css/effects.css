@@ -53,6 +53,10 @@
     transform: rotate(-45deg);
 }
 
+.g7-custom-effects-toggle[data-enabled="true"][data-active="false"] {
+    opacity: 0.42;
+}
+
 .g7-custom-effects-schedule-grid {
     box-sizing: border-box;
     display: grid;

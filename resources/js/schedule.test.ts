@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { normalizeConfig } from './config';
-import { getZonedClock, isScheduleActive, activeScheduledEffect, resolveActiveConfig, shiftClock } from './schedule';
+import { getZonedClock, isScheduleActive, activeScheduledEffect, resolveActiveConfig, shiftClock, SCHEDULE_SYNC_MS } from './schedule';
 
 function scheduled(overrides: Record<string, unknown> = {}, timezone = 'Asia/Seoul') {
     return normalizeConfig({
@@ -195,5 +195,9 @@ describe('effect scheduling', () => {
             date: '2026-09-12',
             time: '00:30',
         });
+    });
+
+    it('re-checks the active schedule about once a second', () => {
+        expect(SCHEDULE_SYNC_MS).toBe(1_000);
     });
 });

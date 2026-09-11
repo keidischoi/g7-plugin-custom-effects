@@ -38,6 +38,7 @@ describe('effects header toggle', () => {
         expect(document.querySelectorAll('[data-g7-custom-effects-toggle="true"]')).toHaveLength(1);
         expect(button?.textContent).toBe('❧');
         expect(button?.getAttribute('aria-pressed')).toBe('true');
+        expect(button?.dataset.active).toBe('true');
 
         mount.stop();
     });
@@ -62,6 +63,44 @@ describe('effects header toggle', () => {
         expect(button.dataset.enabled).toBe('true');
         expect(button.getAttribute('aria-label')).toBe('화면 효과 끄기');
         expect(button.textContent).toBe('♥');
+        expect(button.dataset.active).toBe('true');
+    });
+
+    it('refresh updates the symbol and waiting state without a page reload', () => {
+        document.body.innerHTML = `
+            <div id="header-actions">
+                <div id="theme-wrapper">
+                    <button aria-label="Toggle theme"></button>
+                </div>
+            </div>
+        `;
+
+        let effect: 'snow' | 'rain' = 'snow';
+        let active = false;
+        const mount = new HeaderToggleMount(
+            window,
+            () => effect,
+            () => true,
+            () => true,
+            () => active,
+        );
+        mount.start();
+
+        const button = document.querySelector<HTMLButtonElement>(
+            '[data-g7-custom-effects-toggle="true"]',
+        );
+        expect(button?.textContent).toBe('❄');
+        expect(button?.dataset.enabled).toBe('true');
+        expect(button?.dataset.active).toBe('false');
+
+        effect = 'rain';
+        active = true;
+        mount.refresh();
+
+        expect(button?.textContent).toBe('◆');
+        expect(button?.dataset.active).toBe('true');
+
+        mount.stop();
     });
 
     it('has a header symbol for every effect', () => {

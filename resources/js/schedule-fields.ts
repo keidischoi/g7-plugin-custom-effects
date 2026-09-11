@@ -276,7 +276,7 @@ export function enhanceSchedulePickers(target: Window = window): () => void {
             observe();
         });
         observe();
-        root.addEventListener('click', onAddClick);
+        root.addEventListener('click', onAddClick, true);
     };
 
     const onAddClick = (event: Event): void => {
@@ -284,15 +284,18 @@ export function enhanceSchedulePickers(target: Window = window): () => void {
         if (!(clicked instanceof Element)) return;
         const button = clicked.closest('button');
         if (!button || !isAddScheduleButton(button)) return;
-        const fillLast = (): void => {
-            const list = target.document.querySelector('.g7-custom-effects-schedule-list');
-            const rows = list?.querySelectorAll('.g7-custom-effects-schedule-dfl-row');
-            const last = rows?.[rows.length - 1];
+        const list = target.document.querySelector('.g7-custom-effects-schedule-list');
+        const before = list?.querySelectorAll('.g7-custom-effects-schedule-dfl-row').length ?? 0;
+        const fillNew = (): void => {
+            const current = target.document.querySelector('.g7-custom-effects-schedule-list');
+            const rows = current?.querySelectorAll('.g7-custom-effects-schedule-dfl-row');
+            if (!rows || rows.length !== before + 1) return;
+            const last = rows[rows.length - 1];
             if (last instanceof HTMLElement) fillEmptyScheduleRow(last, target);
         };
-        target.setTimeout(fillLast, 0);
-        target.setTimeout(fillLast, 80);
-        target.setTimeout(fillLast, 250);
+        target.setTimeout(fillNew, 0);
+        target.setTimeout(fillNew, 80);
+        target.setTimeout(fillNew, 250);
     };
 
     const finder = new MutationObserver(() => {
@@ -313,6 +316,6 @@ export function enhanceSchedulePickers(target: Window = window): () => void {
         finder.disconnect();
         observer?.disconnect();
         target.document.querySelector('.g7-custom-effects-schedule-list')
-            ?.removeEventListener('click', onAddClick);
+            ?.removeEventListener('click', onAddClick, true);
     };
 }

@@ -411,7 +411,84 @@ describe('enhanceSchedulePickers', () => {
         expect(extraSelectValue(row, 1)).toBe('#bae6fd');
         stop();
     });
+
+    it('does not copy defaults onto an existing row when add does not create one', async () => {
+        document.body.innerHTML = `
+            <select id="effect" name="effect">
+                <option value="rain" selected>비</option>
+            </select>
+            <input id="intensity" name="intensity" value="160">
+            <div class="g7-custom-effects-schedule-list">
+                ${scheduleRowHtml('snow', '40', '2026-01-02')}
+                <button type="button">+ 예약 추가</button>
+            </div>
+        `;
+        const stop = enhanceSchedulePickers(window);
+        addScheduleButton()?.click();
+        await new Promise((resolve) => setTimeout(resolve, 300));
+
+        const row = document.querySelector('.g7-custom-effects-schedule-dfl-row') as HTMLElement;
+        expect(rowValues(row)).toEqual({
+            effect: 'snow',
+            intensity: '40',
+            start: '2026-01-02',
+        });
+        stop();
+    });
+
+    it('copies defaults only onto the newly added schedule row', async () => {
+        document.body.innerHTML = `
+            <select id="effect" name="effect">
+                <option value="snow">눈</option>
+                <option value="rain" selected>비</option>
+            </select>
+            <input id="intensity" name="intensity" value="160">
+            <input id="speed" name="speed" value="75">
+            <input id="opacity" name="opacity" value="50">
+            <input id="wind" name="wind" value="30">
+            <select id="wind_direction" name="wind_direction">
+                <option value="none">없음</option>
+                <option value="left" selected>왼쪽</option>
+            </select>
+            <select id="color" name="color">
+                <option value="#ffffff">흰색</option>
+                <option value="#bae6fd" selected>하늘</option>
+            </select>
+            <div class="g7-custom-effects-schedule-list">
+                ${scheduleRowHtml('snow', '40', '2026-01-02')}
+                <button type="button">+ 예약 추가</button>
+            </div>
+        `;
+        const list = document.querySelector('.g7-custom-effects-schedule-list') as HTMLElement;
+        const button = addScheduleButton() as HTMLButtonElement;
+        button.addEventListener('click', () => {
+            button.insertAdjacentHTML('beforebegin', scheduleRowHtml('', '', ''));
+        });
+
+        const stop = enhanceSchedulePickers(window);
+        button.click();
+        await new Promise((resolve) => setTimeout(resolve, 300));
+
+        const rows = [...list.querySelectorAll('.g7-custom-effects-schedule-dfl-row')] as HTMLElement[];
+        expect(rows).toHaveLength(2);
+        expect(rowValues(rows[0])).toEqual({
+            effect: 'snow',
+            intensity: '40',
+            start: '2026-01-02',
+        });
+        expect(rowValues(rows[1]).effect).toBe('rain');
+        expect(rowValues(rows[1]).intensity).toBe('160');
+        expect(rowValues(rows[1]).start).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+        expect(rowValues(rows[1]).start).not.toBe('2026-01-02');
+        stop();
+    });
 });
+
+function addScheduleButton(): HTMLButtonElement | null {
+    return [...document.querySelectorAll('button')].find((button) => (
+        /예약 추가|Add schedule/i.test(button.textContent ?? '')
+    )) ?? null;
+}
 
 function extraSelectValue(row: HTMLElement, index: number): string {
     const effect = row.children[2].querySelector('select') as HTMLSelectElement;
@@ -421,4 +498,60 @@ function extraSelectValue(row: HTMLElement, index: number): string {
         && !select.classList.contains('g7-custom-effects-schedule-day-select')
     ));
     return selects[index]?.value ?? '';
+}
+
+function scheduleRowHtml(effect: string, intensity: string, start: string): string {
+    return `
+        <div class="g7-custom-effects-schedule-dfl-row">
+            <div>⋮⋮</div>
+            <div>
+                <select class="g7-custom-effects-schedule-enabled-select">
+                    <option value="true" selected>사용</option>
+                </select>
+            </div>
+            <div>
+                <select>
+                    <option value="">선택하세요</option>
+                    <option value="snow" ${effect === 'snow' ? 'selected' : ''}>눈</option>
+                    <option value="rain" ${effect === 'rain' ? 'selected' : ''}>비</option>
+                </select>
+            </div>
+            <div><input placeholder="YYYY-MM-DD" value="${start}"></div>
+            <div><input placeholder="YYYY-MM-DD"></div>
+            <div><input placeholder="HH:MM"></div>
+            <div><input placeholder="HH:MM"></div>
+            <div><input type="number" value="${intensity}"></div>
+            <div><input type="number"></div>
+            <div><input type="number"></div>
+            <div><input type="number"></div>
+            <div>
+                <select>
+                    <option value="">선택하세요</option>
+                    <option value="none">없음</option>
+                    <option value="left">왼쪽</option>
+                </select>
+            </div>
+            <div>
+                <select>
+                    <option value="">선택하세요</option>
+                    <option value="#ffffff">흰색</option>
+                    <option value="#bae6fd">하늘</option>
+                </select>
+            </div>
+            <div><button type="button">-</button></div>
+        </div>
+    `;
+}
+
+function rowValues(row: HTMLElement): { effect: string; intensity: string; start: string } {
+    const effect = row.children[2].querySelector('select') as HTMLSelectElement;
+    const intensity = row.querySelector('input[type="number"]') as HTMLInputElement | null;
+    const start = [...row.querySelectorAll('input')].find((input) => (
+        input.type === 'date' || (input.getAttribute('placeholder') ?? '').includes('YYYY-MM-DD')
+    ));
+    return {
+        effect: effect?.value ?? '',
+        intensity: intensity?.value ?? '',
+        start: start?.value ?? '',
+    };
 }

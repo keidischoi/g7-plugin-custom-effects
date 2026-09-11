@@ -171,6 +171,7 @@ describe('plugin settings layout', () => {
         expect(slots).toContain('"key":"wind_direction"');
         expect(slots).not.toContain('"event":"onAddItem"');
         expect(slots).toContain('($args[0])');
+        expect(slots).toContain('prev.length + 1');
         expect(slots).toContain('_local.form.intensity');
     });
 

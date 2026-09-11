@@ -1,5 +1,5 @@
 {
-    "version": "1.8.21",
+    "version": "1.8.22",
     "layout_name": "plugin_settings",
     "permissions": [
         "core.plugins.update"
@@ -1166,7 +1166,7 @@
                                                         "handler": "setState",
                                                         "params": {
                                                             "target": "local",
-                                                            "form.schedules": "{{((items) => { const rows = Array.isArray(items) ? items.slice() : []; const row = rows[rows.length - 1]; if (!row) return Array.isArray(items) ? items : rows; const missing = row.intensity === undefined || row.intensity === null || row.intensity === ''; if (!missing) return items; const stamp = new Date().toLocaleString('sv-SE', { hourCycle: 'h23' }); rows[rows.length - 1] = { enabled: row.enabled ?? true, sun: row.sun ?? true, mon: row.mon ?? true, tue: row.tue ?? true, wed: row.wed ?? true, thu: row.thu ?? true, fri: row.fri ?? true, sat: row.sat ?? true, effect: row.effect || (_local.form.effect ?? 'snow'), intensity: _local.form.intensity ?? 100, speed: _local.form.speed ?? 100, opacity: _local.form.opacity ?? 75, wind: _local.form.wind ?? 0, wind_direction: _local.form.wind_direction ?? 'none', color: _local.form.color ?? '#ffffff', start_date: row.start_date || stamp.slice(0, 10), end_date: row.end_date || stamp.slice(0, 10), start_time: row.start_time || stamp.slice(11, 16), end_time: row.end_time || stamp.slice(11, 16) }; return rows; })($args[0])}}"
+                                                            "form.schedules": "{{((items) => { const rows = Array.isArray(items) ? items.slice() : []; const prev = Array.isArray(_local.form.schedules) ? _local.form.schedules : []; if (rows.length !== prev.length + 1) return Array.isArray(items) ? items : rows; const row = rows[rows.length - 1] ?? {}; const stamp = new Date().toLocaleString('sv-SE', { hourCycle: 'h23' }); rows[rows.length - 1] = { enabled: row.enabled ?? true, sun: row.sun ?? true, mon: row.mon ?? true, tue: row.tue ?? true, wed: row.wed ?? true, thu: row.thu ?? true, fri: row.fri ?? true, sat: row.sat ?? true, effect: row.effect || (_local.form.effect ?? 'snow'), intensity: _local.form.intensity ?? 100, speed: _local.form.speed ?? 100, opacity: _local.form.opacity ?? 75, wind: _local.form.wind ?? 0, wind_direction: _local.form.wind_direction ?? 'none', color: _local.form.color ?? '#ffffff', start_date: row.start_date || stamp.slice(0, 10), end_date: row.end_date || stamp.slice(0, 10), start_time: row.start_time || stamp.slice(11, 16), end_time: row.end_time || stamp.slice(11, 16) }; return rows; })($args[0])}}"
                                                         }
                                                     }
                                                 ]

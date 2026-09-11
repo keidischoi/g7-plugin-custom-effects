@@ -136,7 +136,7 @@ describe('plugin settings layout', () => {
         const slots = JSON.stringify(layout.slots);
         expect(slots).toContain('g7-custom-effects-detail-input');
         expect(effectsCss).toContain('.g7-custom-effects-detail-input {');
-        expect(effectsCss).toContain('width: 50% !important;');
+        expect(effectsCss).toContain('width: 38% !important;');
         expect(slots).toContain('g7-custom-effects-schedule-list');
         expect(effectsCss).toContain('.g7-custom-effects-schedule-grid {');
         expect(effectsCss).toContain('padding: 1rem 1.5rem;');

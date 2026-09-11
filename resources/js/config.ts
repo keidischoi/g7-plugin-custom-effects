@@ -59,6 +59,12 @@ export interface EffectSchedule {
     endTime: string;
     days: readonly number[];
     timezone: string;
+    intensity: number;
+    speed: number;
+    opacity: number;
+    wind: number;
+    windDirection: WindDirection;
+    color: string;
 }
 
 export interface EffectConfig {
@@ -205,13 +211,19 @@ function weekdayFlags(value: Record<string, unknown>): readonly number[] {
 
 function scheduleValue(
     raw: unknown,
-    fallbackEffect: EffectKind,
+    fallback: Pick<EffectConfig, 'effect' | 'intensity' | 'speed' | 'opacity' | 'wind' | 'windDirection' | 'color'>,
 ): EffectSchedule {
     const value = raw && typeof raw === 'object' ? raw as Record<string, unknown> : {};
     const effect = EFFECT_KINDS.includes(value.effect as EffectKind)
         ? value.effect as EffectKind
-        : fallbackEffect;
+        : fallback.effect;
     const days = weekdayFlags(value);
+    const legacyWind = boundedInteger(value.wind, fallback.wind, -100, 100);
+    const windDirection = ['none', 'left', 'right', 'random'].includes(String(value.wind_direction))
+        ? value.wind_direction as WindDirection
+        : value.wind === undefined
+            ? fallback.windDirection
+            : legacyWind < 0 ? 'left' : legacyWind > 0 ? 'right' : fallback.windDirection;
 
     return {
         enabled: booleanValue(value.enabled, true),
@@ -222,6 +234,12 @@ function scheduleValue(
         endTime: timeValue(value.end_time),
         days,
         timezone: timezoneValue(value.timezone, DEFAULT_CONFIG.scheduleTimezone),
+        intensity: boundedInteger(value.intensity, fallback.intensity, 10, 200),
+        speed: boundedInteger(value.speed, fallback.speed, 25, 300),
+        opacity: boundedInteger(value.opacity, fallback.opacity, 10, 100),
+        wind: Math.abs(legacyWind),
+        windDirection,
+        color: presetValue(value.color, COLOR_OPTIONS, fallback.color),
     };
 }
 
@@ -237,6 +255,12 @@ export function normalizeConfig(raw: unknown): EffectConfig {
     const legacyDays = ['weekdays', 'weekends'].includes(String(value.schedule_days))
         ? value.schedule_days as ScheduleDays
         : 'all';
+    const intensity = boundedInteger(value.intensity, DEFAULT_CONFIG.intensity, 10, 200);
+    const speed = boundedInteger(value.speed, DEFAULT_CONFIG.speed, 25, 300);
+    const opacity = boundedInteger(value.opacity, DEFAULT_CONFIG.opacity, 10, 100);
+    const wind = Math.abs(legacyWind);
+    const color = presetValue(value.color, COLOR_OPTIONS, DEFAULT_CONFIG.color);
+    const scheduleFallback = { effect, intensity, speed, opacity, wind, windDirection, color };
     const legacySchedule = scheduleValue({
         enabled: true,
         effect,
@@ -252,7 +276,7 @@ export function normalizeConfig(raw: unknown): EffectConfig {
         thu: legacyDays !== 'weekends',
         fri: legacyDays !== 'weekends',
         sat: legacyDays !== 'weekdays',
-    }, effect);
+    }, scheduleFallback);
     const hasLegacySchedule = [
         'schedule_start_date',
         'schedule_end_date',
@@ -262,7 +286,7 @@ export function normalizeConfig(raw: unknown): EffectConfig {
         'schedule_timezone',
     ].some((key) => key in value);
     const schedules = Array.isArray(value.schedules)
-        ? value.schedules.slice(0, 20).map((schedule) => scheduleValue(schedule, effect))
+        ? value.schedules.slice(0, 20).map((schedule) => scheduleValue(schedule, scheduleFallback))
         : hasLegacySchedule
             ? [legacySchedule]
             : [];
@@ -270,12 +294,12 @@ export function normalizeConfig(raw: unknown): EffectConfig {
     return {
         enabled: booleanValue(value.enabled, DEFAULT_CONFIG.enabled),
         effect,
-        intensity: boundedInteger(value.intensity, DEFAULT_CONFIG.intensity, 10, 200),
-        speed: boundedInteger(value.speed, DEFAULT_CONFIG.speed, 25, 300),
-        opacity: boundedInteger(value.opacity, DEFAULT_CONFIG.opacity, 10, 100),
-        wind: Math.abs(legacyWind),
+        intensity,
+        speed,
+        opacity,
+        wind,
         windDirection,
-        color: presetValue(value.color, COLOR_OPTIONS, DEFAULT_CONFIG.color),
+        color,
         mobileEnabled: booleanValue(value.mobile_enabled, DEFAULT_CONFIG.mobileEnabled),
         adminEnabled: booleanValue(value.admin_enabled, DEFAULT_CONFIG.adminEnabled),
         respectReducedMotion: booleanValue(

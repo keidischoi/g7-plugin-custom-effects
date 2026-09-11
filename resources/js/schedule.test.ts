@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { normalizeConfig } from './config';
-import { getZonedClock, isScheduleActive, activeScheduledEffect } from './schedule';
+import { getZonedClock, isScheduleActive, activeScheduledEffect, resolveActiveConfig } from './schedule';
 
 function scheduled(overrides: Record<string, unknown> = {}, timezone = 'Asia/Seoul') {
     return normalizeConfig({
@@ -132,6 +132,30 @@ describe('effect scheduling', () => {
         expect(activeScheduledEffect(config, new Date('2026-09-11T01:00:00Z'))).toBe('rain');
         expect(activeScheduledEffect(config, new Date('2026-09-11T10:00:00Z'))).toBe('hearts');
         expect(activeScheduledEffect(config, new Date('2026-09-11T15:00:00Z'))).toBeNull();
+    });
+
+    it('applies matching schedule visual settings', () => {
+        const config = normalizeConfig({
+            schedule_enabled: true,
+            schedule_timezone: 'Asia/Seoul',
+            intensity: 100,
+            color: '#ffffff',
+            schedules: [{
+                enabled: true,
+                effect: 'rain',
+                intensity: 40,
+                color: '#bae6fd',
+                start_time: '09:00',
+                end_time: '18:00',
+            }],
+        });
+        const resolved = resolveActiveConfig(config, new Date('2026-09-11T01:00:00Z'));
+
+        expect(resolved).toMatchObject({
+            effect: 'rain',
+            intensity: 40,
+            color: '#bae6fd',
+        });
     });
 
     it('keeps the default effect when scheduling is on but no rows exist', () => {

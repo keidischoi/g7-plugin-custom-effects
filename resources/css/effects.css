@@ -106,27 +106,37 @@
 }
 
 .g7-custom-effects-schedule-dfl-row {
-    display: grid !important;
-    grid-template-columns: 1.5rem 2.25rem minmax(8rem, 1fr) max-content max-content max-content max-content minmax(1.75rem, auto);
+    display: flex !important;
+    flex-wrap: wrap;
     align-items: start;
     column-gap: 0.5rem;
     row-gap: 0.75rem;
 }
 
-.g7-custom-effects-schedule-dfl-row > * {
-    min-width: 0;
+.g7-custom-effects-schedule-dfl-row::before {
+    content: "";
+    flex-basis: 100%;
+    width: 100%;
+    order: 2;
+    height: 0;
 }
 
-.g7-custom-effects-schedule-dfl-row > :nth-child(1),
-.g7-custom-effects-schedule-dfl-row > :nth-child(2) {
-    grid-row: 1 / 3;
+.g7-custom-effects-schedule-dfl-row > * {
+    min-width: 0;
+    order: 1;
+}
+
+.g7-custom-effects-schedule-dfl-row > :nth-child(1) {
+    flex: 0 0 1.5rem;
     align-self: center;
 }
 
 .g7-custom-effects-schedule-dfl-row > :nth-child(2) {
     display: flex;
+    flex: 0 0 2.25rem;
     align-items: center;
     justify-content: center;
+    align-self: center;
     position: relative;
 }
 
@@ -135,42 +145,25 @@
     display: none;
 }
 
-.g7-custom-effects-schedule-dfl-row > :nth-child(3) { grid-column: 3; grid-row: 1; }
-.g7-custom-effects-schedule-dfl-row > :nth-child(4),
-.g7-custom-effects-schedule-dfl-row > :nth-child(5),
-.g7-custom-effects-schedule-dfl-row > :nth-child(6),
-.g7-custom-effects-schedule-dfl-row > :nth-child(7) {
-    grid-row: 1;
-    min-width: max-content;
-}
-.g7-custom-effects-schedule-dfl-row > :nth-child(4) { grid-column: 4; }
-.g7-custom-effects-schedule-dfl-row > :nth-child(5) { grid-column: 5; }
-.g7-custom-effects-schedule-dfl-row > :nth-child(6) { grid-column: 6; }
-.g7-custom-effects-schedule-dfl-row > :nth-child(7) { grid-column: 7; }
-.g7-custom-effects-schedule-dfl-row > :nth-child(n+8):nth-child(-n+14) {
-    grid-column: 3 / 8;
-    grid-row: 2;
-    justify-self: start;
-    width: calc(100% / 7);
-    position: relative;
-    box-sizing: border-box;
-}
-.g7-custom-effects-schedule-dfl-row > :nth-child(8) { transform: none; }
-.g7-custom-effects-schedule-dfl-row > :nth-child(9) { transform: translateX(100%); }
-.g7-custom-effects-schedule-dfl-row > :nth-child(10) { transform: translateX(200%); }
-.g7-custom-effects-schedule-dfl-row > :nth-child(11) { transform: translateX(300%); }
-.g7-custom-effects-schedule-dfl-row > :nth-child(12) { transform: translateX(400%); }
-.g7-custom-effects-schedule-dfl-row > :nth-child(13) { transform: translateX(500%); }
-.g7-custom-effects-schedule-dfl-row > :nth-child(14) { transform: translateX(600%); }
-.g7-custom-effects-schedule-dfl-row > :nth-child(15) {
-    grid-column: 8;
-    grid-row: 1 / 3;
-    align-self: center;
-    min-width: 1.75rem;
-    justify-self: center;
+.g7-custom-effects-schedule-dfl-row > :nth-child(3) {
+    flex: 1 1 8rem;
+    min-width: 8rem;
 }
 
-.g7-custom-effects-schedule-dfl-row > :nth-child(n+3):nth-child(-n+7)::before {
+.g7-custom-effects-schedule-dfl-row > :nth-child(n+4) {
+    flex: 0 1 auto;
+    width: max-content;
+    min-width: max-content;
+}
+
+.g7-custom-effects-schedule-dfl-row > :last-child {
+    flex: 0 0 1.75rem;
+    min-width: 1.75rem;
+    margin-left: auto;
+    align-self: center;
+}
+
+.g7-custom-effects-schedule-dfl-row > :nth-child(n+3):nth-child(-n+13)::before {
     display: block;
     margin-bottom: 0.25rem;
     color: #6b7280;
@@ -184,14 +177,26 @@
 .g7-custom-effects-schedule-dfl-row > :nth-child(5)::before { content: "종료 날짜"; }
 .g7-custom-effects-schedule-dfl-row > :nth-child(6)::before { content: "시작 시간"; }
 .g7-custom-effects-schedule-dfl-row > :nth-child(7)::before { content: "종료 시간"; }
+.g7-custom-effects-schedule-dfl-row > :nth-child(8)::before { content: "효과 밀도"; }
+.g7-custom-effects-schedule-dfl-row > :nth-child(9)::before { content: "낙하 속도"; }
+.g7-custom-effects-schedule-dfl-row > :nth-child(10)::before { content: "불투명도"; }
+.g7-custom-effects-schedule-dfl-row > :nth-child(11)::before { content: "바람 세기"; }
+.g7-custom-effects-schedule-dfl-row > :nth-child(12)::before { content: "바람 방향"; }
+.g7-custom-effects-schedule-dfl-row > :nth-child(13)::before { content: "입자 색상"; }
 
 :lang(en) .g7-custom-effects-schedule-dfl-row > :nth-child(3)::before { content: "Effect"; }
 :lang(en) .g7-custom-effects-schedule-dfl-row > :nth-child(4)::before { content: "Start date"; }
 :lang(en) .g7-custom-effects-schedule-dfl-row > :nth-child(5)::before { content: "End date"; }
 :lang(en) .g7-custom-effects-schedule-dfl-row > :nth-child(6)::before { content: "Start time"; }
 :lang(en) .g7-custom-effects-schedule-dfl-row > :nth-child(7)::before { content: "End time"; }
+:lang(en) .g7-custom-effects-schedule-dfl-row > :nth-child(8)::before { content: "Density"; }
+:lang(en) .g7-custom-effects-schedule-dfl-row > :nth-child(9)::before { content: "Speed"; }
+:lang(en) .g7-custom-effects-schedule-dfl-row > :nth-child(10)::before { content: "Opacity"; }
+:lang(en) .g7-custom-effects-schedule-dfl-row > :nth-child(11)::before { content: "Wind"; }
+:lang(en) .g7-custom-effects-schedule-dfl-row > :nth-child(12)::before { content: "Direction"; }
+:lang(en) .g7-custom-effects-schedule-dfl-row > :nth-child(13)::before { content: "Color"; }
 
-.dark .g7-custom-effects-schedule-dfl-row > :nth-child(n+3):nth-child(-n+7)::before {
+.dark .g7-custom-effects-schedule-dfl-row > :nth-child(n+3):nth-child(-n+13)::before {
     color: #9ca3af;
 }
 
@@ -204,19 +209,26 @@
     cursor: pointer;
 }
 
-.g7-custom-effects-schedule-dfl-row > :nth-child(n+8):nth-child(-n+14) {
+.g7-custom-effects-schedule-dfl-row > :has(.g7-custom-effects-schedule-day-select),
+.g7-custom-effects-schedule-dfl-row > :has(.g7-custom-effects-schedule-day) {
     display: flex;
+    flex: 1 1 0;
     flex-direction: column;
     align-items: center;
+    order: 3;
+    width: auto;
+    min-width: 2rem;
     position: relative;
 }
 
-.g7-custom-effects-schedule-dfl-row > :nth-child(n+8):nth-child(-n+14)::before {
+.g7-custom-effects-schedule-dfl-row > :has(.g7-custom-effects-schedule-day-select)::before,
+.g7-custom-effects-schedule-dfl-row > :has(.g7-custom-effects-schedule-day)::before {
     content: none !important;
     display: none !important;
 }
 
-.g7-custom-effects-schedule-dfl-row > :nth-child(n+8):nth-child(-n+14) label {
+.g7-custom-effects-schedule-dfl-row > :has(.g7-custom-effects-schedule-day-select) label,
+.g7-custom-effects-schedule-dfl-row > :has(.g7-custom-effects-schedule-day) label {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -230,7 +242,8 @@
     cursor: pointer;
 }
 
-.dark .g7-custom-effects-schedule-dfl-row > :nth-child(n+8):nth-child(-n+14) label {
+.dark .g7-custom-effects-schedule-dfl-row > :has(.g7-custom-effects-schedule-day-select) label,
+.dark .g7-custom-effects-schedule-dfl-row > :has(.g7-custom-effects-schedule-day) label {
     color: #9ca3af;
 }
 
@@ -249,15 +262,17 @@ select.g7-custom-effects-schedule-day-select {
 }
 
 .g7-custom-effects-schedule-list input[type="date"],
-.g7-custom-effects-schedule-list input[type="time"] {
+.g7-custom-effects-schedule-list input[type="time"],
+.g7-custom-effects-schedule-list input[type="number"],
+.g7-custom-effects-schedule-list select:not(.g7-custom-effects-schedule-enabled-select):not(.g7-custom-effects-schedule-day-select) {
     width: auto;
     max-width: none;
+    min-width: 0;
     field-sizing: content;
 }
 
-.g7-custom-effects-schedule-list select {
+.g7-custom-effects-schedule-dfl-row > :nth-child(3) select {
     width: 100%;
-    min-width: 0;
 }
 
 @media (min-width: 1024px) {

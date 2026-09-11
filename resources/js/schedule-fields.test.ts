@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 
 import { afterEach, describe, expect, it } from 'vitest';
-import { enhanceSchedulePickers } from './schedule-fields';
+import { enhanceSchedulePickers, fillEmptyScheduleRow } from './schedule-fields';
 
 afterEach(() => {
     document.body.replaceChildren();
@@ -239,6 +239,95 @@ describe('enhanceSchedulePickers', () => {
         expect(host).toBeTruthy();
         expect(host?.contains(select)).toBe(true);
         expect(checkbox.checked).toBe(true);
+        stop();
+    });
+
+    it('fills a new empty row from the form above and the current date', () => {
+        document.documentElement.lang = 'ko';
+        document.body.innerHTML = `
+            <select name="effect">
+                <option value="snow">눈</option>
+                <option value="rain" selected>비</option>
+            </select>
+            <input name="intensity" value="160">
+            <input name="speed" value="75">
+            <input name="opacity" value="50">
+            <input name="wind" value="30">
+            <select name="wind_direction">
+                <option value="none">없음</option>
+                <option value="left" selected>왼쪽</option>
+            </select>
+            <select name="color">
+                <option value="#ffffff">흰색</option>
+                <option value="#bae6fd" selected>하늘</option>
+            </select>
+            <div class="g7-custom-effects-schedule-list">
+                <div class="g7-custom-effects-schedule-dfl-row">
+                    <div>⋮⋮</div>
+                    <div>
+                        <select class="g7-custom-effects-schedule-enabled-select">
+                            <option value="true" selected>사용</option>
+                            <option value="false">안함</option>
+                        </select>
+                    </div>
+                    <div>
+                        <select>
+                            <option value="">선택하세요</option>
+                            <option value="snow">눈</option>
+                            <option value="rain">비</option>
+                        </select>
+                    </div>
+                    <div><input placeholder="YYYY-MM-DD"></div>
+                    <div><input placeholder="YYYY-MM-DD"></div>
+                    <div><input placeholder="HH:MM"></div>
+                    <div><input placeholder="HH:MM"></div>
+                    <div><input type="number"></div>
+                    <div><input type="number"></div>
+                    <div><input type="number"></div>
+                    <div><input type="number"></div>
+                    <div>
+                        <select>
+                            <option value="none">없음</option>
+                            <option value="left">왼쪽</option>
+                        </select>
+                    </div>
+                    <div>
+                        <select>
+                            <option value="#ffffff">흰색</option>
+                            <option value="#bae6fd">하늘</option>
+                        </select>
+                    </div>
+                    <div><button type="button">-</button></div>
+                </div>
+            </div>
+        `;
+        const effectSelect = document.querySelectorAll(
+            '.g7-custom-effects-schedule-dfl-row select',
+        )[1] as HTMLSelectElement;
+        effectSelect.value = '';
+
+        const stop = enhanceSchedulePickers(window);
+        const row = document.querySelector('.g7-custom-effects-schedule-dfl-row') as HTMLElement;
+        fillEmptyScheduleRow(row, window);
+
+        const dates = [...row.querySelectorAll('input[type="date"]')].map((input) => (
+            (input as HTMLInputElement).value
+        ));
+        const times = [...row.querySelectorAll('input[type="time"]')].map((input) => (
+            (input as HTMLInputElement).value
+        ));
+        const numbers = [...row.querySelectorAll('input[type="number"]')].map((input) => (
+            (input as HTMLInputElement).value
+        ));
+
+        expect(effectSelect.value).toBe('rain');
+        expect(dates[0]).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+        expect(dates[1]).toBe(dates[0]);
+        expect(times[0]).toMatch(/^\d{2}:\d{2}$/);
+        expect(times[1]).toBe(times[0]);
+        expect(numbers).toEqual(['160', '75', '50', '30']);
+        expect((row.querySelectorAll('select')[2] as HTMLSelectElement).value).toBe('left');
+        expect((row.querySelectorAll('select')[3] as HTMLSelectElement).value).toBe('#bae6fd');
         stop();
     });
 });

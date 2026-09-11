@@ -100,14 +100,34 @@ function matchesSchedule(
     );
 }
 
+export function resolveActiveConfig(
+    config: EffectConfig,
+    now: Date = new Date(),
+): EffectConfig | null {
+    if (!config.scheduleEnabled || config.schedules.length === 0) return config;
+
+    const schedule = config.schedules.find((item) => (
+        matchesSchedule(item, now, config.scheduleTimezone)
+    ));
+    if (!schedule) return null;
+
+    return {
+        ...config,
+        effect: schedule.effect,
+        intensity: schedule.intensity,
+        speed: schedule.speed,
+        opacity: schedule.opacity,
+        wind: schedule.wind,
+        windDirection: schedule.windDirection,
+        color: schedule.color,
+    };
+}
+
 export function activeScheduledEffect(
     config: EffectConfig,
     now: Date = new Date(),
 ): EffectKind | null {
-    if (!config.scheduleEnabled || config.schedules.length === 0) return config.effect;
-    return config.schedules.find((schedule) => (
-        matchesSchedule(schedule, now, config.scheduleTimezone)
-    ))?.effect ?? null;
+    return resolveActiveConfig(config, now)?.effect ?? null;
 }
 
 export function isScheduleActive(

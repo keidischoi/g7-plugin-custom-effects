@@ -147,8 +147,8 @@ class Plugin extends AbstractPlugin
                 'default' => [],
                 'label' => ['ko' => '예약 목록', 'en' => 'Schedules'],
                 'hint' => [
-                    'ko' => '일정을 추가하거나 삭제하고, 일정마다 효과와 요일을 따로 지정합니다.',
-                    'en' => 'Add or remove schedules, each with its own effect and weekdays.',
+                    'ko' => '일정을 추가하거나 삭제하고, 일정마다 효과와 세부 설정을 따로 지정합니다.',
+                    'en' => 'Add or remove schedules, each with its own effect and detail settings.',
                 ],
                 'required' => false,
             ],

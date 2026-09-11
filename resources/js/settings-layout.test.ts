@@ -140,17 +140,15 @@ describe('plugin settings layout', () => {
         expect(effectsCss).toContain('padding: 1rem 1.5rem;');
         expect(slots).toContain('g7-custom-effects-schedule-dfl-header');
         expect(slots).toContain('g7-custom-effects-schedule-dfl-row');
-        expect(effectsCss).toContain('grid-row: 2');
         expect(effectsCss).toContain('.g7-custom-effects-schedule-dfl-row {');
-        expect(effectsCss).toContain('grid-template-columns: 1.5rem 2.25rem minmax(8rem, 1fr) max-content max-content max-content max-content minmax(1.75rem, auto)');
+        expect(effectsCss).toContain('flex-wrap: wrap');
         expect(effectsCss).toContain('.g7-custom-effects-schedule-full {');
-        expect(effectsCss).toContain('> :nth-child(3) { grid-column: 3; grid-row: 1; }');
-        expect(effectsCss).toContain('> :nth-child(4) { grid-column: 4; }');
-        expect(effectsCss).toContain('> :nth-child(7) { grid-column: 7; }');
-        expect(effectsCss).toContain('width: calc(100% / 7);');
-        expect(effectsCss).toContain('transform: translateX(600%);');
+        expect(effectsCss).toContain('> :nth-child(3) {');
+        expect(effectsCss).toContain('flex: 1 1 8rem');
         expect(effectsCss).toContain('field-sizing: content');
-        expect(effectsCss).toContain('> :nth-child(15) {');
+        expect(effectsCss).toContain(':has(.g7-custom-effects-schedule-day-select)');
+        expect(effectsCss).toContain('content: "효과 밀도"');
+        expect(effectsCss).toContain('> :last-child {');
         expect(effectsCss).not.toContain('> :nth-child(16) {');
         expect(effectsCss).not.toContain('.g7-custom-effects-schedule-list tbody tr,');
         expect(effectsCss).not.toContain('thead {');
@@ -160,11 +158,13 @@ describe('plugin settings layout', () => {
         expect(effectsCss).not.toContain('content: "일"');
         expect(effectsCss).toContain('.g7-custom-effects-schedule-enabled,');
         expect(effectsCss).toContain('.g7-custom-effects-schedule-day {');
-        expect(effectsCss).toContain('nth-child(-n+14) label');
         expect(effectsCss).not.toContain('content: "사용"');
         expect(slots).toContain('"showIndex":false');
         expect(slots).toContain('g7-custom-effects-schedule-enabled-select');
         expect(slots).toContain('g7-custom-effects-schedule-day-select');
+        expect(slots).toContain('"key":"intensity"');
+        expect(slots).toContain('"key":"wind_direction"');
+        expect(slots).toContain('"event":"onAddItem"');
     });
 
     it('loads settings into the local form and provides a complete save flow', () => {

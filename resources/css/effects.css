@@ -140,7 +140,13 @@
     display: none;
 }
 
-.g7-custom-effects-schedule-dfl-row > :nth-child(3) { grid-column: 3; grid-row: 1; }
+.g7-custom-effects-schedule-dfl-row > :nth-child(3) {
+    grid-column: 3;
+    grid-row: 1;
+    width: 100%;
+    min-width: 0;
+    justify-self: stretch;
+}
 .g7-custom-effects-schedule-dfl-row > :nth-child(4),
 .g7-custom-effects-schedule-dfl-row > :nth-child(5),
 .g7-custom-effects-schedule-dfl-row > :nth-child(6),
@@ -285,16 +291,27 @@ select.g7-custom-effects-schedule-day-select {
 
 .g7-custom-effects-schedule-list input[type="date"],
 .g7-custom-effects-schedule-list input[type="time"],
-.g7-custom-effects-schedule-list input[type="number"],
-.g7-custom-effects-schedule-list select:not(.g7-custom-effects-schedule-enabled-select):not(.g7-custom-effects-schedule-day-select) {
+.g7-custom-effects-schedule-list input[type="number"] {
     width: auto;
     max-width: none;
     min-width: 0;
     field-sizing: content;
 }
 
-.g7-custom-effects-schedule-dfl-row > :nth-child(3) select {
+.g7-custom-effects-schedule-dfl-row > :nth-child(3) > * {
+    box-sizing: border-box;
     width: 100%;
+    max-width: 100%;
+    min-width: 0;
+}
+
+.g7-custom-effects-schedule-dfl-row > :nth-child(3) select {
+    display: block;
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    field-sizing: fixed;
 }
 
 .g7-custom-effects-schedule-dfl-row > :nth-child(n+8):nth-child(-n+13) input,

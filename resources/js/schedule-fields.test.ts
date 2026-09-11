@@ -330,4 +330,95 @@ describe('enhanceSchedulePickers', () => {
         expect((row.querySelectorAll('select')[3] as HTMLSelectElement).value).toBe('#bae6fd');
         stop();
     });
+
+    it('still copies form defaults when the effect is already filled', () => {
+        document.documentElement.lang = 'ko';
+        document.body.innerHTML = `
+            <select id="effect" name="effect">
+                <option value="snow">눈</option>
+                <option value="rain" selected>비</option>
+            </select>
+            <input id="intensity" name="intensity" value="160">
+            <input id="speed" name="speed" value="75">
+            <input id="opacity" name="opacity" value="50">
+            <input id="wind" name="wind" value="30">
+            <select id="wind_direction" name="wind_direction">
+                <option value="none">없음</option>
+                <option value="left" selected>왼쪽</option>
+            </select>
+            <select id="color" name="color">
+                <option value="#ffffff">흰색</option>
+                <option value="#bae6fd" selected>하늘</option>
+            </select>
+            <div class="g7-custom-effects-schedule-list">
+                <div class="g7-custom-effects-schedule-dfl-row">
+                    <div>⋮⋮</div>
+                    <div>
+                        <select class="g7-custom-effects-schedule-enabled-select">
+                            <option value="true" selected>사용</option>
+                        </select>
+                    </div>
+                    <div>
+                        <select>
+                            <option value="">선택하세요</option>
+                            <option value="snow">눈</option>
+                            <option value="rain" selected>비</option>
+                        </select>
+                    </div>
+                    <div><input placeholder="YYYY-MM-DD" value="2026-09-12"></div>
+                    <div><input placeholder="YYYY-MM-DD"></div>
+                    <div><input placeholder="HH:MM"></div>
+                    <div><input placeholder="HH:MM"></div>
+                    <div><input type="number"></div>
+                    <div><input type="number"></div>
+                    <div><input type="number"></div>
+                    <div><input type="number"></div>
+                    <div>
+                        <select>
+                            <option value="">선택하세요</option>
+                            <option value="none">없음</option>
+                            <option value="left">왼쪽</option>
+                        </select>
+                    </div>
+                    <div>
+                        <select>
+                            <option value="">선택하세요</option>
+                            <option value="#ffffff">흰색</option>
+                            <option value="#bae6fd">하늘</option>
+                        </select>
+                    </div>
+                    <div><button type="button">-</button></div>
+                </div>
+            </div>
+        `;
+
+        const row = document.querySelector('.g7-custom-effects-schedule-dfl-row') as HTMLElement;
+        const effectSelect = row.children[2].querySelector('select') as HTMLSelectElement;
+        effectSelect.value = 'rain';
+        const stop = enhanceSchedulePickers(window);
+        fillEmptyScheduleRow(row, window);
+
+        expect(effectSelect.value).toBe('rain');
+        expect((row.querySelectorAll('input[type="date"]')[1] as HTMLInputElement).value)
+            .toMatch(/^\d{4}-\d{2}-\d{2}$/);
+        expect([...row.querySelectorAll('input[type="time"]')].map((input) => (
+            (input as HTMLInputElement).value
+        )).every((value) => /^\d{2}:\d{2}$/.test(value))).toBe(true);
+        expect([...row.querySelectorAll('input[type="number"]')].map((input) => (
+            (input as HTMLInputElement).value
+        ))).toEqual(['160', '75', '50', '30']);
+        expect(extraSelectValue(row, 0)).toBe('left');
+        expect(extraSelectValue(row, 1)).toBe('#bae6fd');
+        stop();
+    });
 });
+
+function extraSelectValue(row: HTMLElement, index: number): string {
+    const effect = row.children[2].querySelector('select') as HTMLSelectElement;
+    const selects = [...row.querySelectorAll('select')].filter((select) => (
+        select !== effect
+        && !select.classList.contains('g7-custom-effects-schedule-enabled-select')
+        && !select.classList.contains('g7-custom-effects-schedule-day-select')
+    ));
+    return selects[index]?.value ?? '';
+}

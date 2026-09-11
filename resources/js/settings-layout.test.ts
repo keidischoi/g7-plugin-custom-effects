@@ -143,7 +143,9 @@ describe('plugin settings layout', () => {
         expect(effectsCss).toContain('.g7-custom-effects-schedule-dfl-row {');
         expect(effectsCss).toContain('grid-template-columns: 1.5rem 2.25rem minmax(8rem, 1fr) max-content max-content max-content max-content minmax(1.75rem, auto)');
         expect(effectsCss).toContain('.g7-custom-effects-schedule-full {');
-        expect(effectsCss).toContain('> :nth-child(3) { grid-column: 3; grid-row: 1; }');
+        expect(effectsCss).toContain('> :nth-child(3) {');
+        expect(effectsCss).toContain('justify-self: stretch;');
+        expect(effectsCss).toContain('field-sizing: fixed');
         expect(effectsCss).toContain('width: calc(100% / 6);');
         expect(effectsCss).toContain('width: calc(100% / 7);');
         expect(effectsCss).toContain('grid-row: 2');

@@ -122,10 +122,32 @@ function enhanceTrueFalseToggle(
 }
 
 function formValue(target: Window, name: string): string {
-    const control = target.document.querySelector(`[name="${name}"]`);
+    const matches = [
+        target.document.getElementById(name),
+        ...target.document.querySelectorAll(`[name="${name}"]`),
+    ];
+    const control = matches.find((element) => (
+        (element instanceof HTMLInputElement || element instanceof HTMLSelectElement)
+        && !element.closest('.g7-custom-effects-schedule-list')
+    ));
     return control instanceof HTMLInputElement || control instanceof HTMLSelectElement
         ? control.value.trim()
         : '';
+}
+
+function extraSelects(row: HTMLElement, effect: HTMLSelectElement): HTMLSelectElement[] {
+    return [...row.querySelectorAll('select')].filter((select) => (
+        select !== effect
+        && !select.classList.contains('g7-custom-effects-schedule-enabled-select')
+        && !select.classList.contains('g7-custom-effects-schedule-day-select')
+    ));
+}
+
+function isUnfilledScheduleRow(row: HTMLElement, effect: HTMLSelectElement): boolean {
+    if (!effect.value) return true;
+    const numbers = [...row.querySelectorAll('input[type="number"]')];
+    if (numbers.some((input) => input.value === '')) return true;
+    return extraSelects(row, effect).some((select) => select.value === '');
 }
 
 function assignValue(
@@ -134,14 +156,22 @@ function assignValue(
     force = false,
 ): void {
     if (!next || (!force && element.value) || element.value === next) return;
-    element.value = next;
+    const setter = Object.getOwnPropertyDescriptor(
+        element instanceof HTMLSelectElement
+            ? HTMLSelectElement.prototype
+            : HTMLInputElement.prototype,
+        'value',
+    )?.set;
+    if (setter) setter.call(element, next);
+    else element.value = next;
     element.dispatchEvent(new Event('input', { bubbles: true }));
     element.dispatchEvent(new Event('change', { bubbles: true }));
 }
 
 export function fillEmptyScheduleRow(row: HTMLElement, target: Window = window): void {
     const effect = row.children[2]?.querySelector('select');
-    if (!(effect instanceof HTMLSelectElement) || effect.value) return;
+    if (!(effect instanceof HTMLSelectElement)) return;
+    if (effect.value && !isUnfilledScheduleRow(row, effect)) return;
 
     const clock = getZonedClock(new Date(), readSiteTimezone(target));
     const defaults = {
@@ -160,11 +190,11 @@ export function fillEmptyScheduleRow(row: HTMLElement, target: Window = window):
         if (!(input instanceof HTMLInputElement)) return;
         const placeholder = input.getAttribute('placeholder') ?? '';
         if (input.type === 'date' || placeholder.includes('YYYY-MM-DD')) {
-            assignValue(input, clock.date, true);
+            assignValue(input, clock.date);
             return;
         }
         if (input.type === 'time' || placeholder.includes('HH:MM')) {
-            assignValue(input, clock.time, true);
+            assignValue(input, clock.time);
         }
     });
 
@@ -174,13 +204,9 @@ export function fillEmptyScheduleRow(row: HTMLElement, target: Window = window):
         if (input instanceof HTMLInputElement) assignValue(input, defaults[key], true);
     });
 
-    const extraSelects = [...row.querySelectorAll('select')].filter((select) => (
-        select !== effect
-        && !select.classList.contains('g7-custom-effects-schedule-enabled-select')
-        && !select.classList.contains('g7-custom-effects-schedule-day-select')
-    ));
-    if (extraSelects[0]) assignValue(extraSelects[0], defaults.wind_direction, true);
-    if (extraSelects[1]) assignValue(extraSelects[1], defaults.color, true);
+    const selects = extraSelects(row, effect);
+    if (selects[0]) assignValue(selects[0], defaults.wind_direction, true);
+    if (selects[1]) assignValue(selects[1], defaults.color, true);
 }
 
 function isAddScheduleButton(button: Element): boolean {
@@ -235,8 +261,18 @@ export function enhanceSchedulePickers(target: Window = window): () => void {
     const watch = (root: Element): void => {
         apply();
         observer?.disconnect();
-        observer = new MutationObserver(() => {
+        observer = new MutationObserver((mutations) => {
             apply();
+            const addedRow = mutations.some((mutation) => (
+                [...mutation.addedNodes].some((node) => (
+                    node instanceof HTMLElement
+                    && (
+                        node.classList.contains('g7-custom-effects-schedule-dfl-row')
+                        || Boolean(node.querySelector('.g7-custom-effects-schedule-dfl-row'))
+                    )
+                ))
+            ));
+            if (!addedRow) return;
             const rows = root.querySelectorAll('.g7-custom-effects-schedule-dfl-row');
             const last = rows[rows.length - 1];
             if (last instanceof HTMLElement) fillEmptyScheduleRow(last, target);
@@ -263,6 +299,8 @@ export function enhanceSchedulePickers(target: Window = window): () => void {
         };
         target.setTimeout(fillLast, 0);
         target.setTimeout(fillLast, 50);
+        target.setTimeout(fillLast, 150);
+        target.setTimeout(fillLast, 400);
     };
 
     const finder = new MutationObserver(() => {

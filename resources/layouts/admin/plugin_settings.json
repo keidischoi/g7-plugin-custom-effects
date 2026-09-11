@@ -1,0 +1,85 @@
+{
+    "version": "1.0.0",
+    "layout_name": "plugin_settings",
+    "permissions": [
+        "core.plugins.update"
+    ],
+    "extends": "_admin_base",
+    "meta": {
+        "title": "$t:g7-plugin-custom-effects.settings.title",
+        "description": "$t:g7-plugin-custom-effects.settings.description"
+    },
+    "pageConfig": {
+        "notice": "$t:g7-plugin-custom-effects.settings.notice"
+    },
+    "schema": {
+        "enabled": {
+            "type": "boolean",
+            "default": true,
+            "label": "$t:g7-plugin-custom-effects.settings.fields.enabled.label",
+            "hint": "$t:g7-plugin-custom-effects.settings.fields.enabled.hint"
+        },
+        "effect": {
+            "type": "enum",
+            "options": ["snow", "rain"],
+            "default": "snow",
+            "label": "$t:g7-plugin-custom-effects.settings.fields.effect.label",
+            "hint": "$t:g7-plugin-custom-effects.settings.fields.effect.hint"
+        },
+        "intensity": {
+            "type": "integer",
+            "min": 10,
+            "max": 200,
+            "default": 100,
+            "label": "$t:g7-plugin-custom-effects.settings.fields.intensity.label",
+            "hint": "$t:g7-plugin-custom-effects.settings.fields.intensity.hint"
+        },
+        "speed": {
+            "type": "integer",
+            "min": 25,
+            "max": 300,
+            "default": 100,
+            "label": "$t:g7-plugin-custom-effects.settings.fields.speed.label",
+            "hint": "$t:g7-plugin-custom-effects.settings.fields.speed.hint"
+        },
+        "opacity": {
+            "type": "integer",
+            "min": 10,
+            "max": 100,
+            "default": 75,
+            "label": "$t:g7-plugin-custom-effects.settings.fields.opacity.label"
+        },
+        "wind": {
+            "type": "integer",
+            "min": -100,
+            "max": 100,
+            "default": 0,
+            "label": "$t:g7-plugin-custom-effects.settings.fields.wind.label",
+            "hint": "$t:g7-plugin-custom-effects.settings.fields.wind.hint"
+        },
+        "color": {
+            "type": "string",
+            "default": "#ffffff",
+            "label": "$t:g7-plugin-custom-effects.settings.fields.color.label",
+            "hint": "$t:g7-plugin-custom-effects.settings.fields.color.hint"
+        },
+        "mobile_enabled": {
+            "type": "boolean",
+            "default": false,
+            "label": "$t:g7-plugin-custom-effects.settings.fields.mobile_enabled.label",
+            "hint": "$t:g7-plugin-custom-effects.settings.fields.mobile_enabled.hint"
+        },
+        "admin_enabled": {
+            "type": "boolean",
+            "default": false,
+            "label": "$t:g7-plugin-custom-effects.settings.fields.admin_enabled.label",
+            "hint": "$t:g7-plugin-custom-effects.settings.fields.admin_enabled.hint"
+        },
+        "respect_reduced_motion": {
+            "type": "boolean",
+            "default": true,
+            "label": "$t:g7-plugin-custom-effects.settings.fields.respect_reduced_motion.label",
+            "hint": "$t:g7-plugin-custom-effects.settings.fields.respect_reduced_motion.hint"
+        }
+    }
+}

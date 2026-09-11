@@ -6,6 +6,10 @@
     },
     "name": "Custom Effects",
     "description": "Displays weather and decorative effects on Gnuboard7 pages.",
+    "toggle": {
+        "enable": "Turn visual effects on",
+        "disable": "Turn visual effects off"
+    },
     "settings": {
         "title": "Custom Effects Settings",
         "description": "Configure the weather effect, density, and where it runs.",

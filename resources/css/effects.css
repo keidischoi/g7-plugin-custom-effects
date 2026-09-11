@@ -10,8 +10,64 @@
     contain: strict;
 }
 
+.g7-custom-effects-toggle {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    padding: 0;
+    border: 0;
+    border-radius: 0.5rem;
+    background: transparent;
+    color: #4b5563;
+    font: inherit;
+    font-size: 1.25rem;
+    line-height: 1;
+    cursor: pointer;
+    transition: color 150ms ease, background-color 150ms ease, opacity 150ms ease;
+}
+
+.g7-custom-effects-toggle:hover {
+    background-color: #f3f4f6;
+    color: #111827;
+}
+
+.g7-custom-effects-toggle:focus-visible {
+    outline: 2px solid #3b82f6;
+    outline-offset: 2px;
+}
+
+.g7-custom-effects-toggle[data-enabled="false"] {
+    opacity: 0.42;
+}
+
+.g7-custom-effects-toggle[data-enabled="false"]::after {
+    position: absolute;
+    width: 1.35rem;
+    height: 2px;
+    border-radius: 9999px;
+    background: currentcolor;
+    content: "";
+    transform: rotate(-45deg);
+}
+
+.dark .g7-custom-effects-toggle {
+    color: #9ca3af;
+}
+
+.dark .g7-custom-effects-toggle:hover {
+    background-color: #1f2937;
+    color: #f9fafb;
+}
+
 @media (prefers-reduced-motion: reduce) {
     .g7-custom-effects-canvas[data-respect-reduced-motion="true"] {
         display: none;
+    }
+
+    .g7-custom-effects-toggle {
+        transition: none;
     }
 }

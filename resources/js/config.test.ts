@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { DEFAULT_CONFIG, normalizeConfig, shouldStart } from './config';
+import { DEFAULT_CONFIG, EFFECT_KINDS, normalizeConfig, shouldStart } from './config';
 import { particleCount } from './engine';
 
 describe('normalizeConfig', () => {
@@ -33,6 +33,14 @@ describe('normalizeConfig', () => {
 
     it('rejects color values that could escape a style context', () => {
         expect(normalizeConfig({ color: 'red; display:none' }).color).toBe('#ffffff');
+    });
+
+    it.each(EFFECT_KINDS)('accepts the %s effect', (effect) => {
+        expect(normalizeConfig({ effect }).effect).toBe(effect);
+    });
+
+    it('falls back to snow for an unknown effect', () => {
+        expect(normalizeConfig({ effect: 'unknown' }).effect).toBe('snow');
     });
 });
 
@@ -68,8 +76,17 @@ describe('shouldStart', () => {
 
 describe('particleCount', () => {
     it('scales with area and density while enforcing limits', () => {
-        expect(particleCount(1, 1, 10)).toBe(12);
+        expect(particleCount(1, 1, 10)).toBe(8);
         expect(particleCount(1920, 1080, 200)).toBe(259);
         expect(particleCount(10000, 10000, 200)).toBe(300);
+    });
+
+    it('uses effect-specific density profiles', () => {
+        expect(particleCount(1920, 1080, 100, 'rain')).toBeGreaterThan(
+            particleCount(1920, 1080, 100, 'snow'),
+        );
+        expect(particleCount(1920, 1080, 100, 'fireflies')).toBeLessThan(
+            particleCount(1920, 1080, 100, 'snow'),
+        );
     });
 });

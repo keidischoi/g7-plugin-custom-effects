@@ -5,7 +5,7 @@ namespace Plugins\G7\Plugin\Custom\Effects;
 use App\Extension\AbstractPlugin;
 
 /**
- * 사용자 화면에 눈 또는 비 효과를 추가하는 플러그인입니다.
+ * 사용자 화면에 날씨 및 장식 효과를 추가하는 플러그인입니다.
  */
 class Plugin extends AbstractPlugin
 {
@@ -27,12 +27,22 @@ class Plugin extends AbstractPlugin
             ],
             'effect' => [
                 'type' => 'enum',
-                'options' => ['snow', 'rain'],
+                'options' => [
+                    'snow',
+                    'rain',
+                    'leaves',
+                    'stars',
+                    'hearts',
+                    'petals',
+                    'confetti',
+                    'bubbles',
+                    'fireflies',
+                ],
                 'default' => 'snow',
                 'label' => ['ko' => '효과 종류', 'en' => 'Effect'],
                 'hint' => [
-                    'ko' => '눈 또는 비 효과를 선택합니다.',
-                    'en' => 'Choose a snow or rain effect.',
+                    'ko' => '날씨 또는 장식 효과를 선택합니다.',
+                    'en' => 'Choose a weather or decorative effect.',
                 ],
                 'required' => true,
             ],

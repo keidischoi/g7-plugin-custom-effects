@@ -606,12 +606,14 @@ export class EffectsEngine {
     private pileRestInset(particle: Particle): number {
         if (this.config.effect === 'leaves') return particle.size * 0.58;
         if (this.config.effect === 'maple_leaves') return particle.size * 0.82;
+        if (this.config.effect === 'petals') return particle.size;
         return particle.size;
     }
 
     private pileDeposit(particle: Particle): number {
         if (this.config.effect === 'leaves') return particle.size * 2.4;
         if (this.config.effect === 'maple_leaves') return particle.size * 2.2;
+        if (this.config.effect === 'petals') return particle.size * 2.6;
         return Math.max(8, particle.size * 9.5);
     }
 
@@ -886,7 +888,7 @@ export class EffectsEngine {
 
     private drawPetals(delta: number): void {
         for (const particle of this.particles) {
-            this.advanceFalling(particle, delta, 25);
+            this.advancePiling(particle, delta, 25);
             this.prepareParticle(particle);
             this.withTransform(particle, () => {
                 this.context.beginPath();

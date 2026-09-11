@@ -1,4 +1,4 @@
-import type { EffectConfig, EffectKind } from './config';
+import type { EffectConfig, EffectKind, WindDirection } from './config';
 
 interface Particle {
     x: number;
@@ -34,6 +34,11 @@ const EFFECT_PALETTES: Partial<Record<EffectKind, readonly string[]>> = {
     bubbles: ['#bae6fd', '#ddd6fe', '#fbcfe8'],
     fireflies: ['#fef08a', '#fde047', '#bef264'],
 };
+
+export function signedWind(strength: number, direction: WindDirection): number {
+    if (direction === 'none') return 0;
+    return Math.abs(strength) * (direction === 'left' ? -1 : 1);
+}
 
 export function particleCount(
     width: number,
@@ -122,6 +127,7 @@ export class EffectsEngine {
         const bubbles = effect === 'bubbles';
         const fireflies = effect === 'fireflies';
         const speedRange = this.speedRange(effect);
+        const wind = signedWind(this.config.wind, this.config.windDirection);
 
         return {
             x: Math.random() * this.width,
@@ -130,7 +136,7 @@ export class EffectsEngine {
                 : bubbles ? this.height + 20 : -(Math.random() * 40 + 10),
             vx: fireflies
                 ? (Math.random() - 0.5) * 30 * speed
-                : this.config.wind * (rain ? 0.8 : 0.35) + (Math.random() - 0.5) * 18,
+                : wind * (rain ? 0.8 : 0.35) + (Math.random() - 0.5) * 18,
             vy: (bubbles ? -1 : 1)
                 * (speedRange[0] + Math.random() * (speedRange[1] - speedRange[0]))
                 * speed,

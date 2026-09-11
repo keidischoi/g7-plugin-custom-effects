@@ -14,6 +14,7 @@ export const EFFECT_KINDS = [
 
 export type EffectKind = typeof EFFECT_KINDS[number];
 export type ScheduleDays = 'all' | 'weekdays' | 'weekends';
+export type WindDirection = 'none' | 'left' | 'right';
 
 export interface EffectConfig {
     enabled: boolean;
@@ -22,6 +23,7 @@ export interface EffectConfig {
     speed: number;
     opacity: number;
     wind: number;
+    windDirection: WindDirection;
     color: string;
     mobileEnabled: boolean;
     adminEnabled: boolean;
@@ -42,6 +44,7 @@ export const DEFAULT_CONFIG: Readonly<EffectConfig> = {
     speed: 100,
     opacity: 75,
     wind: 0,
+    windDirection: 'none',
     color: '#ffffff',
     mobileEnabled: false,
     adminEnabled: false,
@@ -100,6 +103,10 @@ export function normalizeConfig(raw: unknown): EffectConfig {
     const effect = EFFECT_KINDS.includes(value.effect as EffectKind)
         ? value.effect as EffectKind
         : DEFAULT_CONFIG.effect;
+    const legacyWind = boundedInteger(value.wind, DEFAULT_CONFIG.wind, -100, 100);
+    const windDirection = ['none', 'left', 'right'].includes(String(value.wind_direction))
+        ? value.wind_direction as WindDirection
+        : legacyWind < 0 ? 'left' : legacyWind > 0 ? 'right' : DEFAULT_CONFIG.windDirection;
 
     return {
         enabled: booleanValue(value.enabled, DEFAULT_CONFIG.enabled),
@@ -107,7 +114,8 @@ export function normalizeConfig(raw: unknown): EffectConfig {
         intensity: boundedInteger(value.intensity, DEFAULT_CONFIG.intensity, 10, 200),
         speed: boundedInteger(value.speed, DEFAULT_CONFIG.speed, 25, 300),
         opacity: boundedInteger(value.opacity, DEFAULT_CONFIG.opacity, 10, 100),
-        wind: boundedInteger(value.wind, DEFAULT_CONFIG.wind, -100, 100),
+        wind: Math.abs(legacyWind),
+        windDirection,
         color: colorValue(value.color),
         mobileEnabled: booleanValue(value.mobile_enabled, DEFAULT_CONFIG.mobileEnabled),
         adminEnabled: booleanValue(value.admin_enabled, DEFAULT_CONFIG.adminEnabled),

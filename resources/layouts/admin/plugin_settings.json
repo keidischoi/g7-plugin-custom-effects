@@ -1,5 +1,5 @@
 {
-    "version": "1.3.0",
+    "version": "1.4.0",
     "layout_name": "plugin_settings",
     "permissions": [
         "core.plugins.update"
@@ -438,11 +438,82 @@
                                                     "id": "wind",
                                                     "type": "number",
                                                     "name": "wind",
-                                                    "min": -100,
+                                                    "min": 0,
                                                     "max": 100,
                                                     "step": 10,
                                                     "className": "lg:col-span-1 w-full"
                                                 }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "id": "field_wind_direction",
+                                        "type": "basic",
+                                        "name": "Div",
+                                        "props": {
+                                            "className": "grid-2col lg:grid-cols-3 items-center px-6 py-4"
+                                        },
+                                        "children": [
+                                            {
+                                                "type": "basic",
+                                                "name": "Div",
+                                                "props": {
+                                                    "className": "lg:col-span-2"
+                                                },
+                                                "children": [
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "Label",
+                                                        "props": {
+                                                            "className": "form-label",
+                                                            "htmlFor": "wind_direction"
+                                                        },
+                                                        "text": "$t:g7-plugin-custom-effects.settings.fields.wind_direction.label"
+                                                    },
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "P",
+                                                        "props": {
+                                                            "className": "form-hint"
+                                                        },
+                                                        "text": "$t:g7-plugin-custom-effects.settings.fields.wind_direction.hint"
+                                                    }
+                                                ]
+                                            },
+                                            {
+                                                "type": "basic",
+                                                "name": "Select",
+                                                "props": {
+                                                    "id": "wind_direction",
+                                                    "name": "wind_direction",
+                                                    "className": "lg:col-span-1 w-full"
+                                                },
+                                                "children": [
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "Option",
+                                                        "props": {
+                                                            "value": "none"
+                                                        },
+                                                        "text": "$t:g7-plugin-custom-effects.settings.options.wind_none"
+                                                    },
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "Option",
+                                                        "props": {
+                                                            "value": "left"
+                                                        },
+                                                        "text": "$t:g7-plugin-custom-effects.settings.options.wind_left"
+                                                    },
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "Option",
+                                                        "props": {
+                                                            "value": "right"
+                                                        },
+                                                        "text": "$t:g7-plugin-custom-effects.settings.options.wind_right"
+                                                    }
+                                                ]
                                             }
                                         ]
                                     },
@@ -1155,9 +1226,14 @@
         },
         "wind": {
             "type": "integer",
-            "min": -100,
+            "min": 0,
             "max": 100,
             "default": 0
+        },
+        "wind_direction": {
+            "type": "enum",
+            "options": ["none", "left", "right"],
+            "default": "none"
         },
         "color": {
             "type": "string",

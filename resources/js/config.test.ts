@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { DEFAULT_CONFIG, EFFECT_KINDS, normalizeConfig, shouldStart } from './config';
-import { particleCount } from './engine';
+import { particleCount, signedWind } from './engine';
 
 describe('normalizeConfig', () => {
     it('uses safe defaults for a missing payload', () => {
@@ -24,7 +24,8 @@ describe('normalizeConfig', () => {
             intensity: 200,
             speed: 25,
             opacity: 45,
-            wind: -100,
+            wind: 100,
+            windDirection: 'left',
             mobileEnabled: true,
             adminEnabled: true,
             respectReducedMotion: false,
@@ -33,6 +34,27 @@ describe('normalizeConfig', () => {
 
     it('rejects color values that could escape a style context', () => {
         expect(normalizeConfig({ color: 'red; display:none' }).color).toBe('#ffffff');
+    });
+
+    it('uses an explicit wind direction with a positive strength', () => {
+        expect(normalizeConfig({
+            wind: 60,
+            wind_direction: 'right',
+        })).toMatchObject({
+            wind: 60,
+            windDirection: 'right',
+        });
+    });
+
+    it('converts legacy signed wind values into the new direction model', () => {
+        expect(normalizeConfig({ wind: -40 })).toMatchObject({
+            wind: 40,
+            windDirection: 'left',
+        });
+        expect(normalizeConfig({ wind: 40 })).toMatchObject({
+            wind: 40,
+            windDirection: 'right',
+        });
     });
 
     it.each(EFFECT_KINDS)('accepts the %s effect', (effect) => {
@@ -108,5 +130,13 @@ describe('particleCount', () => {
         expect(particleCount(1920, 1080, 100, 'fireflies')).toBeLessThan(
             particleCount(1920, 1080, 100, 'snow'),
         );
+    });
+});
+
+describe('signedWind', () => {
+    it('maps explicit directions to horizontal velocity', () => {
+        expect(signedWind(50, 'left')).toBe(-50);
+        expect(signedWind(50, 'right')).toBe(50);
+        expect(signedWind(50, 'none')).toBe(0);
     });
 });

@@ -49,7 +49,7 @@ describe('plugin settings layout', () => {
         const boundControls = [...collectBoundControls(layout.slots)].sort();
 
         expect(boundControls).toEqual(schemaFields);
-        expect(boundControls).toHaveLength(17);
+        expect(boundControls).toHaveLength(18);
     });
 
     it('offers every effect supported by the canvas engine', () => {

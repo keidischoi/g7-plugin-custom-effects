@@ -1,0 +1,50 @@
+{
+    "name": "Custom Effects",
+    "description": "Displays snow or rain effects on Gnuboard7 pages.",
+    "settings": {
+        "title": "Custom Effects Settings",
+        "description": "Configure the weather effect, density, and where it runs.",
+        "notice": "Refresh a visitor page after saving to apply your changes.",
+        "fields": {
+            "enabled": {
+                "label": "Enable effects",
+                "hint": "Displays the selected weather effect on visitor pages."
+            },
+            "effect": {
+                "label": "Effect",
+                "hint": "Choose snow or rain."
+            },
+            "intensity": {
+                "label": "Effect density (%)",
+                "hint": "Choose a particle density from 10 to 200."
+            },
+            "speed": {
+                "label": "Fall speed (%)",
+                "hint": "Choose a percentage of the default speed from 25 to 300."
+            },
+            "opacity": {
+                "label": "Opacity (%)"
+            },
+            "wind": {
+                "label": "Wind",
+                "hint": "Negative values move particles left; positive values move them right."
+            },
+            "color": {
+                "label": "Particle color",
+                "hint": "Enter a CSS color value, such as #ffffff."
+            },
+            "mobile_enabled": {
+                "label": "Enable on mobile",
+                "hint": "Disabled by default on mobile to reduce battery usage."
+            },
+            "admin_enabled": {
+                "label": "Enable in admin",
+                "hint": "Disabled by default to avoid distracting from administration."
+            },
+            "respect_reduced_motion": {
+                "label": "Respect reduced motion",
+                "hint": "Hides effects for visitors who prefer reduced motion."
+            }
+        }
+    }
+}

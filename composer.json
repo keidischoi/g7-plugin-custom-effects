@@ -1,0 +1,15 @@
+{
+    "name": "plugins/g7-plugin-custom-effects",
+    "description": "Snow and rain effects plugin for Gnuboard7",
+    "type": "library",
+    "version": "1.0.0",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Plugins\\G7\\Plugin\\Custom\\Effects\\": ["src/", "./"]
+        }
+    },
+    "require": {
+        "php": "^8.2"
+    }
+}

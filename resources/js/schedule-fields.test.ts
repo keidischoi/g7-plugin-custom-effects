@@ -168,8 +168,50 @@ describe('enhanceSchedulePickers', () => {
 
         expect(labels).toHaveLength(1);
         expect(labels[0]?.textContent?.trim()).toBe('월');
-        expect(labels[0]?.htmlFor).toBe(checkbox.id);
-        expect(checkbox.nextElementSibling?.tagName).toBe('SELECT');
+        expect(labels[0]?.contains(checkbox)).toBe(true);
+        expect(cell.querySelector('select')).toBeTruthy();
+        stop();
+    });
+
+    it('replaces generic 요일 captions with Sunday-to-Saturday names', () => {
+        const daySelects = Array.from({ length: 7 }, () => `
+            <div>
+                <label>요일</label>
+                <select class="g7-custom-effects-schedule-day-select">
+                    <option value="true">적용</option>
+                    <option value="false">제외</option>
+                </select>
+            </div>
+        `).join('');
+        document.body.innerHTML = `
+            <div class="g7-custom-effects-schedule-list">
+                <div class="g7-custom-effects-schedule-dfl-row">
+                    <div>⋮⋮</div>
+                    <div>
+                        <select class="g7-custom-effects-schedule-enabled-select">
+                            <option value="true">사용</option>
+                            <option value="false">안함</option>
+                        </select>
+                    </div>
+                    <div><select><option>눈</option></select></div>
+                    <div><input placeholder="YYYY-MM-DD"></div>
+                    <div><input placeholder="YYYY-MM-DD"></div>
+                    <div><input placeholder="HH:MM"></div>
+                    <div><input placeholder="HH:MM"></div>
+                    ${daySelects}
+                    <div><button type="button">-</button></div>
+                </div>
+            </div>
+        `;
+
+        const stop = enhanceSchedulePickers(window);
+        const row = document.querySelector('.g7-custom-effects-schedule-dfl-row') as HTMLElement;
+        const names = [...row.querySelectorAll('input.g7-custom-effects-schedule-day')].map((box) => (
+            box.closest('label')?.childNodes[0]?.textContent?.trim()
+        ));
+
+        expect(names).toEqual(['일', '월', '화', '수', '목', '금', '토']);
+        expect(row.querySelectorAll('label')).toHaveLength(7);
         stop();
     });
 

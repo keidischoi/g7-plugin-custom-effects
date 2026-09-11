@@ -1,3 +1,40 @@
+const DAY_LABELS = {
+    ko: ['일', '월', '화', '수', '목', '금', '토'],
+    en: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+} as const;
+
+const KNOWN_DAY_NAMES = new Set<string>([...DAY_LABELS.ko, ...DAY_LABELS.en]);
+
+function dayLabels(target: Window): readonly string[] {
+    return (target.document.documentElement.lang || '').toLowerCase().startsWith('en')
+        ? DAY_LABELS.en
+        : DAY_LABELS.ko;
+}
+
+function rowChild(element: Element, row: HTMLElement): Element | null {
+    let current: Element | null = element;
+    while (current && current.parentElement !== row) {
+        current = current.parentElement;
+    }
+    return current;
+}
+
+function dayName(select: HTMLSelectElement, target: Window): string {
+    const labels = dayLabels(target);
+    const row = select.closest('.g7-custom-effects-schedule-dfl-row');
+    if (row instanceof HTMLElement) {
+        const cell = rowChild(select, row);
+        const index = cell ? [...row.children].indexOf(cell) : -1;
+        if (index >= 7 && index <= 13) return labels[index - 7] ?? labels[0];
+    }
+
+    const existing = select.parentElement?.querySelector('label')?.textContent?.trim() ?? '';
+    if (KNOWN_DAY_NAMES.has(existing)) return existing;
+    const aria = select.getAttribute('aria-label')?.trim() ?? '';
+    if (KNOWN_DAY_NAMES.has(aria)) return aria;
+    return labels[0];
+}
+
 function isEnabledSelect(element: HTMLSelectElement): boolean {
     if (!(element instanceof HTMLSelectElement)) return false;
     if (element.classList.contains('g7-custom-effects-schedule-enabled-select')) return true;
@@ -21,15 +58,6 @@ function isEnabledSelect(element: HTMLSelectElement): boolean {
 function isDaySelect(element: HTMLSelectElement): boolean {
     return element instanceof HTMLSelectElement
         && element.classList.contains('g7-custom-effects-schedule-day-select');
-}
-
-function dayCaption(select: HTMLSelectElement, host: Element): string {
-    const labelled = host.querySelector('label');
-    const fromLabel = labelled?.childNodes[0]?.textContent?.trim()
-        || labelled?.textContent?.trim()
-        || '';
-    if (fromLabel && fromLabel.length <= 8) return fromLabel;
-    return select.getAttribute('aria-label') || '요일';
 }
 
 function enhanceTrueFalseToggle(
@@ -74,27 +102,20 @@ function enhanceTrueFalseToggle(
     });
 
     if (flag === 'g7DayToggle') {
-        const caption = dayCaption(select, host);
-        checkbox.title = caption;
+        checkbox.title = label;
         const wrappingLabel = select.closest('label');
         const siblingLabel = wrappingLabel ?? host.querySelector('label');
 
         if (siblingLabel instanceof HTMLLabelElement) {
-            if (!checkbox.id) {
-                checkbox.id = `g7-custom-effects-day-${Math.random().toString(36).slice(2, 9)}`;
-            }
-            siblingLabel.htmlFor = checkbox.id;
-            if (wrappingLabel) {
-                wrappingLabel.insertBefore(checkbox, select);
-            } else {
-                siblingLabel.after(checkbox);
-            }
+            const wasWrapping = wrappingLabel === siblingLabel;
+            siblingLabel.replaceChildren(label, checkbox);
+            if (wasWrapping) siblingLabel.append(select);
             return;
         }
 
         const created = select.ownerDocument.createElement('label');
         created.className = 'g7-custom-effects-schedule-day-label';
-        created.append(caption, checkbox);
+        created.append(label, checkbox);
         host.insertBefore(created, select);
         return;
     }
@@ -140,7 +161,7 @@ export function enhanceSchedulePickers(target: Window = window): () => void {
                     element,
                     'g7DayToggle',
                     'g7-custom-effects-schedule-day',
-                    element.getAttribute('aria-label') || '요일',
+                    dayName(element, target),
                     'g7-custom-effects-schedule-day-select',
                     'g7-custom-effects-schedule-day-host',
                 );

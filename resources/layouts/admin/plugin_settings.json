@@ -1,5 +1,5 @@
 {
-    "version": "1.7.6",
+    "version": "1.8.0",
     "layout_name": "plugin_settings",
     "permissions": [
         "core.plugins.update"
@@ -269,6 +269,62 @@
                                                             "value": "fireflies"
                                                         },
                                                         "text": "$t:g7-plugin-custom-effects.settings.options.fireflies"
+                                                    },
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "Option",
+                                                        "props": {
+                                                            "value": "cheese"
+                                                        },
+                                                        "text": "$t:g7-plugin-custom-effects.settings.options.cheese"
+                                                    },
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "Option",
+                                                        "props": {
+                                                            "value": "poop"
+                                                        },
+                                                        "text": "$t:g7-plugin-custom-effects.settings.options.poop"
+                                                    },
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "Option",
+                                                        "props": {
+                                                            "value": "ice_cream"
+                                                        },
+                                                        "text": "$t:g7-plugin-custom-effects.settings.options.ice_cream"
+                                                    },
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "Option",
+                                                        "props": {
+                                                            "value": "bills"
+                                                        },
+                                                        "text": "$t:g7-plugin-custom-effects.settings.options.bills"
+                                                    },
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "Option",
+                                                        "props": {
+                                                            "value": "coins"
+                                                        },
+                                                        "text": "$t:g7-plugin-custom-effects.settings.options.coins"
+                                                    },
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "Option",
+                                                        "props": {
+                                                            "value": "alarm_clock"
+                                                        },
+                                                        "text": "$t:g7-plugin-custom-effects.settings.options.alarm_clock"
+                                                    },
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "Option",
+                                                        "props": {
+                                                            "value": "maple_leaves"
+                                                        },
+                                                        "text": "$t:g7-plugin-custom-effects.settings.options.maple_leaves"
                                                     }
                                                 ]
                                             }
@@ -816,6 +872,34 @@
                                                                 {
                                                                     "value": "fireflies",
                                                                     "label": "$t:g7-plugin-custom-effects.settings.options.fireflies"
+                                                                },
+                                                                {
+                                                                    "value": "cheese",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.cheese"
+                                                                },
+                                                                {
+                                                                    "value": "poop",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.poop"
+                                                                },
+                                                                {
+                                                                    "value": "ice_cream",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.ice_cream"
+                                                                },
+                                                                {
+                                                                    "value": "bills",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.bills"
+                                                                },
+                                                                {
+                                                                    "value": "coins",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.coins"
+                                                                },
+                                                                {
+                                                                    "value": "alarm_clock",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.alarm_clock"
+                                                                },
+                                                                {
+                                                                    "value": "maple_leaves",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.maple_leaves"
                                                                 }
                                                             ],
                                                             "required": true
@@ -1305,7 +1389,14 @@
                 "confetti",
                 "bubbles",
                 "bouncing_bubbles",
-                "fireflies"
+                "fireflies",
+                "cheese",
+                "poop",
+                "ice_cream",
+                "bills",
+                "coins",
+                "alarm_clock",
+                "maple_leaves"
             ],
             "default": "snow"
         },

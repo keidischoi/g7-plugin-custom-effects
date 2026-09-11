@@ -39,6 +39,13 @@ class Plugin extends AbstractPlugin
                     'bubbles',
                     'bouncing_bubbles',
                     'fireflies',
+                    'cheese',
+                    'poop',
+                    'ice_cream',
+                    'bills',
+                    'coins',
+                    'alarm_clock',
+                    'maple_leaves',
                 ],
                 'default' => 'snow',
                 'label' => ['ko' => '효과 종류', 'en' => 'Effect'],
@@ -269,7 +276,7 @@ class Plugin extends AbstractPlugin
         return [
             'author' => 'keidischoi',
             'license' => 'MIT',
-            'keywords' => ['effects', 'snow', 'rain', 'canvas'],
+            'keywords' => ['effects', 'snow', 'rain', 'canvas', 'cheese', 'coins'],
         ];
     }
 }

@@ -12,6 +12,13 @@ export const EFFECT_KINDS = [
     'bubbles',
     'bouncing_bubbles',
     'fireflies',
+    'cheese',
+    'poop',
+    'ice_cream',
+    'bills',
+    'coins',
+    'alarm_clock',
+    'maple_leaves',
 ] as const;
 
 export const COLOR_OPTIONS = [

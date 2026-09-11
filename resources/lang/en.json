@@ -106,7 +106,8 @@
             "schedules": {
                 "add": "Add schedule",
                 "empty": "No schedules yet. Add a schedule to begin.",
-                "enabled": "Active"
+                "enabled": "Active",
+                "remove": "Remove"
             },
             "schedule_start_date": {
                 "label": "Start date",

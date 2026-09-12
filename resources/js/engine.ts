@@ -332,8 +332,8 @@ export function snowSpawnY(
     randomPosition: boolean,
     random: () => number = Math.random,
 ): number {
-    const span = randomPosition ? Math.max(1, height) : 40;
-    return -(random() * span + 10);
+    if (randomPosition) return random() * Math.max(1, height);
+    return -(random() * 40 + 10);
 }
 
 export function parkSettledFlake<T extends object>(flake: T, piles: T[]): T {

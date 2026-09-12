@@ -519,9 +519,9 @@ describe('ground piles', () => {
         expect(flake.vy).toBe(30);
     });
 
-    it('spawns snow above the screen so the first frame is not a full dump', () => {
-        expect(snowSpawnY(400, true, () => 0)).toBe(-10);
-        expect(snowSpawnY(400, true, () => 1)).toBe(-410);
+    it('fills the opening flurry across the viewport and respawns from above', () => {
+        expect(snowSpawnY(400, true, () => 0)).toBe(0);
+        expect(snowSpawnY(400, true, () => 1)).toBe(400);
         expect(snowSpawnY(400, false, () => 0.5)).toBe(-30);
     });
 

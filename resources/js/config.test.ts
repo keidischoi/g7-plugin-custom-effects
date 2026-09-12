@@ -22,6 +22,9 @@ import {
     bounceRainAtFloor,
     isUnsupported,
     settleWhereHit,
+    snowSpawnY,
+    parkSettledFlake,
+    ageSnowPiles,
 } from './engine';
 
 describe('normalizeConfig', () => {
@@ -514,6 +517,47 @@ describe('ground piles', () => {
         expect(settleWhereHit(flake, 200, 4, [])).toBe(false);
         expect(flake.settled).toBe(0);
         expect(flake.vy).toBe(30);
+    });
+
+    it('spawns snow above the screen so the first frame is not a full dump', () => {
+        expect(snowSpawnY(400, true, () => 0)).toBe(-10);
+        expect(snowSpawnY(400, true, () => 1)).toBe(-410);
+        expect(snowSpawnY(400, false, () => 0.5)).toBe(-30);
+    });
+
+    it('keeps the falling count when a flake is parked in a pile', () => {
+        const falling = {
+            x: 16,
+            y: 196,
+            vx: 0,
+            vy: 40,
+            size: 4,
+            rotationSpeed: 0,
+            settled: 0,
+        };
+        const piles: typeof falling[] = [];
+
+        expect(settleWhereHit(falling, 200, 4, [])).toBe(true);
+        const parked = parkSettledFlake(falling, piles);
+        falling.settled = 0;
+        falling.y = snowSpawnY(200, false, () => 0);
+
+        expect(piles).toHaveLength(1);
+        expect(parked.settled).toBe(1);
+        expect(falling.settled).toBe(0);
+        expect(falling.y).toBeLessThan(0);
+        expect(piles[0]).not.toBe(falling);
+    });
+
+    it('removes aged pile flakes instead of turning them back into falling snow', () => {
+        const young = { settled: 2 };
+        const old = { settled: 17.5 };
+        const collapsing = { settled: 0 };
+
+        expect(ageSnowPiles([young, old, collapsing], 1)).toEqual([
+            { settled: 3 },
+            { settled: 0 },
+        ]);
     });
 });
 

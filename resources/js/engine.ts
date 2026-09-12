@@ -327,6 +327,37 @@ export function settleWhereHit(
     return true;
 }
 
+export function snowSpawnY(
+    height: number,
+    randomPosition: boolean,
+    random: () => number = Math.random,
+): number {
+    const span = randomPosition ? Math.max(1, height) : 40;
+    return -(random() * span + 10);
+}
+
+export function parkSettledFlake<T extends object>(flake: T, piles: T[]): T {
+    const parked = { ...flake };
+    piles.push(parked);
+    return parked;
+}
+
+export function ageSnowPiles<T extends { settled: number }>(
+    piles: readonly T[],
+    delta: number,
+    recycleAge: number = PILE_RECYCLE_AGE,
+): T[] {
+    const kept: T[] = [];
+    for (const particle of piles) {
+        if (particle.settled > 0) {
+            particle.settled += delta;
+            if (particle.settled >= recycleAge) continue;
+        }
+        kept.push(particle);
+    }
+    return kept;
+}
+
 export interface RainBody {
     x: number;
     y: number;
@@ -375,6 +406,7 @@ export class EffectsEngine {
     private readonly canvas: HTMLCanvasElement;
     private readonly context: CanvasRenderingContext2D;
     private particles: Particle[] = [];
+    private snowPiles: Particle[] = [];
     private pilingSettled: Particle[] = [];
     private frameId: number | null = null;
     private previousTime = 0;
@@ -416,6 +448,8 @@ export class EffectsEngine {
         this.target.document.removeEventListener('visibilitychange', this.handleVisibility);
         this.canvas.remove();
         this.particles = [];
+        this.snowPiles = [];
+        this.pilingSettled = [];
     }
 
     private readonly resize = (): void => {
@@ -438,6 +472,7 @@ export class EffectsEngine {
 
     private createParticles(count: number): void {
         this.particles = Array.from({ length: count }, () => this.newParticle(true));
+        this.snowPiles = [];
         this.pilingSettled = [];
     }
 
@@ -455,9 +490,11 @@ export class EffectsEngine {
 
         return {
             x: Math.random() * this.width,
-            y: randomPosition
-                ? Math.random() * this.height
-                : bubbles ? this.height + 20 : -(Math.random() * 40 + 10),
+            y: effect === 'snow'
+                ? snowSpawnY(this.height, randomPosition)
+                : randomPosition
+                    ? Math.random() * this.height
+                    : bubbles ? this.height + 20 : -(Math.random() * 40 + 10),
             vx: fireflies || bouncingBubbles
                 ? (Math.random() - 0.5) * 30 * speed
                     + wind * (bouncingBubbles ? 0.35 : 0)
@@ -603,15 +640,14 @@ export class EffectsEngine {
     }
 
     private beginPilingFrame(delta: number): void {
-        for (const particle of this.particles) {
+        this.snowPiles = ageSnowPiles(this.snowPiles, delta);
+        for (const particle of this.snowPiles) {
             if (particle.settled <= 0) continue;
-            particle.settled += delta;
             particle.vx = 0;
             particle.vy = 0;
             particle.rotationSpeed = 0;
-            if (particle.settled >= PILE_RECYCLE_AGE) this.resetParticle(particle);
         }
-        this.pilingSettled = this.particles.filter((particle) => particle.settled > 0);
+        this.pilingSettled = this.snowPiles.filter((particle) => particle.settled > 0);
         this.releaseUnsupportedPiles();
     }
 
@@ -624,7 +660,7 @@ export class EffectsEngine {
             particle.settled = 0;
             this.releaseFallSpeed(particle);
         }
-        this.pilingSettled = this.particles.filter((particle) => particle.settled > 0);
+        this.pilingSettled = this.snowPiles.filter((particle) => particle.settled > 0);
     }
 
     private releaseFallSpeed(particle: Particle): void {
@@ -633,7 +669,12 @@ export class EffectsEngine {
         particle.rotationSpeed = (Math.random() - 0.5) * 2.4;
     }
 
-    private advancePiling(particle: Particle, delta: number, sway: number): void {
+    private advancePiling(
+        particle: Particle,
+        delta: number,
+        sway: number,
+        source: 'sky' | 'pile',
+    ): void {
         if (particle.settled > 0) return;
 
         particle.phase += particle.phaseSpeed * delta;
@@ -641,6 +682,11 @@ export class EffectsEngine {
         particle.x += (particle.vx + Math.sin(particle.phase) * sway) * delta;
         particle.y += particle.vy * delta;
         this.wrapHorizontally(particle);
+
+        if (source === 'pile' && particle.y > this.height + particle.size * 3) {
+            particle.settled = -1;
+            return;
+        }
 
         const restInset = this.pileRestInset(particle);
         const restY = supportYFromSettled(
@@ -654,11 +700,19 @@ export class EffectsEngine {
 
         const maxSettled = Math.max(4, Math.floor(this.particles.length * 0.72));
         if (restY < this.height - PILE_MAX_HEIGHT || this.pilingSettled.length >= maxSettled) {
-            this.resetParticle(particle);
+            if (source === 'sky') this.resetParticle(particle);
+            else particle.settled = -1;
             return;
         }
 
         if (!settleWhereHit(particle, this.height, restInset, this.pilingSettled)) return;
+
+        if (source === 'sky') {
+            this.pilingSettled.push(parkSettledFlake(particle, this.snowPiles));
+            this.resetParticle(particle);
+            return;
+        }
+
         this.pilingSettled.push(particle);
     }
 
@@ -681,8 +735,25 @@ export class EffectsEngine {
 
     private drawSnow(delta: number): void {
         this.beginPilingFrame(delta);
+
         for (const particle of this.particles) {
-            this.advancePiling(particle, delta, 12);
+            this.advancePiling(particle, delta, 12, 'sky');
+        }
+
+        this.snowPiles = this.snowPiles.filter((particle) => {
+            if (particle.settled > 0) return true;
+            this.advancePiling(particle, delta, 12, 'pile');
+            return particle.settled >= 0;
+        });
+
+        for (const particle of this.snowPiles) {
+            this.prepareParticle(particle);
+            this.context.beginPath();
+            this.context.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
+            this.context.fill();
+        }
+
+        for (const particle of this.particles) {
             this.prepareParticle(particle);
             this.context.beginPath();
             this.context.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);

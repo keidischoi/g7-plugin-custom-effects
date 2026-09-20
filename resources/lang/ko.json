@@ -4,14 +4,14 @@
             "settings": "화면 효과 설정"
         }
     },
-    "name": "사용자 화면 효과",
+    "name": "화면 효과",
     "description": "그누보드7 화면에 날씨와 장식 효과를 표시합니다.",
     "toggle": {
         "enable": "화면 효과 켜기",
         "disable": "화면 효과 끄기"
     },
     "settings": {
-        "title": "사용자 화면 효과 설정",
+        "title": "화면 효과 설정",
         "description": "눈·비 효과의 종류, 밀도와 동작 범위를 설정합니다.",
         "notice": "저장하면 이미 열린 방문자 페이지에도 바로 적용됩니다.",
         "sections": {

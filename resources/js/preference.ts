@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 export const EFFECTS_PREFERENCE_KEY = 'custom-effects:user-enabled';
-=======
-export const EFFECTS_PREFERENCE_KEY = 'g7-plugin-custom-effects:user-enabled';
->>>>>>> c296cf2d90e83e047cf94ead1b1c993fb02b9ad7
 
 export interface PreferenceStorage {
     getItem: (key: string) => string | null;

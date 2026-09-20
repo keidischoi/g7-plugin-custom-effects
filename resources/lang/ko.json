@@ -1,0 +1,158 @@
+{
+    "editor": {
+        "data_source": {
+            "settings": "화면 효과 설정"
+        }
+    },
+    "name": "사용자 화면 효과",
+    "description": "그누보드7 화면에 날씨와 장식 효과를 표시합니다.",
+    "toggle": {
+        "enable": "화면 효과 켜기",
+        "disable": "화면 효과 끄기"
+    },
+    "settings": {
+        "title": "사용자 화면 효과 설정",
+        "description": "눈·비 효과의 종류, 밀도와 동작 범위를 설정합니다.",
+        "notice": "저장하면 이미 열린 방문자 페이지에도 바로 적용됩니다.",
+        "sections": {
+            "effect": "효과 모양 및 움직임",
+            "schedule": "날짜 및 시간 예약",
+            "scope": "표시 범위 및 접근성"
+        },
+        "options": {
+            "leaves": "낙엽",
+            "snow": "눈",
+            "maple_leaves": "단풍잎",
+            "coins": "동전",
+            "fireflies": "반딧불",
+            "cherry_blossoms": "벚꽃",
+            "petals": "벚꽃잎",
+            "stars": "별",
+            "rain": "비",
+            "bubbles": "비눗방울",
+            "confetti": "색종이",
+            "ice_cream": "아이스크림",
+            "stars_multicolor": "여러 색 별",
+            "poop": "응가",
+            "alarm_clock": "자명종",
+            "bills": "지폐",
+            "cheese": "치즈",
+            "bouncing_bubbles": "튕기는 비눗방울",
+            "hearts": "하트",
+            "sunflowers": "해바라기",
+            "wind_none": "바람 없음",
+            "wind_left": "왼쪽",
+            "wind_right": "오른쪽",
+            "wind_random": "무작위",
+            "schedule_on": "사용",
+            "schedule_off": "중지",
+            "day_on": "적용",
+            "day_off": "제외",
+            "day_sun": "일",
+            "day_mon": "월",
+            "day_tue": "화",
+            "day_wed": "수",
+            "day_thu": "목",
+            "day_fri": "금",
+            "day_sat": "토",
+            "color_white": "흰색 (#ffffff)",
+            "color_sky": "하늘색 (#bae6fd)",
+            "color_pink": "분홍색 (#f9a8d4)",
+            "color_yellow": "노란색 (#fde047)",
+            "color_green": "초록색 (#86efac)",
+            "color_purple": "보라색 (#c4b5fd)",
+            "color_orange": "주황색 (#fb923c)",
+            "color_red": "빨간색 (#f87171)",
+            "timezone_seoul": "서울 (Asia/Seoul)",
+            "timezone_utc": "협정 세계시 (UTC)",
+            "timezone_tokyo": "도쿄 (Asia/Tokyo)",
+            "timezone_shanghai": "상하이 (Asia/Shanghai)",
+            "timezone_new_york": "뉴욕 (America/New_York)",
+            "timezone_los_angeles": "로스앤젤레스 (America/Los_Angeles)",
+            "timezone_london": "런던 (Europe/London)",
+            "timezone_paris": "파리 (Europe/Paris)",
+            "timezone_sydney": "시드니 (Australia/Sydney)",
+            "days_all": "매일",
+            "days_weekdays": "평일",
+            "days_weekends": "주말"
+        },
+        "fields": {
+            "enabled": {
+                "label": "화면 효과 사용",
+                "hint": "방문자 화면에 선택한 날씨 효과를 표시합니다."
+            },
+            "effect": {
+                "label": "효과 종류",
+                "hint": "눈·비·낙엽과 다양한 장식 효과 중 하나를 선택합니다."
+            },
+            "intensity": {
+                "label": "효과 밀도 (%)",
+                "hint": "10~200 사이에서 화면에 표시할 입자 수를 조절합니다."
+            },
+            "speed": {
+                "label": "낙하 속도 (%)",
+                "hint": "25~300 사이에서 기본 낙하 속도의 비율을 조절합니다."
+            },
+            "opacity": {
+                "label": "불투명도 (%)"
+            },
+            "wind": {
+                "label": "바람 세기",
+                "hint": "선택한 방향으로 입자를 미는 세기를 설정합니다."
+            },
+            "wind_direction": {
+                "label": "바람 방향",
+                "hint": "바람 없음, 왼쪽, 오른쪽 또는 입자별 무작위를 선택합니다."
+            },
+            "color": {
+                "label": "입자 색상",
+                "hint": "미리 준비된 샘플 색상 중 하나를 선택합니다."
+            },
+            "schedule_enabled": {
+                "label": "예약 사용",
+                "hint": "예약을 켜면 아래 일정 중 현재 시각에 해당하는 효과만 표시합니다. 시간은 환경설정의 기본 시간대를 사용합니다."
+            },
+            "schedules": {
+                "add": "예약 추가",
+                "empty": "예약이 없습니다. 예약을 추가하세요.",
+                "enabled": "사용",
+                "remove": "삭제"
+            },
+            "schedule_start_date": {
+                "label": "시작 날짜",
+                "hint": "비워두면 시작 날짜를 제한하지 않습니다."
+            },
+            "schedule_end_date": {
+                "label": "종료 날짜",
+                "hint": "종료 날짜 전체가 예약에 포함됩니다."
+            },
+            "schedule_start_time": {
+                "label": "매일 시작 시간",
+                "hint": "비워두면 하루의 시작부터 적용합니다."
+            },
+            "schedule_end_time": {
+                "label": "매일 종료 시간",
+                "hint": "시작 시간보다 이르면 다음 날 종료로 처리합니다."
+            },
+            "schedule_days": {
+                "label": "적용 요일"
+            },
+            "schedule_timezone": {
+                "label": "기준 타임존",
+                "hint": "예약 시간은 환경설정의 기본 시간대로 계산합니다."
+            },
+            "mobile_enabled": {
+                "label": "모바일에서 사용",
+                "hint": "모바일에서는 배터리 사용을 줄이기 위해 기본적으로 꺼집니다."
+            },
+            "admin_enabled": {
+                "label": "관리자 화면에서 사용",
+                "hint": "관리 작업을 방해하지 않도록 기본적으로 꺼집니다."
+            },
+            "respect_reduced_motion": {
+                "label": "동작 줄이기 설정 존중",
+                "hint": "운영체제에서 동작 줄이기를 선택한 방문자에게 효과를 표시하지 않습니다."
+            }
+        }
+    }
+}

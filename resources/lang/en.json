@@ -1,0 +1,158 @@
+{
+    "editor": {
+        "data_source": {
+            "settings": "Custom effects settings"
+        }
+    },
+    "name": "Custom Effects",
+    "description": "Displays weather and decorative effects on Gnuboard7 pages.",
+    "toggle": {
+        "enable": "Turn visual effects on",
+        "disable": "Turn visual effects off"
+    },
+    "settings": {
+        "title": "Custom Effects Settings",
+        "description": "Configure the weather effect, density, and where it runs.",
+        "notice": "Changes apply to already open visitor pages as soon as you save.",
+        "sections": {
+            "effect": "Appearance and movement",
+            "schedule": "Date and time scheduling",
+            "scope": "Display scope and accessibility"
+        },
+        "options": {
+            "leaves": "Falling leaves",
+            "snow": "Snow",
+            "maple_leaves": "Maple leaves",
+            "coins": "Coins",
+            "fireflies": "Fireflies",
+            "cherry_blossoms": "Cherry blossoms",
+            "petals": "Cherry blossom petals",
+            "stars": "Stars",
+            "rain": "Rain",
+            "bubbles": "Bubbles",
+            "confetti": "Confetti",
+            "ice_cream": "Ice cream",
+            "stars_multicolor": "Multicolor stars",
+            "poop": "Poop",
+            "alarm_clock": "Alarm clock",
+            "bills": "Banknotes",
+            "cheese": "Cheese",
+            "bouncing_bubbles": "Bouncing bubbles",
+            "hearts": "Hearts",
+            "sunflowers": "Sunflowers",
+            "wind_none": "No wind",
+            "wind_left": "Left",
+            "wind_right": "Right",
+            "wind_random": "Random",
+            "schedule_on": "On",
+            "schedule_off": "Off",
+            "day_on": "On",
+            "day_off": "Off",
+            "day_sun": "Sun",
+            "day_mon": "Mon",
+            "day_tue": "Tue",
+            "day_wed": "Wed",
+            "day_thu": "Thu",
+            "day_fri": "Fri",
+            "day_sat": "Sat",
+            "color_white": "White (#ffffff)",
+            "color_sky": "Sky blue (#bae6fd)",
+            "color_pink": "Pink (#f9a8d4)",
+            "color_yellow": "Yellow (#fde047)",
+            "color_green": "Green (#86efac)",
+            "color_purple": "Purple (#c4b5fd)",
+            "color_orange": "Orange (#fb923c)",
+            "color_red": "Red (#f87171)",
+            "timezone_seoul": "Seoul (Asia/Seoul)",
+            "timezone_utc": "Coordinated Universal Time (UTC)",
+            "timezone_tokyo": "Tokyo (Asia/Tokyo)",
+            "timezone_shanghai": "Shanghai (Asia/Shanghai)",
+            "timezone_new_york": "New York (America/New_York)",
+            "timezone_los_angeles": "Los Angeles (America/Los_Angeles)",
+            "timezone_london": "London (Europe/London)",
+            "timezone_paris": "Paris (Europe/Paris)",
+            "timezone_sydney": "Sydney (Australia/Sydney)",
+            "days_all": "Every day",
+            "days_weekdays": "Weekdays",
+            "days_weekends": "Weekends"
+        },
+        "fields": {
+            "enabled": {
+                "label": "Enable effects",
+                "hint": "Displays the selected weather effect on visitor pages."
+            },
+            "effect": {
+                "label": "Effect",
+                "hint": "Choose a weather or decorative effect."
+            },
+            "intensity": {
+                "label": "Effect density (%)",
+                "hint": "Choose a particle density from 10 to 200."
+            },
+            "speed": {
+                "label": "Fall speed (%)",
+                "hint": "Choose a percentage of the default speed from 25 to 300."
+            },
+            "opacity": {
+                "label": "Opacity (%)"
+            },
+            "wind": {
+                "label": "Wind",
+                "hint": "Controls how strongly particles move in the selected direction."
+            },
+            "wind_direction": {
+                "label": "Wind direction",
+                "hint": "Choose no wind, left, right, or a random direction per particle."
+            },
+            "color": {
+                "label": "Particle color",
+                "hint": "Choose one of the preset sample colors."
+            },
+            "schedule_enabled": {
+                "label": "Enable scheduling",
+                "hint": "When scheduling is on, only a matching schedule effect is shown. Times use the site default timezone."
+            },
+            "schedules": {
+                "add": "Add schedule",
+                "empty": "No schedules yet. Add a schedule to begin.",
+                "enabled": "Active",
+                "remove": "Remove"
+            },
+            "schedule_start_date": {
+                "label": "Start date",
+                "hint": "Leave empty for no start-date limit."
+            },
+            "schedule_end_date": {
+                "label": "End date",
+                "hint": "The entire end date is included."
+            },
+            "schedule_start_time": {
+                "label": "Daily start time",
+                "hint": "Leave empty to start at the beginning of the day."
+            },
+            "schedule_end_time": {
+                "label": "Daily end time",
+                "hint": "An earlier end time is treated as ending the next day."
+            },
+            "schedule_days": {
+                "label": "Active days"
+            },
+            "schedule_timezone": {
+                "label": "Timezone",
+                "hint": "Scheduled times use the site default timezone."
+            },
+            "mobile_enabled": {
+                "label": "Enable on mobile",
+                "hint": "Disabled by default on mobile to reduce battery usage."
+            },
+            "admin_enabled": {
+                "label": "Enable in admin",
+                "hint": "Disabled by default to avoid distracting from administration."
+            },
+            "respect_reduced_motion": {
+                "label": "Respect reduced motion",
+                "hint": "Hides effects for visitors who prefer reduced motion."
+            }
+        }
+    }
+}

@@ -1,0 +1,36 @@
+<?php
+
+namespace Plugins\Custom\Effects\Http\Controllers;
+
+use App\Helpers\ResponseHelper;
+use App\Services\PluginSettingsService;
+use Illuminate\Http\JsonResponse;
+
+/**
+ * 방문자 화면에 이미 노출되는 플러그인 설정만 돌려줍니다.
+ */
+class PublicSettingsController
+{
+    private const IDENTIFIER = 'custom-effects';
+
+    public function __construct(
+        private PluginSettingsService $pluginSettings,
+    ) {}
+
+    public function show(): JsonResponse
+    {
+        $settings = [];
+
+        if (method_exists($this->pluginSettings, 'getAllActiveSettings')) {
+            $active = $this->pluginSettings->getAllActiveSettings();
+            $settings = is_array($active[self::IDENTIFIER] ?? null)
+                ? $active[self::IDENTIFIER]
+                : [];
+        } else {
+            $loaded = $this->pluginSettings->get(self::IDENTIFIER);
+            $settings = is_array($loaded) ? $loaded : [];
+        }
+
+        return ResponseHelper::success('common.success', $settings);
+    }
+}

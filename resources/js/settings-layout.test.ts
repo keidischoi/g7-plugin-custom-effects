@@ -1,0 +1,201 @@
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
+import { describe, expect, it } from 'vitest';
+import { COLOR_OPTIONS, EFFECT_KINDS } from './config';
+
+interface LayoutNode {
+    name?: string;
+    props?: {
+        name?: string;
+    };
+    [key: string]: unknown;
+}
+
+const layout = JSON.parse(readFileSync(
+    resolve(import.meta.dirname, '../layouts/admin/plugin_settings.json'),
+    'utf8',
+)) as {
+    schema: Record<string, unknown> & {
+        effect: { options: string[] };
+        color: { options: string[] };
+        wind_direction: { options: string[] };
+        schedules?: { type: string };
+    };
+    data_sources: Array<{ initLocal?: string }>;
+    slots: unknown;
+};
+const effectsCss = readFileSync(resolve(import.meta.dirname, '../css/effects.css'), 'utf8');
+
+function collectBoundControls(value: unknown, result = new Set<string>()): Set<string> {
+    if (Array.isArray(value)) {
+        value.forEach((item) => collectBoundControls(item, result));
+        return result;
+    }
+
+    if (!value || typeof value !== 'object') return result;
+
+    const node = value as LayoutNode;
+    if (
+        node.name
+        && ['Input', 'Select', 'Toggle', 'DynamicFieldList'].includes(node.name)
+        && typeof node.props?.name === 'string'
+    ) {
+        result.add(node.props.name.startsWith('schedules') ? 'schedules' : node.props.name);
+    }
+
+    Object.values(node).forEach((item) => collectBoundControls(item, result));
+    return result;
+}
+
+describe('plugin settings layout', () => {
+    it('renders one bound control for every schema setting', () => {
+        const schemaFields = Object.keys(layout.schema).sort();
+        const boundControls = [...collectBoundControls(layout.slots)].sort();
+
+        expect(boundControls).toEqual(schemaFields);
+        expect(boundControls).toHaveLength(13);
+    });
+
+    it('offers every effect supported by the canvas engine', () => {
+        expect(layout.schema.effect.options).toEqual(EFFECT_KINDS);
+
+        const renderedOptions = EFFECT_KINDS.filter((effect) => (
+            JSON.stringify(layout.slots).includes(`"value":"${effect}"`)
+        ));
+        expect(renderedOptions).toEqual(EFFECT_KINDS);
+    });
+
+    it('lists effect dropdowns in Korean name order', () => {
+        const labels = JSON.parse(readFileSync(
+            resolve(import.meta.dirname, '../lang/ko.json'),
+            'utf8',
+        )).settings.options as Record<string, string>;
+        const names = EFFECT_KINDS.map((effect) => labels[effect]);
+        expect(names).toEqual([...names].sort((left, right) => left.localeCompare(right, 'ko')));
+
+        const collectEffectValues = (value: unknown, result: string[] = []): string[] => {
+            if (Array.isArray(value)) {
+                value.forEach((item) => collectEffectValues(item, result));
+                return result;
+            }
+            if (!value || typeof value !== 'object') return result;
+            const node = value as LayoutNode & {
+                children?: unknown;
+                props?: { name?: string; value?: string };
+                key?: string;
+                options?: Array<{ value?: string }>;
+            };
+            if (node.name === 'Select' && node.props?.name === 'effect') {
+                result.push(
+                    ...((node.children as Array<{ props?: { value?: string } }> | undefined) ?? [])
+                        .map((child) => child.props?.value)
+                        .filter((item): item is string => typeof item === 'string'),
+                );
+            }
+            if (node.key === 'effect' && Array.isArray(node.options)) {
+                result.push(
+                    ...node.options
+                        .map((item) => item.value)
+                        .filter((item): item is string => typeof item === 'string'),
+                );
+            }
+            Object.values(node).forEach((item) => collectEffectValues(item, result));
+            return result;
+        };
+
+        const lists = collectEffectValues(layout.slots);
+        expect(lists.slice(0, EFFECT_KINDS.length)).toEqual([...EFFECT_KINDS]);
+        expect(lists.slice(EFFECT_KINDS.length, EFFECT_KINDS.length * 2)).toEqual([...EFFECT_KINDS]);
+    });
+
+    it('keeps preset dropdowns aligned with runtime normalization', () => {
+        expect(layout.schema.color.options).toEqual(COLOR_OPTIONS);
+        expect(layout.schema.wind_direction.options).toEqual([
+            'none',
+            'left',
+            'right',
+            'random',
+        ]);
+        expect(layout.schema.schedules?.type).toBe('array');
+
+        const slots = JSON.stringify(layout.slots);
+        expect(slots).toContain('"name":"DynamicFieldList"');
+        expect(slots).toContain('"name":"schedules"');
+        expect(slots).toContain('"placeholder":"YYYY-MM-DD"');
+        expect(slots).toContain('"placeholder":"HH:MM"');
+        for (const value of COLOR_OPTIONS) {
+            expect(slots).toContain(`"value":"${value}"`);
+        }
+        expect(slots).not.toContain('"key":"timezone"');
+        for (const day of ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat']) {
+            expect(slots).toContain(`"key":"${day}"`);
+        }
+    });
+
+    it('keeps schedule controls within plugin-owned equal padding', () => {
+        const slots = JSON.stringify(layout.slots);
+        expect(slots).toContain('g7-custom-effects-detail-input');
+        expect(effectsCss).toContain('.g7-custom-effects-detail-input {');
+        expect(effectsCss).toContain('width: 38% !important;');
+        expect(slots).toContain('g7-custom-effects-schedule-list');
+        expect(effectsCss).toContain('.g7-custom-effects-schedule-grid {');
+        expect(effectsCss).toContain('padding: 1rem 1.5rem;');
+        expect(slots).toContain('g7-custom-effects-schedule-dfl-header');
+        expect(slots).toContain('g7-custom-effects-schedule-dfl-row');
+        expect(effectsCss).toContain('.g7-custom-effects-schedule-dfl-row {');
+        expect(effectsCss).toContain('grid-template-columns: 1.5rem 2.25rem minmax(8rem, 1fr) max-content max-content max-content max-content minmax(1.75rem, auto)');
+        expect(effectsCss).toContain('--g7-schedule-col-gap: 0.5rem');
+        expect(effectsCss).toContain('column-gap: var(--g7-schedule-col-gap)');
+        expect(effectsCss).toContain('.g7-custom-effects-schedule-full {');
+        expect(effectsCss).toContain('> :nth-child(3) {');
+        expect(effectsCss).toContain('justify-self: stretch;');
+        expect(effectsCss).toContain('field-sizing: fixed');
+        expect(effectsCss).toContain('width: calc((100% - (5 * var(--g7-schedule-col-gap))) / 6);');
+        expect(effectsCss).toContain('translateX(calc(100% + var(--g7-schedule-col-gap)))');
+        expect(effectsCss).toContain('width: calc(100% / 7);');
+        expect(effectsCss).toContain('> :nth-child(5)::before { content: "시작 시간"');
+        expect(effectsCss).toContain('> :nth-child(6)::before { content: "종료 날짜"');
+        const startDate = slots.indexOf('"key":"start_date"');
+        const startTime = slots.indexOf('"key":"start_time"');
+        const endDate = slots.indexOf('"key":"end_date"');
+        const endTime = slots.indexOf('"key":"end_time"');
+        expect(startDate).toBeGreaterThan(-1);
+        expect(startTime).toBeGreaterThan(startDate);
+        expect(endDate).toBeGreaterThan(startTime);
+        expect(endTime).toBeGreaterThan(endDate);
+        expect(effectsCss).toContain('grid-row: 2');
+        expect(effectsCss).toContain('grid-row: 3');
+        expect(effectsCss).toContain('field-sizing: content');
+        expect(effectsCss).toContain(':has(.g7-custom-effects-schedule-day-select)');
+        expect(effectsCss).toContain('content: "효과 밀도"');
+        expect(effectsCss).toContain('> :last-child {');
+        expect(effectsCss).toContain('> :nth-child(16) {');
+        expect(effectsCss).not.toContain('.g7-custom-effects-schedule-list tbody tr,');
+        expect(effectsCss).not.toContain('thead {');
+        expect(effectsCss).toContain('input[type="date"]');
+        expect(effectsCss).toContain('input[type="time"]');
+        expect(effectsCss).toContain('content: "시작 시간"');
+        expect(effectsCss).not.toContain('content: "일"');
+        expect(effectsCss).toContain('.g7-custom-effects-schedule-enabled,');
+        expect(effectsCss).toContain('.g7-custom-effects-schedule-day {');
+        expect(effectsCss).not.toContain('content: "사용"');
+        expect(slots).toContain('"showIndex":false');
+        expect(slots).toContain('g7-custom-effects-schedule-enabled-select');
+        expect(slots).toContain('g7-custom-effects-schedule-day-select');
+        expect(slots).toContain('"key":"intensity"');
+        expect(slots).toContain('"key":"wind_direction"');
+        expect(slots).not.toContain('"event":"onAddItem"');
+        expect(slots).toContain('Array.isArray($args[0]) ? $args[0]');
+        expect(slots).not.toContain('prev.length + 1');
+    });
+
+    it('loads settings into the local form and provides a complete save flow', () => {
+        expect(layout.data_sources[0]?.initLocal).toBe('form');
+
+        const slots = JSON.stringify(layout.slots);
+        expect(slots).toContain('"handler":"apiCall"');
+        expect(slots).toContain('"body":"{{_local.form}}"');
+        expect(slots).toContain('"handler":"refetchDataSource"');
+        expect(slots).toContain('"onError"');
+    });
+});

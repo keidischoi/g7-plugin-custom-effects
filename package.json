@@ -1,11 +1,6 @@
 {
-<<<<<<< HEAD
     "name": "@custom/effects",
-    "version": "1.0.0",
-=======
-    "name": "@g7/plugin-custom-effects",
-    "version": "1.0.1",
->>>>>>> c296cf2d90e83e047cf94ead1b1c993fb02b9ad7
+    "version": "1.0.2",
     "description": "Snow and rain effects plugin for Gnuboard7",
     "private": true,
     "type": "module",

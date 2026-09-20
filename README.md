@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 # custom-effects
-=======
-# g7-plugin-custom-effects
->>>>>>> c296cf2d90e83e047cf94ead1b1c993fb02b9ad7
 
 그누보드7 방문자 화면에 Canvas 기반 날씨 및 장식 효과를 추가하는 플러그인입니다.
 
@@ -26,11 +22,7 @@
 
 이 기능은 자체 페이지나 비즈니스 데이터를 소유하지 않고 기존 화면을 선택적으로 확장하므로
 G7 모듈이 아닌 플러그인으로 구현되어 있습니다. 전역 플러그인 에셋과
-<<<<<<< HEAD
 `window.G7Config.plugins['custom-effects']`에 공개된 안전한 설정만 사용하며 코어
-=======
-`window.G7Config.plugins['g7-plugin-custom-effects']`에 공개된 안전한 설정만 사용하며 코어
->>>>>>> c296cf2d90e83e047cf94ead1b1c993fb02b9ad7
 파일이나 템플릿을 수정하지 않습니다.
 
 ## 요구 사항
@@ -40,23 +32,18 @@ G7 모듈이 아닌 플러그인으로 구현되어 있습니다. 전역 플러�
 
 ## 설치
 
-GitHub 저장소에서 설치하거나 플러그인 디렉터리를
-<<<<<<< HEAD
-`plugins/custom-effects`에 배치한 다음 실행합니다.
+관리자 플러그인 목록에서 **수동 설치 → GitHub** 로 저장소 URL을 넣습니다.
+
+`https://github.com/keidischoi/g7-plugin-custom-effects`
+
+또는 플러그인 디렉터리를 `plugins/custom-effects`에 배치한 다음 실행합니다.
 
 ```bash
 php artisan plugin:install custom-effects
 php artisan plugin:activate custom-effects
-=======
-`plugins/g7-plugin-custom-effects`에 배치한 다음 실행합니다.
-
-```bash
-php artisan plugin:install g7-plugin-custom-effects
-php artisan plugin:activate g7-plugin-custom-effects
->>>>>>> c296cf2d90e83e047cf94ead1b1c993fb02b9ad7
 ```
 
-관리자 플러그인 목록에서 **사용자 화면 효과** 설정을 열어 효과를 조절할 수 있습니다. 설정을
+관리자 플러그인 목록에서 **화면 효과** 설정을 열어 효과를 조절할 수 있습니다. 설정을
 저장하면 이미 열어 둔 방문자 페이지에도 바로 적용됩니다. 예약 시각이 되면 새로고침 없이
 효과가 바뀝니다.
 
@@ -66,11 +53,7 @@ G7 프론트엔드 액션 이벤트를 사용합니다.
 
 ```js
 window.G7Core.dispatch({
-<<<<<<< HEAD
     handler: 'custom-effects.toggle',
-=======
-    handler: 'g7-plugin-custom-effects.toggle',
->>>>>>> c296cf2d90e83e047cf94ead1b1c993fb02b9ad7
 });
 ```
 

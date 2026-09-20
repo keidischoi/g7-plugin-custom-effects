@@ -77,11 +77,7 @@ describe('live settings', () => {
 
         const onSaved = vi.fn();
         const stop = watchAdminSettingsSave(target, onSaved);
-<<<<<<< HEAD
         await target.fetch('/api/admin/plugins/custom-effects/settings', {
-=======
-        await target.fetch('/api/admin/plugins/g7-plugin-custom-effects/settings', {
->>>>>>> c296cf2d90e83e047cf94ead1b1c993fb02b9ad7
             method: 'PUT',
             body: '{}',
         });

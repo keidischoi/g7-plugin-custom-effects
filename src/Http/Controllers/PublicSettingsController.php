@@ -1,10 +1,6 @@
 <?php
 
-<<<<<<< HEAD
 namespace Plugins\Custom\Effects\Http\Controllers;
-=======
-namespace Plugins\G7\Plugin\Custom\Effects\Http\Controllers;
->>>>>>> c296cf2d90e83e047cf94ead1b1c993fb02b9ad7
 
 use App\Helpers\ResponseHelper;
 use App\Services\PluginSettingsService;
@@ -15,11 +11,7 @@ use Illuminate\Http\JsonResponse;
  */
 class PublicSettingsController
 {
-<<<<<<< HEAD
     private const IDENTIFIER = 'custom-effects';
-=======
-    private const IDENTIFIER = 'g7-plugin-custom-effects';
->>>>>>> c296cf2d90e83e047cf94ead1b1c993fb02b9ad7
 
     public function __construct(
         private PluginSettingsService $pluginSettings,

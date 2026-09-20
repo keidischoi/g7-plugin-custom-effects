@@ -22,12 +22,9 @@ import {
     bounceRainAtFloor,
     isUnsupported,
     settleWhereHit,
-<<<<<<< HEAD
-=======
     snowSpawnY,
     parkSettledFlake,
     ageSnowPiles,
->>>>>>> c296cf2d90e83e047cf94ead1b1c993fb02b9ad7
 } from './engine';
 
 describe('normalizeConfig', () => {
@@ -250,11 +247,7 @@ describe('readSiteTimezone', () => {
                     },
                 },
                 plugins: {
-<<<<<<< HEAD
                     'custom-effects': { effect: 'rain' },
-=======
-                    'g7-plugin-custom-effects': { effect: 'rain' },
->>>>>>> c296cf2d90e83e047cf94ead1b1c993fb02b9ad7
                 },
             },
         } as unknown as Window;
@@ -525,8 +518,6 @@ describe('ground piles', () => {
         expect(flake.settled).toBe(0);
         expect(flake.vy).toBe(30);
     });
-<<<<<<< HEAD
-=======
 
     it('fills the opening flurry across the viewport and respawns from above', () => {
         expect(snowSpawnY(400, true, () => 0)).toBe(0);
@@ -568,7 +559,6 @@ describe('ground piles', () => {
             { settled: 0 },
         ]);
     });
->>>>>>> c296cf2d90e83e047cf94ead1b1c993fb02b9ad7
 });
 
 describe('rain bouncing', () => {

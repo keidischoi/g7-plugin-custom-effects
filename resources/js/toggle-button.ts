@@ -1,10 +1,6 @@
 import type { EffectKind } from './config';
 
-<<<<<<< HEAD
 export const TOGGLE_ACTION = 'custom-effects.toggle';
-=======
-export const TOGGLE_ACTION = 'g7-plugin-custom-effects.toggle';
->>>>>>> c296cf2d90e83e047cf94ead1b1c993fb02b9ad7
 export const PREFERENCE_EVENT = 'g7-custom-effects:preference-changed';
 
 interface ActionDispatcher {
@@ -38,13 +34,8 @@ const EFFECT_SYMBOLS: Record<EffectKind, string> = {
 
 function translatedLabel(target: Window, enabled: boolean): string {
     const key = enabled
-<<<<<<< HEAD
         ? 'custom-effects.toggle.disable'
         : 'custom-effects.toggle.enable';
-=======
-        ? 'g7-plugin-custom-effects.toggle.disable'
-        : 'g7-plugin-custom-effects.toggle.enable';
->>>>>>> c296cf2d90e83e047cf94ead1b1c993fb02b9ad7
     const translated = (target as Window & {
         G7Core?: { t?: (key: string) => string };
     }).G7Core?.t?.(key);

@@ -6,8 +6,13 @@ import {
 } from './config';
 
 export const SETTINGS_POLL_MS = 3_000;
+<<<<<<< HEAD
 export const SETTINGS_REVISION_KEY = 'custom-effects:settings-revision';
 export const SETTINGS_CHANNEL = 'custom-effects:settings';
+=======
+export const SETTINGS_REVISION_KEY = 'g7-plugin-custom-effects:settings-revision';
+export const SETTINGS_CHANNEL = 'g7-plugin-custom-effects:settings';
+>>>>>>> c296cf2d90e83e047cf94ead1b1c993fb02b9ad7
 
 export function publicSettingsUrl(target: Window = window): string {
     const g7Config = (target as Window & {

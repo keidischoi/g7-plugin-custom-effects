@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 export const PLUGIN_IDENTIFIER = 'custom-effects';
+=======
+export const PLUGIN_IDENTIFIER = 'g7-plugin-custom-effects';
+>>>>>>> c296cf2d90e83e047cf94ead1b1c993fb02b9ad7
 
 export const EFFECT_KINDS = [
     'leaves',

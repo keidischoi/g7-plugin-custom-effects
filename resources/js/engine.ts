@@ -327,6 +327,40 @@ export function settleWhereHit(
     return true;
 }
 
+<<<<<<< HEAD
+=======
+export function snowSpawnY(
+    height: number,
+    randomPosition: boolean,
+    random: () => number = Math.random,
+): number {
+    if (randomPosition) return random() * Math.max(1, height);
+    return -(random() * 40 + 10);
+}
+
+export function parkSettledFlake<T extends object>(flake: T, piles: T[]): T {
+    const parked = { ...flake };
+    piles.push(parked);
+    return parked;
+}
+
+export function ageSnowPiles<T extends { settled: number }>(
+    piles: readonly T[],
+    delta: number,
+    recycleAge: number = PILE_RECYCLE_AGE,
+): T[] {
+    const kept: T[] = [];
+    for (const particle of piles) {
+        if (particle.settled > 0) {
+            particle.settled += delta;
+            if (particle.settled >= recycleAge) continue;
+        }
+        kept.push(particle);
+    }
+    return kept;
+}
+
+>>>>>>> c296cf2d90e83e047cf94ead1b1c993fb02b9ad7
 export interface RainBody {
     x: number;
     y: number;
@@ -375,6 +409,10 @@ export class EffectsEngine {
     private readonly canvas: HTMLCanvasElement;
     private readonly context: CanvasRenderingContext2D;
     private particles: Particle[] = [];
+<<<<<<< HEAD
+=======
+    private snowPiles: Particle[] = [];
+>>>>>>> c296cf2d90e83e047cf94ead1b1c993fb02b9ad7
     private pilingSettled: Particle[] = [];
     private frameId: number | null = null;
     private previousTime = 0;
@@ -416,6 +454,11 @@ export class EffectsEngine {
         this.target.document.removeEventListener('visibilitychange', this.handleVisibility);
         this.canvas.remove();
         this.particles = [];
+<<<<<<< HEAD
+=======
+        this.snowPiles = [];
+        this.pilingSettled = [];
+>>>>>>> c296cf2d90e83e047cf94ead1b1c993fb02b9ad7
     }
 
     private readonly resize = (): void => {
@@ -438,6 +481,10 @@ export class EffectsEngine {
 
     private createParticles(count: number): void {
         this.particles = Array.from({ length: count }, () => this.newParticle(true));
+<<<<<<< HEAD
+=======
+        this.snowPiles = [];
+>>>>>>> c296cf2d90e83e047cf94ead1b1c993fb02b9ad7
         this.pilingSettled = [];
     }
 
@@ -455,9 +502,17 @@ export class EffectsEngine {
 
         return {
             x: Math.random() * this.width,
+<<<<<<< HEAD
             y: randomPosition
                 ? Math.random() * this.height
                 : bubbles ? this.height + 20 : -(Math.random() * 40 + 10),
+=======
+            y: effect === 'snow'
+                ? snowSpawnY(this.height, randomPosition)
+                : randomPosition
+                    ? Math.random() * this.height
+                    : bubbles ? this.height + 20 : -(Math.random() * 40 + 10),
+>>>>>>> c296cf2d90e83e047cf94ead1b1c993fb02b9ad7
             vx: fireflies || bouncingBubbles
                 ? (Math.random() - 0.5) * 30 * speed
                     + wind * (bouncingBubbles ? 0.35 : 0)
@@ -603,6 +658,7 @@ export class EffectsEngine {
     }
 
     private beginPilingFrame(delta: number): void {
+<<<<<<< HEAD
         for (const particle of this.particles) {
             if (particle.settled <= 0) continue;
             particle.settled += delta;
@@ -612,6 +668,16 @@ export class EffectsEngine {
             if (particle.settled >= PILE_RECYCLE_AGE) this.resetParticle(particle);
         }
         this.pilingSettled = this.particles.filter((particle) => particle.settled > 0);
+=======
+        this.snowPiles = ageSnowPiles(this.snowPiles, delta);
+        for (const particle of this.snowPiles) {
+            if (particle.settled <= 0) continue;
+            particle.vx = 0;
+            particle.vy = 0;
+            particle.rotationSpeed = 0;
+        }
+        this.pilingSettled = this.snowPiles.filter((particle) => particle.settled > 0);
+>>>>>>> c296cf2d90e83e047cf94ead1b1c993fb02b9ad7
         this.releaseUnsupportedPiles();
     }
 
@@ -624,7 +690,11 @@ export class EffectsEngine {
             particle.settled = 0;
             this.releaseFallSpeed(particle);
         }
+<<<<<<< HEAD
         this.pilingSettled = this.particles.filter((particle) => particle.settled > 0);
+=======
+        this.pilingSettled = this.snowPiles.filter((particle) => particle.settled > 0);
+>>>>>>> c296cf2d90e83e047cf94ead1b1c993fb02b9ad7
     }
 
     private releaseFallSpeed(particle: Particle): void {
@@ -633,7 +703,16 @@ export class EffectsEngine {
         particle.rotationSpeed = (Math.random() - 0.5) * 2.4;
     }
 
+<<<<<<< HEAD
     private advancePiling(particle: Particle, delta: number, sway: number): void {
+=======
+    private advancePiling(
+        particle: Particle,
+        delta: number,
+        sway: number,
+        source: 'sky' | 'pile',
+    ): void {
+>>>>>>> c296cf2d90e83e047cf94ead1b1c993fb02b9ad7
         if (particle.settled > 0) return;
 
         particle.phase += particle.phaseSpeed * delta;
@@ -642,6 +721,14 @@ export class EffectsEngine {
         particle.y += particle.vy * delta;
         this.wrapHorizontally(particle);
 
+<<<<<<< HEAD
+=======
+        if (source === 'pile' && particle.y > this.height + particle.size * 3) {
+            particle.settled = -1;
+            return;
+        }
+
+>>>>>>> c296cf2d90e83e047cf94ead1b1c993fb02b9ad7
         const restInset = this.pileRestInset(particle);
         const restY = supportYFromSettled(
             particle.x,
@@ -654,11 +741,26 @@ export class EffectsEngine {
 
         const maxSettled = Math.max(4, Math.floor(this.particles.length * 0.72));
         if (restY < this.height - PILE_MAX_HEIGHT || this.pilingSettled.length >= maxSettled) {
+<<<<<<< HEAD
             this.resetParticle(particle);
+=======
+            if (source === 'sky') this.resetParticle(particle);
+            else particle.settled = -1;
+>>>>>>> c296cf2d90e83e047cf94ead1b1c993fb02b9ad7
             return;
         }
 
         if (!settleWhereHit(particle, this.height, restInset, this.pilingSettled)) return;
+<<<<<<< HEAD
+=======
+
+        if (source === 'sky') {
+            this.pilingSettled.push(parkSettledFlake(particle, this.snowPiles));
+            this.resetParticle(particle);
+            return;
+        }
+
+>>>>>>> c296cf2d90e83e047cf94ead1b1c993fb02b9ad7
         this.pilingSettled.push(particle);
     }
 
@@ -681,8 +783,30 @@ export class EffectsEngine {
 
     private drawSnow(delta: number): void {
         this.beginPilingFrame(delta);
+<<<<<<< HEAD
         for (const particle of this.particles) {
             this.advancePiling(particle, delta, 12);
+=======
+
+        for (const particle of this.particles) {
+            this.advancePiling(particle, delta, 12, 'sky');
+        }
+
+        this.snowPiles = this.snowPiles.filter((particle) => {
+            if (particle.settled > 0) return true;
+            this.advancePiling(particle, delta, 12, 'pile');
+            return particle.settled >= 0;
+        });
+
+        for (const particle of this.snowPiles) {
+            this.prepareParticle(particle);
+            this.context.beginPath();
+            this.context.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
+            this.context.fill();
+        }
+
+        for (const particle of this.particles) {
+>>>>>>> c296cf2d90e83e047cf94ead1b1c993fb02b9ad7
             this.prepareParticle(particle);
             this.context.beginPath();
             this.context.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);

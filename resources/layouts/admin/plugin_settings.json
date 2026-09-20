@@ -1,18 +1,31 @@
 {
+<<<<<<< HEAD
     "version": "1.0.0",
+=======
+    "version": "1.0.1",
+>>>>>>> c296cf2d90e83e047cf94ead1b1c993fb02b9ad7
     "layout_name": "plugin_settings",
     "permissions": [
         "core.plugins.update"
     ],
     "extends": "_admin_base",
     "meta": {
+<<<<<<< HEAD
         "title": "$t:custom-effects.settings.title",
         "description": "$t:custom-effects.settings.description"
+=======
+        "title": "$t:g7-plugin-custom-effects.settings.title",
+        "description": "$t:g7-plugin-custom-effects.settings.description"
+>>>>>>> c296cf2d90e83e047cf94ead1b1c993fb02b9ad7
     },
     "data_sources": [
         {
             "id": "settings",
+<<<<<<< HEAD
             "label_key": "$t:custom-effects.editor.data_source.settings",
+=======
+            "label_key": "$t:g7-plugin-custom-effects.editor.data_source.settings",
+>>>>>>> c296cf2d90e83e047cf94ead1b1c993fb02b9ad7
             "type": "api",
             "endpoint": "/api/admin/plugins/{{route.identifier}}/settings",
             "method": "GET",
@@ -39,8 +52,13 @@
                         "type": "composite",
                         "name": "PageHeader",
                         "props": {
+<<<<<<< HEAD
                             "title": "$t:custom-effects.settings.title",
                             "description": "$t:custom-effects.settings.description",
+=======
+                            "title": "$t:g7-plugin-custom-effects.settings.title",
+                            "description": "$t:g7-plugin-custom-effects.settings.description",
+>>>>>>> c296cf2d90e83e047cf94ead1b1c993fb02b9ad7
                             "backPath": "/admin/plugins",
                             "backLabel": "$t:admin.plugins.back_to_list"
                         }
@@ -52,7 +70,11 @@
                         "props": {
                             "className": "mt-6 rounded-lg border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-800 dark:border-blue-800 dark:bg-blue-950 dark:text-blue-200"
                         },
+<<<<<<< HEAD
                         "text": "$t:custom-effects.settings.notice"
+=======
+                        "text": "$t:g7-plugin-custom-effects.settings.notice"
+>>>>>>> c296cf2d90e83e047cf94ead1b1c993fb02b9ad7
                     },
                     {
                         "id": "effect_settings_card",
@@ -76,7 +98,11 @@
                                         "props": {
                                             "className": "text-body font-semibold"
                                         },
+<<<<<<< HEAD
                                         "text": "$t:custom-effects.settings.sections.effect"
+=======
+                                        "text": "$t:g7-plugin-custom-effects.settings.sections.effect"
+>>>>>>> c296cf2d90e83e047cf94ead1b1c993fb02b9ad7
                                     }
                                 ]
                             },
@@ -109,7 +135,11 @@
                                                         "props": {
                                                             "className": "form-label"
                                                         },
+<<<<<<< HEAD
                                                         "text": "$t:custom-effects.settings.fields.enabled.label"
+=======
+                                                        "text": "$t:g7-plugin-custom-effects.settings.fields.enabled.label"
+>>>>>>> c296cf2d90e83e047cf94ead1b1c993fb02b9ad7
                                                     },
                                                     {
                                                         "type": "basic",
@@ -117,7 +147,11 @@
                                                         "props": {
                                                             "className": "form-hint"
                                                         },
+<<<<<<< HEAD
                                                         "text": "$t:custom-effects.settings.fields.enabled.hint"
+=======
+                                                        "text": "$t:g7-plugin-custom-effects.settings.fields.enabled.hint"
+>>>>>>> c296cf2d90e83e047cf94ead1b1c993fb02b9ad7
                                                     }
                                                 ]
                                             },
@@ -161,7 +195,11 @@
                                                             "className": "form-label",
                                                             "htmlFor": "effect"
                                                         },
+<<<<<<< HEAD
                                                         "text": "$t:custom-effects.settings.fields.effect.label"
+=======
+                                                        "text": "$t:g7-plugin-custom-effects.settings.fields.effect.label"
+>>>>>>> c296cf2d90e83e047cf94ead1b1c993fb02b9ad7
                                                     },
                                                     {
                                                         "type": "basic",
@@ -169,7 +207,11 @@
                                                         "props": {
                                                             "className": "form-hint"
                                                         },
+<<<<<<< HEAD
                                                         "text": "$t:custom-effects.settings.fields.effect.hint"
+=======
+                                                        "text": "$t:g7-plugin-custom-effects.settings.fields.effect.hint"
+>>>>>>> c296cf2d90e83e047cf94ead1b1c993fb02b9ad7
                                                     }
                                                 ]
                                             },
@@ -188,7 +230,11 @@
                                                         "props": {
                                                             "value": "leaves"
                                                         },
+<<<<<<< HEAD
                                                         "text": "$t:custom-effects.settings.options.leaves"
+=======
+                                                        "text": "$t:g7-plugin-custom-effects.settings.options.leaves"
+>>>>>>> c296cf2d90e83e047cf94ead1b1c993fb02b9ad7
                                                     },
                                                     {
                                                         "type": "basic",
@@ -196,7 +242,11 @@
                                                         "props": {
                                                             "value": "snow"
                                                         },
+<<<<<<< HEAD
                                                         "text": "$t:custom-effects.settings.options.snow"
+=======
+                                                        "text": "$t:g7-plugin-custom-effects.settings.options.snow"
+>>>>>>> c296cf2d90e83e047cf94ead1b1c993fb02b9ad7
                                                     },
                                                     {
                                                         "type": "basic",
@@ -204,7 +254,11 @@
                                                         "props": {
                                                             "value": "maple_leaves"
                                                         },
+<<<<<<< HEAD
                                                         "text": "$t:custom-effects.settings.options.maple_leaves"
+=======
+                                                        "text": "$t:g7-plugin-custom-effects.settings.options.maple_leaves"
+>>>>>>> c296cf2d90e83e047cf94ead1b1c993fb02b9ad7
                                                     },
                                                     {
                                                         "type": "basic",
@@ -212,7 +266,11 @@
                                                         "props": {
                                                             "value": "coins"
                                                         },
+<<<<<<< HEAD
                                                         "text": "$t:custom-effects.settings.options.coins"
+=======
+                                                        "text": "$t:g7-plugin-custom-effects.settings.options.coins"
+>>>>>>> c296cf2d90e83e047cf94ead1b1c993fb02b9ad7
                                                     },
                                                     {
                                                         "type": "basic",
@@ -220,7 +278,11 @@
                                                         "props": {
                                                             "value": "fireflies"
                                                         },
+<<<<<<< HEAD
                                                         "text": "$t:custom-effects.settings.options.fireflies"
+=======
+                                                        "text": "$t:g7-plugin-custom-effects.settings.options.fireflies"
+>>>>>>> c296cf2d90e83e047cf94ead1b1c993fb02b9ad7
                                                     },
                                                     {
                                                         "type": "basic",
@@ -228,7 +290,11 @@
                                                         "props": {
                                                             "value": "cherry_blossoms"
                                                         },
+<<<<<<< HEAD
                                                         "text": "$t:custom-effects.settings.options.cherry_blossoms"
+=======
+                                                        "text": "$t:g7-plugin-custom-effects.settings.options.cherry_blossoms"
+>>>>>>> c296cf2d90e83e047cf94ead1b1c993fb02b9ad7
                                                     },
                                                     {
                                                         "type": "basic",
@@ -236,7 +302,11 @@
                                                         "props": {
                                                             "value": "petals"
                                                         },
+<<<<<<< HEAD
                                                         "text": "$t:custom-effects.settings.options.petals"
+=======
+                                                        "text": "$t:g7-plugin-custom-effects.settings.options.petals"
+>>>>>>> c296cf2d90e83e047cf94ead1b1c993fb02b9ad7
                                                     },
                                                     {
                                                         "type": "basic",
@@ -244,7 +314,11 @@
                                                         "props": {
                                                             "value": "stars"
                                                         },
+<<<<<<< HEAD
                                                         "text": "$t:custom-effects.settings.options.stars"
+=======
+                                                        "text": "$t:g7-plugin-custom-effects.settings.options.stars"
+>>>>>>> c296cf2d90e83e047cf94ead1b1c993fb02b9ad7
                                                     },
                                                     {
                                                         "type": "basic",
@@ -252,7 +326,11 @@
                                                         "props": {
                                                             "value": "rain"
                                                         },
+<<<<<<< HEAD
                                                         "text": "$t:custom-effects.settings.options.rain"
+=======
+                                                        "text": "$t:g7-plugin-custom-effects.settings.options.rain"
+>>>>>>> c296cf2d90e83e047cf94ead1b1c993fb02b9ad7
                                                     },
                                                     {
                                                         "type": "basic",
@@ -260,7 +338,11 @@
                                                         "props": {
                                                             "value": "bubbles"
                                                         },
+<<<<<<< HEAD
                                                         "text": "$t:custom-effects.settings.options.bubbles"
+=======
+                                                        "text": "$t:g7-plugin-custom-effects.settings.options.bubbles"
+>>>>>>> c296cf2d90e83e047cf94ead1b1c993fb02b9ad7
                                                     },
                                                     {
                                                         "type": "basic",
@@ -268,7 +350,11 @@
                                                         "props": {
                                                             "value": "confetti"
                                                         },
+<<<<<<< HEAD
                                                         "text": "$t:custom-effects.settings.options.confetti"
+=======
+                                                        "text": "$t:g7-plugin-custom-effects.settings.options.confetti"
+>>>>>>> c296cf2d90e83e047cf94ead1b1c993fb02b9ad7
                                                     },
                                                     {
                                                         "type": "basic",
@@ -276,7 +362,11 @@
                                                         "props": {
                                                             "value": "ice_cream"
                                                         },
+<<<<<<< HEAD
                                                         "text": "$t:custom-effects.settings.options.ice_cream"
+=======
+                                                        "text": "$t:g7-plugin-custom-effects.settings.options.ice_cream"
+>>>>>>> c296cf2d90e83e047cf94ead1b1c993fb02b9ad7
                                                     },
                                                     {
                                                         "type": "basic",
@@ -284,7 +374,11 @@
                                                         "props": {
                                                             "value": "stars_multicolor"
                                                         },
+<<<<<<< HEAD
                                                         "text": "$t:custom-effects.settings.options.stars_multicolor"
+=======
+                                                        "text": "$t:g7-plugin-custom-effects.settings.options.stars_multicolor"
+>>>>>>> c296cf2d90e83e047cf94ead1b1c993fb02b9ad7
                                                     },
                                                     {
                                                         "type": "basic",
@@ -292,7 +386,11 @@
                                                         "props": {
                                                             "value": "poop"
                                                         },
+<<<<<<< HEAD
                                                         "text": "$t:custom-effects.settings.options.poop"
+=======
+                                                        "text": "$t:g7-plugin-custom-effects.settings.options.poop"
+>>>>>>> c296cf2d90e83e047cf94ead1b1c993fb02b9ad7
                                                     },
                                                     {
                                                         "type": "basic",
@@ -300,7 +398,11 @@
                                                         "props": {
                                                             "value": "alarm_clock"
                                                         },
+<<<<<<< HEAD
                                                         "text": "$t:custom-effects.settings.options.alarm_clock"
+=======
+                                                        "text": "$t:g7-plugin-custom-effects.settings.options.alarm_clock"
+>>>>>>> c296cf2d90e83e047cf94ead1b1c993fb02b9ad7
                                                     },
                                                     {
                                                         "type": "basic",
@@ -308,7 +410,11 @@
                                                         "props": {
                                                             "value": "bills"
                                                         },
+<<<<<<< HEAD
                                                         "text": "$t:custom-effects.settings.options.bills"
+=======
+                                                        "text": "$t:g7-plugin-custom-effects.settings.options.bills"
+>>>>>>> c296cf2d90e83e047cf94ead1b1c993fb02b9ad7
                                                     },
                                                     {
                                                         "type": "basic",
@@ -316,7 +422,11 @@
                                                         "props": {
                                                             "value": "cheese"
                                                         },
+<<<<<<< HEAD
                                                         "text": "$t:custom-effects.settings.options.cheese"
+=======
+                                                        "text": "$t:g7-plugin-custom-effects.settings.options.cheese"
+>>>>>>> c296cf2d90e83e047cf94ead1b1c993fb02b9ad7
                                                     },
                                                     {
                                                         "type": "basic",
@@ -324,7 +434,11 @@
                                                         "props": {
                                                             "value": "bouncing_bubbles"
                                                         },
+<<<<<<< HEAD
                                                         "text": "$t:custom-effects.settings.options.bouncing_bubbles"
+=======
+                                                        "text": "$t:g7-plugin-custom-effects.settings.options.bouncing_bubbles"
+>>>>>>> c296cf2d90e83e047cf94ead1b1c993fb02b9ad7
                                                     },
                                                     {
                                                         "type": "basic",
@@ -332,7 +446,11 @@
                                                         "props": {
                                                             "value": "hearts"
                                                         },
+<<<<<<< HEAD
                                                         "text": "$t:custom-effects.settings.options.hearts"
+=======
+                                                        "text": "$t:g7-plugin-custom-effects.settings.options.hearts"
+>>>>>>> c296cf2d90e83e047cf94ead1b1c993fb02b9ad7
                                                     },
                                                     {
                                                         "type": "basic",
@@ -340,7 +458,11 @@
                                                         "props": {
                                                             "value": "sunflowers"
                                                         },
+<<<<<<< HEAD
                                                         "text": "$t:custom-effects.settings.options.sunflowers"
+=======
+                                                        "text": "$t:g7-plugin-custom-effects.settings.options.sunflowers"
+>>>>>>> c296cf2d90e83e047cf94ead1b1c993fb02b9ad7
                                                     }
                                                 ]
                                             }
@@ -368,7 +490,11 @@
                                                             "className": "form-label",
                                                             "htmlFor": "intensity"
                                                         },
+<<<<<<< HEAD
                                                         "text": "$t:custom-effects.settings.fields.intensity.label"
+=======
+                                                        "text": "$t:g7-plugin-custom-effects.settings.fields.intensity.label"
+>>>>>>> c296cf2d90e83e047cf94ead1b1c993fb02b9ad7
                                                     },
                                                     {
                                                         "type": "basic",
@@ -376,7 +502,11 @@
                                                         "props": {
                                                             "className": "form-hint"
                                                         },
+<<<<<<< HEAD
                                                         "text": "$t:custom-effects.settings.fields.intensity.hint"
+=======
+                                                        "text": "$t:g7-plugin-custom-effects.settings.fields.intensity.hint"
+>>>>>>> c296cf2d90e83e047cf94ead1b1c993fb02b9ad7
                                                     }
                                                 ]
                                             },
@@ -417,7 +547,11 @@
                                                             "className": "form-label",
                                                             "htmlFor": "speed"
                                                         },
+<<<<<<< HEAD
                                                         "text": "$t:custom-effects.settings.fields.speed.label"
+=======
+                                                        "text": "$t:g7-plugin-custom-effects.settings.fields.speed.label"
+>>>>>>> c296cf2d90e83e047cf94ead1b1c993fb02b9ad7
                                                     },
                                                     {
                                                         "type": "basic",
@@ -425,7 +559,11 @@
                                                         "props": {
                                                             "className": "form-hint"
                                                         },
+<<<<<<< HEAD
                                                         "text": "$t:custom-effects.settings.fields.speed.hint"
+=======
+                                                        "text": "$t:g7-plugin-custom-effects.settings.fields.speed.hint"
+>>>>>>> c296cf2d90e83e047cf94ead1b1c993fb02b9ad7
                                                     }
                                                 ]
                                             },
@@ -466,7 +604,11 @@
                                                             "className": "form-label",
                                                             "htmlFor": "opacity"
                                                         },
+<<<<<<< HEAD
                                                         "text": "$t:custom-effects.settings.fields.opacity.label"
+=======
+                                                        "text": "$t:g7-plugin-custom-effects.settings.fields.opacity.label"
+>>>>>>> c296cf2d90e83e047cf94ead1b1c993fb02b9ad7
                                                     }
                                                 ]
                                             },
@@ -507,7 +649,11 @@
                                                             "className": "form-label",
                                                             "htmlFor": "wind"
                                                         },
+<<<<<<< HEAD
                                                         "text": "$t:custom-effects.settings.fields.wind.label"
+=======
+                                                        "text": "$t:g7-plugin-custom-effects.settings.fields.wind.label"
+>>>>>>> c296cf2d90e83e047cf94ead1b1c993fb02b9ad7
                                                     },
                                                     {
                                                         "type": "basic",
@@ -515,7 +661,11 @@
                                                         "props": {
                                                             "className": "form-hint"
                                                         },
+<<<<<<< HEAD
                                                         "text": "$t:custom-effects.settings.fields.wind.hint"
+=======
+                                                        "text": "$t:g7-plugin-custom-effects.settings.fields.wind.hint"
+>>>>>>> c296cf2d90e83e047cf94ead1b1c993fb02b9ad7
                                                     }
                                                 ]
                                             },
@@ -556,7 +706,11 @@
                                                             "className": "form-label",
                                                             "htmlFor": "wind_direction"
                                                         },
+<<<<<<< HEAD
                                                         "text": "$t:custom-effects.settings.fields.wind_direction.label"
+=======
+                                                        "text": "$t:g7-plugin-custom-effects.settings.fields.wind_direction.label"
+>>>>>>> c296cf2d90e83e047cf94ead1b1c993fb02b9ad7
                                                     },
                                                     {
                                                         "type": "basic",
@@ -564,7 +718,11 @@
                                                         "props": {
                                                             "className": "form-hint"
                                                         },
+<<<<<<< HEAD
                                                         "text": "$t:custom-effects.settings.fields.wind_direction.hint"
+=======
+                                                        "text": "$t:g7-plugin-custom-effects.settings.fields.wind_direction.hint"
+>>>>>>> c296cf2d90e83e047cf94ead1b1c993fb02b9ad7
                                                     }
                                                 ]
                                             },
@@ -583,7 +741,11 @@
                                                         "props": {
                                                             "value": "none"
                                                         },
+<<<<<<< HEAD
                                                         "text": "$t:custom-effects.settings.options.wind_none"
+=======
+                                                        "text": "$t:g7-plugin-custom-effects.settings.options.wind_none"
+>>>>>>> c296cf2d90e83e047cf94ead1b1c993fb02b9ad7
                                                     },
                                                     {
                                                         "type": "basic",
@@ -591,7 +753,11 @@
                                                         "props": {
                                                             "value": "left"
                                                         },
+<<<<<<< HEAD
                                                         "text": "$t:custom-effects.settings.options.wind_left"
+=======
+                                                        "text": "$t:g7-plugin-custom-effects.settings.options.wind_left"
+>>>>>>> c296cf2d90e83e047cf94ead1b1c993fb02b9ad7
                                                     },
                                                     {
                                                         "type": "basic",
@@ -599,7 +765,11 @@
                                                         "props": {
                                                             "value": "right"
                                                         },
+<<<<<<< HEAD
                                                         "text": "$t:custom-effects.settings.options.wind_right"
+=======
+                                                        "text": "$t:g7-plugin-custom-effects.settings.options.wind_right"
+>>>>>>> c296cf2d90e83e047cf94ead1b1c993fb02b9ad7
                                                     },
                                                     {
                                                         "type": "basic",
@@ -607,7 +777,11 @@
                                                         "props": {
                                                             "value": "random"
                                                         },
+<<<<<<< HEAD
                                                         "text": "$t:custom-effects.settings.options.wind_random"
+=======
+                                                        "text": "$t:g7-plugin-custom-effects.settings.options.wind_random"
+>>>>>>> c296cf2d90e83e047cf94ead1b1c993fb02b9ad7
                                                     }
                                                 ]
                                             }
@@ -635,7 +809,11 @@
                                                             "className": "form-label",
                                                             "htmlFor": "color"
                                                         },
+<<<<<<< HEAD
                                                         "text": "$t:custom-effects.settings.fields.color.label"
+=======
+                                                        "text": "$t:g7-plugin-custom-effects.settings.fields.color.label"
+>>>>>>> c296cf2d90e83e047cf94ead1b1c993fb02b9ad7
                                                     },
                                                     {
                                                         "type": "basic",
@@ -643,7 +821,11 @@
                                                         "props": {
                                                             "className": "form-hint"
                                                         },
+<<<<<<< HEAD
                                                         "text": "$t:custom-effects.settings.fields.color.hint"
+=======
+                                                        "text": "$t:g7-plugin-custom-effects.settings.fields.color.hint"
+>>>>>>> c296cf2d90e83e047cf94ead1b1c993fb02b9ad7
                                                     }
                                                 ]
                                             },
@@ -662,7 +844,11 @@
                                                         "props": {
                                                             "value": "#ffffff"
                                                         },
+<<<<<<< HEAD
                                                         "text": "$t:custom-effects.settings.options.color_white"
+=======
+                                                        "text": "$t:g7-plugin-custom-effects.settings.options.color_white"
+>>>>>>> c296cf2d90e83e047cf94ead1b1c993fb02b9ad7
                                                     },
                                                     {
                                                         "type": "basic",
@@ -670,7 +856,11 @@
                                                         "props": {
                                                             "value": "#bae6fd"
                                                         },
+<<<<<<< HEAD
                                                         "text": "$t:custom-effects.settings.options.color_sky"
+=======
+                                                        "text": "$t:g7-plugin-custom-effects.settings.options.color_sky"
+>>>>>>> c296cf2d90e83e047cf94ead1b1c993fb02b9ad7
                                                     },
                                                     {
                                                         "type": "basic",
@@ -678,7 +868,11 @@
                                                         "props": {
                                                             "value": "#f9a8d4"
                                                         },
+<<<<<<< HEAD
                                                         "text": "$t:custom-effects.settings.options.color_pink"
+=======
+                                                        "text": "$t:g7-plugin-custom-effects.settings.options.color_pink"
+>>>>>>> c296cf2d90e83e047cf94ead1b1c993fb02b9ad7
                                                     },
                                                     {
                                                         "type": "basic",
@@ -686,7 +880,11 @@
                                                         "props": {
                                                             "value": "#fde047"
                                                         },
+<<<<<<< HEAD
                                                         "text": "$t:custom-effects.settings.options.color_yellow"
+=======
+                                                        "text": "$t:g7-plugin-custom-effects.settings.options.color_yellow"
+>>>>>>> c296cf2d90e83e047cf94ead1b1c993fb02b9ad7
                                                     },
                                                     {
                                                         "type": "basic",
@@ -694,7 +892,11 @@
                                                         "props": {
                                                             "value": "#86efac"
                                                         },
+<<<<<<< HEAD
                                                         "text": "$t:custom-effects.settings.options.color_green"
+=======
+                                                        "text": "$t:g7-plugin-custom-effects.settings.options.color_green"
+>>>>>>> c296cf2d90e83e047cf94ead1b1c993fb02b9ad7
                                                     },
                                                     {
                                                         "type": "basic",
@@ -702,7 +904,11 @@
                                                         "props": {
                                                             "value": "#c4b5fd"
                                                         },
+<<<<<<< HEAD
                                                         "text": "$t:custom-effects.settings.options.color_purple"
+=======
+                                                        "text": "$t:g7-plugin-custom-effects.settings.options.color_purple"
+>>>>>>> c296cf2d90e83e047cf94ead1b1c993fb02b9ad7
                                                     },
                                                     {
                                                         "type": "basic",
@@ -710,7 +916,11 @@
                                                         "props": {
                                                             "value": "#fb923c"
                                                         },
+<<<<<<< HEAD
                                                         "text": "$t:custom-effects.settings.options.color_orange"
+=======
+                                                        "text": "$t:g7-plugin-custom-effects.settings.options.color_orange"
+>>>>>>> c296cf2d90e83e047cf94ead1b1c993fb02b9ad7
                                                     },
                                                     {
                                                         "type": "basic",
@@ -718,7 +928,11 @@
                                                         "props": {
                                                             "value": "#f87171"
                                                         },
+<<<<<<< HEAD
                                                         "text": "$t:custom-effects.settings.options.color_red"
+=======
+                                                        "text": "$t:g7-plugin-custom-effects.settings.options.color_red"
+>>>>>>> c296cf2d90e83e047cf94ead1b1c993fb02b9ad7
                                                     }
                                                 ]
                                             }
@@ -750,7 +964,11 @@
                                         "props": {
                                             "className": "text-body font-semibold"
                                         },
+<<<<<<< HEAD
                                         "text": "$t:custom-effects.settings.sections.schedule"
+=======
+                                        "text": "$t:g7-plugin-custom-effects.settings.sections.schedule"
+>>>>>>> c296cf2d90e83e047cf94ead1b1c993fb02b9ad7
                                     }
                                 ]
                             },
@@ -780,7 +998,11 @@
                                                         "props": {
                                                             "className": "form-label"
                                                         },
+<<<<<<< HEAD
                                                         "text": "$t:custom-effects.settings.fields.schedule_enabled.label"
+=======
+                                                        "text": "$t:g7-plugin-custom-effects.settings.fields.schedule_enabled.label"
+>>>>>>> c296cf2d90e83e047cf94ead1b1c993fb02b9ad7
                                                     },
                                                     {
                                                         "type": "basic",
@@ -788,7 +1010,11 @@
                                                         "props": {
                                                             "className": "form-hint"
                                                         },
+<<<<<<< HEAD
                                                         "text": "$t:custom-effects.settings.fields.schedule_enabled.hint"
+=======
+                                                        "text": "$t:g7-plugin-custom-effects.settings.fields.schedule_enabled.hint"
+>>>>>>> c296cf2d90e83e047cf94ead1b1c993fb02b9ad7
                                                     }
                                                 ]
                                             },
@@ -815,8 +1041,13 @@
                                                 "props": {
                                                     "name": "schedules",
                                                     "items": "{{_local.form.schedules ?? []}}",
+<<<<<<< HEAD
                                                     "addLabel": "$t:custom-effects.settings.fields.schedules.add",
                                                     "emptyMessage": "$t:custom-effects.settings.fields.schedules.empty",
+=======
+                                                    "addLabel": "$t:g7-plugin-custom-effects.settings.fields.schedules.add",
+                                                    "emptyMessage": "$t:g7-plugin-custom-effects.settings.fields.schedules.empty",
+>>>>>>> c296cf2d90e83e047cf94ead1b1c993fb02b9ad7
                                                     "enableDrag": true,
                                                     "showIndex": false,
                                                     "headerClassName": "g7-custom-effects-schedule-dfl-header",
@@ -827,22 +1058,35 @@
                                                         {
                                                             "key": "enabled",
                                                             "type": "select",
+<<<<<<< HEAD
                                                             "label": "$t:custom-effects.settings.fields.schedules.enabled",
+=======
+                                                            "label": "$t:g7-plugin-custom-effects.settings.fields.schedules.enabled",
+>>>>>>> c296cf2d90e83e047cf94ead1b1c993fb02b9ad7
                                                             "className": "g7-custom-effects-schedule-enabled-select",
                                                             "options": [
                                                                 {
                                                                     "value": "true",
+<<<<<<< HEAD
                                                                     "label": "$t:custom-effects.settings.options.schedule_on"
                                                                 },
                                                                 {
                                                                     "value": "false",
                                                                     "label": "$t:custom-effects.settings.options.schedule_off"
+=======
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.schedule_on"
+                                                                },
+                                                                {
+                                                                    "value": "false",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.schedule_off"
+>>>>>>> c296cf2d90e83e047cf94ead1b1c993fb02b9ad7
                                                                 }
                                                             ]
                                                         },
                                                         {
                                                             "key": "effect",
                                                             "type": "select",
+<<<<<<< HEAD
                                                             "label": "$t:custom-effects.settings.fields.effect.label",
                                                             "options": [
                                                                 {
@@ -924,6 +1168,89 @@
                                                                 {
                                                                     "value": "sunflowers",
                                                                     "label": "$t:custom-effects.settings.options.sunflowers"
+=======
+                                                            "label": "$t:g7-plugin-custom-effects.settings.fields.effect.label",
+                                                            "options": [
+                                                                {
+                                                                    "value": "leaves",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.leaves"
+                                                                },
+                                                                {
+                                                                    "value": "snow",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.snow"
+                                                                },
+                                                                {
+                                                                    "value": "maple_leaves",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.maple_leaves"
+                                                                },
+                                                                {
+                                                                    "value": "coins",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.coins"
+                                                                },
+                                                                {
+                                                                    "value": "fireflies",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.fireflies"
+                                                                },
+                                                                {
+                                                                    "value": "cherry_blossoms",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.cherry_blossoms"
+                                                                },
+                                                                {
+                                                                    "value": "petals",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.petals"
+                                                                },
+                                                                {
+                                                                    "value": "stars",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.stars"
+                                                                },
+                                                                {
+                                                                    "value": "rain",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.rain"
+                                                                },
+                                                                {
+                                                                    "value": "bubbles",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.bubbles"
+                                                                },
+                                                                {
+                                                                    "value": "confetti",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.confetti"
+                                                                },
+                                                                {
+                                                                    "value": "ice_cream",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.ice_cream"
+                                                                },
+                                                                {
+                                                                    "value": "stars_multicolor",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.stars_multicolor"
+                                                                },
+                                                                {
+                                                                    "value": "poop",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.poop"
+                                                                },
+                                                                {
+                                                                    "value": "alarm_clock",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.alarm_clock"
+                                                                },
+                                                                {
+                                                                    "value": "bills",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.bills"
+                                                                },
+                                                                {
+                                                                    "value": "cheese",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.cheese"
+                                                                },
+                                                                {
+                                                                    "value": "bouncing_bubbles",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.bouncing_bubbles"
+                                                                },
+                                                                {
+                                                                    "value": "hearts",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.hearts"
+                                                                },
+                                                                {
+                                                                    "value": "sunflowers",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.sunflowers"
+>>>>>>> c296cf2d90e83e047cf94ead1b1c993fb02b9ad7
                                                                 }
                                                             ],
                                                             "required": true
@@ -931,31 +1258,51 @@
                                                         {
                                                             "key": "start_date",
                                                             "type": "input",
+<<<<<<< HEAD
                                                             "label": "$t:custom-effects.settings.fields.schedule_start_date.label",
+=======
+                                                            "label": "$t:g7-plugin-custom-effects.settings.fields.schedule_start_date.label",
+>>>>>>> c296cf2d90e83e047cf94ead1b1c993fb02b9ad7
                                                             "placeholder": "YYYY-MM-DD"
                                                         },
                                                         {
                                                             "key": "start_time",
                                                             "type": "input",
+<<<<<<< HEAD
                                                             "label": "$t:custom-effects.settings.fields.schedule_start_time.label",
+=======
+                                                            "label": "$t:g7-plugin-custom-effects.settings.fields.schedule_start_time.label",
+>>>>>>> c296cf2d90e83e047cf94ead1b1c993fb02b9ad7
                                                             "placeholder": "HH:MM"
                                                         },
                                                         {
                                                             "key": "end_date",
                                                             "type": "input",
+<<<<<<< HEAD
                                                             "label": "$t:custom-effects.settings.fields.schedule_end_date.label",
+=======
+                                                            "label": "$t:g7-plugin-custom-effects.settings.fields.schedule_end_date.label",
+>>>>>>> c296cf2d90e83e047cf94ead1b1c993fb02b9ad7
                                                             "placeholder": "YYYY-MM-DD"
                                                         },
                                                         {
                                                             "key": "end_time",
                                                             "type": "input",
+<<<<<<< HEAD
                                                             "label": "$t:custom-effects.settings.fields.schedule_end_time.label",
+=======
+                                                            "label": "$t:g7-plugin-custom-effects.settings.fields.schedule_end_time.label",
+>>>>>>> c296cf2d90e83e047cf94ead1b1c993fb02b9ad7
                                                             "placeholder": "HH:MM"
                                                         },
                                                         {
                                                             "key": "intensity",
                                                             "type": "number",
+<<<<<<< HEAD
                                                             "label": "$t:custom-effects.settings.fields.intensity.label",
+=======
+                                                            "label": "$t:g7-plugin-custom-effects.settings.fields.intensity.label",
+>>>>>>> c296cf2d90e83e047cf94ead1b1c993fb02b9ad7
                                                             "min": 10,
                                                             "max": 200,
                                                             "step": 10
@@ -963,7 +1310,11 @@
                                                         {
                                                             "key": "speed",
                                                             "type": "number",
+<<<<<<< HEAD
                                                             "label": "$t:custom-effects.settings.fields.speed.label",
+=======
+                                                            "label": "$t:g7-plugin-custom-effects.settings.fields.speed.label",
+>>>>>>> c296cf2d90e83e047cf94ead1b1c993fb02b9ad7
                                                             "min": 25,
                                                             "max": 300,
                                                             "step": 25
@@ -971,7 +1322,11 @@
                                                         {
                                                             "key": "opacity",
                                                             "type": "number",
+<<<<<<< HEAD
                                                             "label": "$t:custom-effects.settings.fields.opacity.label",
+=======
+                                                            "label": "$t:g7-plugin-custom-effects.settings.fields.opacity.label",
+>>>>>>> c296cf2d90e83e047cf94ead1b1c993fb02b9ad7
                                                             "min": 10,
                                                             "max": 100,
                                                             "step": 5
@@ -979,7 +1334,11 @@
                                                         {
                                                             "key": "wind",
                                                             "type": "number",
+<<<<<<< HEAD
                                                             "label": "$t:custom-effects.settings.fields.wind.label",
+=======
+                                                            "label": "$t:g7-plugin-custom-effects.settings.fields.wind.label",
+>>>>>>> c296cf2d90e83e047cf94ead1b1c993fb02b9ad7
                                                             "min": 0,
                                                             "max": 100,
                                                             "step": 10
@@ -987,6 +1346,7 @@
                                                         {
                                                             "key": "wind_direction",
                                                             "type": "select",
+<<<<<<< HEAD
                                                             "label": "$t:custom-effects.settings.fields.wind_direction.label",
                                                             "options": [
                                                                 {
@@ -1004,12 +1364,32 @@
                                                                 {
                                                                     "value": "random",
                                                                     "label": "$t:custom-effects.settings.options.wind_random"
+=======
+                                                            "label": "$t:g7-plugin-custom-effects.settings.fields.wind_direction.label",
+                                                            "options": [
+                                                                {
+                                                                    "value": "none",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.wind_none"
+                                                                },
+                                                                {
+                                                                    "value": "left",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.wind_left"
+                                                                },
+                                                                {
+                                                                    "value": "right",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.wind_right"
+                                                                },
+                                                                {
+                                                                    "value": "random",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.wind_random"
+>>>>>>> c296cf2d90e83e047cf94ead1b1c993fb02b9ad7
                                                                 }
                                                             ]
                                                         },
                                                         {
                                                             "key": "color",
                                                             "type": "select",
+<<<<<<< HEAD
                                                             "label": "$t:custom-effects.settings.fields.color.label",
                                                             "options": [
                                                                 {
@@ -1043,6 +1423,41 @@
                                                                 {
                                                                     "value": "#f87171",
                                                                     "label": "$t:custom-effects.settings.options.color_red"
+=======
+                                                            "label": "$t:g7-plugin-custom-effects.settings.fields.color.label",
+                                                            "options": [
+                                                                {
+                                                                    "value": "#ffffff",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.color_white"
+                                                                },
+                                                                {
+                                                                    "value": "#bae6fd",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.color_sky"
+                                                                },
+                                                                {
+                                                                    "value": "#f9a8d4",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.color_pink"
+                                                                },
+                                                                {
+                                                                    "value": "#fde047",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.color_yellow"
+                                                                },
+                                                                {
+                                                                    "value": "#86efac",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.color_green"
+                                                                },
+                                                                {
+                                                                    "value": "#c4b5fd",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.color_purple"
+                                                                },
+                                                                {
+                                                                    "value": "#fb923c",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.color_orange"
+                                                                },
+                                                                {
+                                                                    "value": "#f87171",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.color_red"
+>>>>>>> c296cf2d90e83e047cf94ead1b1c993fb02b9ad7
                                                                 }
                                                             ]
                                                         },
@@ -1050,6 +1465,7 @@
                                                             "key": "sun",
                                                             "type": "select",
                                                             "className": "g7-custom-effects-schedule-day-select",
+<<<<<<< HEAD
                                                             "label": "$t:custom-effects.settings.options.day_sun",
                                                             "options": [
                                                                 {
@@ -1059,6 +1475,17 @@
                                                                 {
                                                                     "value": "false",
                                                                     "label": "$t:custom-effects.settings.options.day_off"
+=======
+                                                            "label": "$t:g7-plugin-custom-effects.settings.options.day_sun",
+                                                            "options": [
+                                                                {
+                                                                    "value": "true",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.day_on"
+                                                                },
+                                                                {
+                                                                    "value": "false",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.day_off"
+>>>>>>> c296cf2d90e83e047cf94ead1b1c993fb02b9ad7
                                                                 }
                                                             ]
                                                         },
@@ -1066,6 +1493,7 @@
                                                             "key": "mon",
                                                             "type": "select",
                                                             "className": "g7-custom-effects-schedule-day-select",
+<<<<<<< HEAD
                                                             "label": "$t:custom-effects.settings.options.day_mon",
                                                             "options": [
                                                                 {
@@ -1075,6 +1503,17 @@
                                                                 {
                                                                     "value": "false",
                                                                     "label": "$t:custom-effects.settings.options.day_off"
+=======
+                                                            "label": "$t:g7-plugin-custom-effects.settings.options.day_mon",
+                                                            "options": [
+                                                                {
+                                                                    "value": "true",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.day_on"
+                                                                },
+                                                                {
+                                                                    "value": "false",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.day_off"
+>>>>>>> c296cf2d90e83e047cf94ead1b1c993fb02b9ad7
                                                                 }
                                                             ]
                                                         },
@@ -1082,6 +1521,7 @@
                                                             "key": "tue",
                                                             "type": "select",
                                                             "className": "g7-custom-effects-schedule-day-select",
+<<<<<<< HEAD
                                                             "label": "$t:custom-effects.settings.options.day_tue",
                                                             "options": [
                                                                 {
@@ -1091,6 +1531,17 @@
                                                                 {
                                                                     "value": "false",
                                                                     "label": "$t:custom-effects.settings.options.day_off"
+=======
+                                                            "label": "$t:g7-plugin-custom-effects.settings.options.day_tue",
+                                                            "options": [
+                                                                {
+                                                                    "value": "true",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.day_on"
+                                                                },
+                                                                {
+                                                                    "value": "false",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.day_off"
+>>>>>>> c296cf2d90e83e047cf94ead1b1c993fb02b9ad7
                                                                 }
                                                             ]
                                                         },
@@ -1098,6 +1549,7 @@
                                                             "key": "wed",
                                                             "type": "select",
                                                             "className": "g7-custom-effects-schedule-day-select",
+<<<<<<< HEAD
                                                             "label": "$t:custom-effects.settings.options.day_wed",
                                                             "options": [
                                                                 {
@@ -1107,6 +1559,17 @@
                                                                 {
                                                                     "value": "false",
                                                                     "label": "$t:custom-effects.settings.options.day_off"
+=======
+                                                            "label": "$t:g7-plugin-custom-effects.settings.options.day_wed",
+                                                            "options": [
+                                                                {
+                                                                    "value": "true",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.day_on"
+                                                                },
+                                                                {
+                                                                    "value": "false",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.day_off"
+>>>>>>> c296cf2d90e83e047cf94ead1b1c993fb02b9ad7
                                                                 }
                                                             ]
                                                         },
@@ -1114,6 +1577,7 @@
                                                             "key": "thu",
                                                             "type": "select",
                                                             "className": "g7-custom-effects-schedule-day-select",
+<<<<<<< HEAD
                                                             "label": "$t:custom-effects.settings.options.day_thu",
                                                             "options": [
                                                                 {
@@ -1123,6 +1587,17 @@
                                                                 {
                                                                     "value": "false",
                                                                     "label": "$t:custom-effects.settings.options.day_off"
+=======
+                                                            "label": "$t:g7-plugin-custom-effects.settings.options.day_thu",
+                                                            "options": [
+                                                                {
+                                                                    "value": "true",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.day_on"
+                                                                },
+                                                                {
+                                                                    "value": "false",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.day_off"
+>>>>>>> c296cf2d90e83e047cf94ead1b1c993fb02b9ad7
                                                                 }
                                                             ]
                                                         },
@@ -1130,6 +1605,7 @@
                                                             "key": "fri",
                                                             "type": "select",
                                                             "className": "g7-custom-effects-schedule-day-select",
+<<<<<<< HEAD
                                                             "label": "$t:custom-effects.settings.options.day_fri",
                                                             "options": [
                                                                 {
@@ -1139,6 +1615,17 @@
                                                                 {
                                                                     "value": "false",
                                                                     "label": "$t:custom-effects.settings.options.day_off"
+=======
+                                                            "label": "$t:g7-plugin-custom-effects.settings.options.day_fri",
+                                                            "options": [
+                                                                {
+                                                                    "value": "true",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.day_on"
+                                                                },
+                                                                {
+                                                                    "value": "false",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.day_off"
+>>>>>>> c296cf2d90e83e047cf94ead1b1c993fb02b9ad7
                                                                 }
                                                             ]
                                                         },
@@ -1146,6 +1633,7 @@
                                                             "key": "sat",
                                                             "type": "select",
                                                             "className": "g7-custom-effects-schedule-day-select",
+<<<<<<< HEAD
                                                             "label": "$t:custom-effects.settings.options.day_sat",
                                                             "options": [
                                                                 {
@@ -1155,6 +1643,17 @@
                                                                 {
                                                                     "value": "false",
                                                                     "label": "$t:custom-effects.settings.options.day_off"
+=======
+                                                            "label": "$t:g7-plugin-custom-effects.settings.options.day_sat",
+                                                            "options": [
+                                                                {
+                                                                    "value": "true",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.day_on"
+                                                                },
+                                                                {
+                                                                    "value": "false",
+                                                                    "label": "$t:g7-plugin-custom-effects.settings.options.day_off"
+>>>>>>> c296cf2d90e83e047cf94ead1b1c993fb02b9ad7
                                                                 }
                                                             ]
                                                         }
@@ -1199,7 +1698,11 @@
                                         "props": {
                                             "className": "text-body font-semibold"
                                         },
+<<<<<<< HEAD
                                         "text": "$t:custom-effects.settings.sections.scope"
+=======
+                                        "text": "$t:g7-plugin-custom-effects.settings.sections.scope"
+>>>>>>> c296cf2d90e83e047cf94ead1b1c993fb02b9ad7
                                     }
                                 ]
                             },
@@ -1232,7 +1735,11 @@
                                                         "props": {
                                                             "className": "form-label"
                                                         },
+<<<<<<< HEAD
                                                         "text": "$t:custom-effects.settings.fields.mobile_enabled.label"
+=======
+                                                        "text": "$t:g7-plugin-custom-effects.settings.fields.mobile_enabled.label"
+>>>>>>> c296cf2d90e83e047cf94ead1b1c993fb02b9ad7
                                                     },
                                                     {
                                                         "type": "basic",
@@ -1240,7 +1747,11 @@
                                                         "props": {
                                                             "className": "form-hint"
                                                         },
+<<<<<<< HEAD
                                                         "text": "$t:custom-effects.settings.fields.mobile_enabled.hint"
+=======
+                                                        "text": "$t:g7-plugin-custom-effects.settings.fields.mobile_enabled.hint"
+>>>>>>> c296cf2d90e83e047cf94ead1b1c993fb02b9ad7
                                                     }
                                                 ]
                                             },
@@ -1283,7 +1794,11 @@
                                                         "props": {
                                                             "className": "form-label"
                                                         },
+<<<<<<< HEAD
                                                         "text": "$t:custom-effects.settings.fields.admin_enabled.label"
+=======
+                                                        "text": "$t:g7-plugin-custom-effects.settings.fields.admin_enabled.label"
+>>>>>>> c296cf2d90e83e047cf94ead1b1c993fb02b9ad7
                                                     },
                                                     {
                                                         "type": "basic",
@@ -1291,7 +1806,11 @@
                                                         "props": {
                                                             "className": "form-hint"
                                                         },
+<<<<<<< HEAD
                                                         "text": "$t:custom-effects.settings.fields.admin_enabled.hint"
+=======
+                                                        "text": "$t:g7-plugin-custom-effects.settings.fields.admin_enabled.hint"
+>>>>>>> c296cf2d90e83e047cf94ead1b1c993fb02b9ad7
                                                     }
                                                 ]
                                             },
@@ -1334,7 +1853,11 @@
                                                         "props": {
                                                             "className": "form-label"
                                                         },
+<<<<<<< HEAD
                                                         "text": "$t:custom-effects.settings.fields.respect_reduced_motion.label"
+=======
+                                                        "text": "$t:g7-plugin-custom-effects.settings.fields.respect_reduced_motion.label"
+>>>>>>> c296cf2d90e83e047cf94ead1b1c993fb02b9ad7
                                                     },
                                                     {
                                                         "type": "basic",
@@ -1342,7 +1865,11 @@
                                                         "props": {
                                                             "className": "form-hint"
                                                         },
+<<<<<<< HEAD
                                                         "text": "$t:custom-effects.settings.fields.respect_reduced_motion.hint"
+=======
+                                                        "text": "$t:g7-plugin-custom-effects.settings.fields.respect_reduced_motion.hint"
+>>>>>>> c296cf2d90e83e047cf94ead1b1c993fb02b9ad7
                                                     }
                                                 ]
                                             },

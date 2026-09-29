@@ -344,6 +344,41 @@ select.g7-custom-effects-schedule-day-select {
     }
 }
 
+.g7-custom-effects-mouse-canvas {
+    z-index: 2147483647;
+}
+
+.g7-custom-effects-mouse-toggle svg {
+    display: block;
+    width: 1.15rem;
+    height: 1.15rem;
+}
+
+.g7-custom-effects-mouse-text-input {
+    box-sizing: border-box;
+    width: 100% !important;
+    min-width: 8rem;
+    justify-self: end;
+}
+
+.g7-custom-effects-mouse-schedule-list {
+    grid-column: 1 / -1;
+    min-width: 0;
+    overflow-x: auto;
+    overflow-y: visible;
+}
+
+.g7-custom-effects-mouse-schedule-list input[type="date"],
+.g7-custom-effects-mouse-schedule-list input[type="time"] {
+    min-width: 0;
+}
+
+@media (pointer: coarse) {
+    .g7-custom-effects-mouse-toggle {
+        display: none !important;
+    }
+}
+
 .dark .g7-custom-effects-toggle {
     color: #9ca3af;
 }

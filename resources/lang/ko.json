@@ -17,7 +17,8 @@
         "sections": {
             "effect": "효과 모양 및 움직임",
             "schedule": "날짜 및 시간 예약",
-            "scope": "표시 범위 및 접근성"
+            "scope": "표시 범위 및 접근성",
+            "mouse": "마우스 따라다니는 효과"
         },
         "options": {
             "leaves": "낙엽",
@@ -152,7 +153,69 @@
             "respect_reduced_motion": {
                 "label": "동작 줄이기 설정 존중",
                 "hint": "운영체제에서 동작 줄이기를 선택한 방문자에게 효과를 표시하지 않습니다."
+            },
+            "mouse_enabled": {
+                "label": "마우스 효과 사용",
+                "hint": "방문자 화면에서 마우스 커서를 따라다니는 효과를 표시합니다."
+            },
+            "mouse_effect": {
+                "label": "마우스 효과 종류"
+            },
+            "mouse_color": {
+                "label": "마우스 효과 색상"
+            },
+            "mouse_custom_color": {
+                "label": "직접 입력 색상 (선택)"
+            },
+            "mouse_amount": {
+                "label": "입자 양 (%)"
+            },
+            "mouse_size": {
+                "label": "효과 크기 (%)"
+            },
+            "mouse_emojis": {
+                "label": "이모지 목록"
+            },
+            "mouse_text": {
+                "label": "꼬리 글자"
+            },
+            "mouse_click_burst": {
+                "label": "클릭하면 터지기"
+            },
+            "mouse_schedule_enabled": {
+                "label": "마우스 효과 예약 사용"
+            },
+            "mouse_schedules": {
+                "add": "마우스 효과 예약 추가",
+                "empty": "마우스 효과 예약이 없습니다. 예약을 추가하세요."
             }
+        },
+        "mouse_options": {
+            "neon_line": "네온 선",
+            "snowflakes": "눈송이",
+            "click_fireworks": "클릭 폭죽",
+            "petals": "꽃잎 (벚꽃)",
+            "butterflies": "나비",
+            "ring_cursor": "링 커서 (지연 원)",
+            "rainbow_tail": "무지개 꼬리",
+            "ripple": "물결 (ripple)",
+            "fireflies": "반딧불 빛 입자",
+            "embers": "불꽃 (불씨)",
+            "bubbles": "비눗방울",
+            "sparkle_stars": "반짝이 별",
+            "confetti": "색종이",
+            "spotlight": "스포트라이트",
+            "text_trail": "글자 꼬리",
+            "emoji": "이모지",
+            "dot_follow": "점 따라가기",
+            "hearts": "하트",
+            "comet": "혜성 꼬리",
+            "color_default": "효과 기본색",
+            "color_rainbow": "무지개 (여러 색)"
         }
+    },
+    "mouse_toggle": {
+        "enable": "마우스 효과 켜기",
+        "disable": "마우스 효과 끄기"
     }
 }

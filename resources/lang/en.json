@@ -17,7 +17,8 @@
         "sections": {
             "effect": "Appearance and movement",
             "schedule": "Date and time scheduling",
-            "scope": "Display scope and accessibility"
+            "scope": "Display scope and accessibility",
+            "mouse": "Mouse-follow effects"
         },
         "options": {
             "leaves": "Falling leaves",
@@ -152,7 +153,69 @@
             "respect_reduced_motion": {
                 "label": "Respect reduced motion",
                 "hint": "Hides effects for visitors who prefer reduced motion."
+            },
+            "mouse_enabled": {
+                "label": "Enable mouse effects",
+                "hint": "Shows an effect that follows the mouse cursor."
+            },
+            "mouse_effect": {
+                "label": "Mouse effect"
+            },
+            "mouse_color": {
+                "label": "Mouse effect color"
+            },
+            "mouse_custom_color": {
+                "label": "Custom color (optional)"
+            },
+            "mouse_amount": {
+                "label": "Particle amount (%)"
+            },
+            "mouse_size": {
+                "label": "Effect size (%)"
+            },
+            "mouse_emojis": {
+                "label": "Emoji list"
+            },
+            "mouse_text": {
+                "label": "Trail text"
+            },
+            "mouse_click_burst": {
+                "label": "Burst on click"
+            },
+            "mouse_schedule_enabled": {
+                "label": "Enable mouse effect scheduling"
+            },
+            "mouse_schedules": {
+                "add": "Add mouse schedule",
+                "empty": "No mouse schedules yet."
             }
+        },
+        "mouse_options": {
+            "neon_line": "Neon line",
+            "snowflakes": "Snowflakes",
+            "click_fireworks": "Click fireworks",
+            "petals": "Petals (cherry blossom)",
+            "butterflies": "Butterflies",
+            "ring_cursor": "Ring cursor (delayed circle)",
+            "rainbow_tail": "Rainbow tail",
+            "ripple": "Ripple",
+            "fireflies": "Firefly glow",
+            "embers": "Embers",
+            "bubbles": "Bubbles",
+            "sparkle_stars": "Sparkle stars",
+            "confetti": "Confetti",
+            "spotlight": "Spotlight",
+            "text_trail": "Text trail",
+            "emoji": "Emoji",
+            "dot_follow": "Dot follow",
+            "hearts": "Hearts",
+            "comet": "Comet tail",
+            "color_default": "Effect default",
+            "color_rainbow": "Rainbow"
         }
+    },
+    "mouse_toggle": {
+        "enable": "Turn on mouse effect",
+        "disable": "Turn off mouse effect"
     }
 }

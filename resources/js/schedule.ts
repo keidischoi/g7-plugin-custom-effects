@@ -89,8 +89,13 @@ function previousDate(date: string): string {
     return previous.toISOString().slice(0, 10);
 }
 
-function matchesSchedule(
-    schedule: EffectSchedule,
+export type ScheduleWindow = Pick<
+    EffectSchedule,
+    'enabled' | 'startDate' | 'endDate' | 'startTime' | 'endTime' | 'days'
+>;
+
+export function matchesSchedule(
+    schedule: ScheduleWindow,
     now: Date,
     timezone: string,
 ): boolean {

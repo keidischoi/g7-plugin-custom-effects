@@ -13,6 +13,7 @@ import {
     trailTextValue,
 } from './mouse-config';
 import { MouseEffectsEngine } from './mouse-engine';
+import { enhanceSchedulePickers, fillEmptyMouseScheduleRow } from './schedule-fields';
 import { shouldRunMouseEffect } from './mouse-runtime';
 import {
     MOUSE_PREFERENCE_KEY,
@@ -34,8 +35,9 @@ afterEach(() => {
 });
 
 describe('mouse effect config', () => {
-    it('offers at least 16 effects in Korean name order and matches the layout', () => {
-        expect(MOUSE_EFFECT_KINDS.length).toBeGreaterThanOrEqual(16);
+    it('offers 30 effects in Korean name order and matches the layout', () => {
+        expect(MOUSE_EFFECT_KINDS).toHaveLength(30);
+        expect(new Set(MOUSE_EFFECT_KINDS).size).toBe(30);
         const names = MOUSE_EFFECT_KINDS.map((kind) => MOUSE_EFFECT_LABELS[kind]);
         expect(names).toEqual([...names].sort((left, right) => left.localeCompare(right, 'ko')));
         expect(layout.schema.mouse_effect.options).toEqual([...MOUSE_EFFECT_KINDS]);
@@ -46,6 +48,138 @@ describe('mouse effect config', () => {
         }
         expect(slots).toContain('"name":"mouse_schedules"');
         expect(slots).not.toContain('$t:custom-effects.settings.fields.mouse');
+
+        for (const lang of ['ko', 'en']) {
+            const options = JSON.parse(readFileSync(
+                resolve(root, `resources/lang/${lang}.json`),
+                'utf8',
+            )).settings.mouse_options as Record<string, string>;
+            for (const kind of MOUSE_EFFECT_KINDS) expect(options[kind]).toBeTruthy();
+        }
+        const php = readFileSync(resolve(root, 'plugin.php'), 'utf8');
+        for (const kind of MOUSE_EFFECT_KINDS) expect(php).toContain(`'${kind}',`);
+    });
+
+    it('builds mouse schedule rows from the same picker columns as screen schedules', () => {
+        const findList = (value: unknown): Record<string, any> | null => {
+            if (Array.isArray(value)) {
+                for (const item of value) {
+                    const found = findList(item);
+                    if (found) return found;
+                }
+                return null;
+            }
+            if (!value || typeof value !== 'object') return null;
+            const node = value as Record<string, any>;
+            if (node.name === 'DynamicFieldList' && node.props?.name === 'mouse_schedules') return node;
+            for (const item of Object.values(node)) {
+                const found = findList(item);
+                if (found) return found;
+            }
+            return null;
+        };
+        const list = findList(layout.slots);
+        expect(list?.props.headerClassName).toBe('g7-custom-effects-schedule-dfl-header');
+        expect(list?.props.rowClassName).toContain('g7-custom-effects-schedule-dfl-row');
+        const columns = list?.props.columns as Array<Record<string, any>>;
+        expect(columns.map((column) => column.key)).toEqual([
+            'enabled', 'mouse_effect', 'start_date', 'start_time', 'end_date', 'end_time', 'mouse_color',
+            'mouse_custom_color', 'mouse_amount', 'mouse_size', 'mouse_click_burst', 'mouse_emojis', 'mouse_text',
+            'sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat',
+        ]);
+        expect(columns[0].className).toBe('g7-custom-effects-schedule-enabled-select');
+        expect(columns[2].placeholder).toBe('YYYY-MM-DD');
+        expect(columns[3].placeholder).toBe('HH:MM');
+        expect(columns[4].placeholder).toBe('YYYY-MM-DD');
+        expect(columns[5].placeholder).toBe('HH:MM');
+        const optionKeys = Object.keys(layout.schema).filter((key) => (
+            key.startsWith('mouse_') && !key.startsWith('mouse_schedule') && key !== 'mouse_enabled'
+        ));
+        for (const key of optionKeys) expect(columns.map((column) => column.key)).toContain(key);
+        columns.slice(13).forEach((column) => {
+            expect(column.className).toBe('g7-custom-effects-schedule-day-select');
+        });
+    });
+
+    it('lets an active schedule row override every mouse option, blank falls back', () => {
+        const base = {
+            mouse_enabled: true,
+            mouse_effect: 'hearts',
+            mouse_color: 'default',
+            mouse_custom_color: '#123456',
+            mouse_amount: 80,
+            mouse_size: 120,
+            mouse_emojis: '🍀',
+            mouse_text: '기본 문구',
+            mouse_click_burst: false,
+            mouse_schedule_enabled: true,
+        };
+        const full = resolveMouseConfig(normalizeMouseConfig({
+            ...base,
+            mouse_schedules: [{
+                mouse_effect: 'text_trail',
+                mouse_color: 'rainbow',
+                mouse_custom_color: '',
+                mouse_amount: '150',
+                mouse_size: 60,
+                mouse_click_burst: 'true',
+                mouse_emojis: '🎄 ⛄',
+                mouse_text: '메리 크리스마스',
+            }],
+        }));
+        expect(full).toMatchObject({
+            effect: 'text_trail',
+            color: 'rainbow',
+            customColor: '',
+            amount: 150,
+            size: 60,
+            clickBurst: true,
+            emojis: ['🎄', '⛄'],
+            text: '메리 크리스마스',
+        });
+
+        const blank = resolveMouseConfig(normalizeMouseConfig({
+            ...base,
+            mouse_schedules: [{
+                mouse_effect: '',
+                mouse_color: '',
+                mouse_custom_color: '',
+                mouse_amount: '',
+                mouse_size: null,
+                mouse_click_burst: '',
+                mouse_emojis: '  ',
+                mouse_text: '',
+            }],
+        }));
+        expect(blank).toMatchObject({
+            effect: 'hearts',
+            color: 'default',
+            customColor: '#123456',
+            amount: 80,
+            size: 120,
+            clickBurst: false,
+            emojis: ['🍀'],
+            text: '기본 문구',
+        });
+
+        const ownHex = resolveMouseConfig(normalizeMouseConfig({
+            ...base,
+            mouse_schedules: [{ mouse_custom_color: '#abcdef' }],
+        }));
+        expect(ownHex?.customColor).toBe('#abcdef');
+    });
+
+    it('reads per-day flags and still accepts 1.1.0 all/weekdays/weekends rows', () => {
+        const config = normalizeMouseConfig({
+            mouse_schedules: [
+                { sun: 'false', mon: 'true', tue: 'true', wed: 'true', thu: 'true', fri: 'true', sat: 'false' },
+                { days: 'weekends' },
+                {},
+            ],
+        });
+        expect(config.schedules[0].days).toEqual([1, 2, 3, 4, 5]);
+        expect(config.schedules[1].days).toEqual([0, 6]);
+        expect(config.schedules[2].days).toEqual([0, 1, 2, 3, 4, 5, 6]);
     });
 
     it('is off by default and exposes every setting to the front end', () => {
@@ -144,6 +278,66 @@ describe('mouse effect config', () => {
         } finally {
             HTMLCanvasElement.prototype.getContext = original;
         }
+    });
+});
+
+describe('mouse schedule pickers', () => {
+    const cell = (inner: string): string => `<div class="flex-1 min-w-0"><div class="w-full">${inner}</div></div>`;
+    const daySelect = '<select class="g7-custom-effects-schedule-day-select"><option value="">선택하세요</option><option value="true">적용</option><option value="false">제외</option></select>';
+
+    it('turns mouse schedule date/time inputs into native pickers and days into checkboxes', async () => {
+        document.body.innerHTML = `
+            <select name="mouse_effect"><option value="hearts" selected>하트</option></select>
+            <div class="g7-custom-effects-schedule-list"></div>
+            <div class="g7-custom-effects-schedule-list g7-custom-effects-mouse-schedule-list">
+                <div class="g7-custom-effects-schedule-dfl-row g7-custom-effects-mouse-schedule-row">
+                    <div>≡</div>
+                    ${cell('<select class="g7-custom-effects-schedule-enabled-select"><option value="true">사용</option><option value="false">중지</option></select>')}
+                    ${cell('<select><option value="">선택하세요</option><option value="hearts">하트</option></select>')}
+                    ${cell('<input type="text" placeholder="YYYY-MM-DD">')}
+                    ${cell('<input type="text" placeholder="HH:MM">')}
+                    ${cell('<input type="text" placeholder="YYYY-MM-DD">')}
+                    ${cell('<input type="text" placeholder="HH:MM">')}
+                    ${cell('<select><option value="">선택하세요</option><option value="default">효과 기본색</option></select>')}
+                    ${cell('<input type="text" placeholder="#ff66cc">')}
+                    ${cell('<input type="number" placeholder="기본">')}
+                    ${cell('<input type="number" placeholder="기본">')}
+                    ${cell('<select><option value="">선택하세요</option><option value="true">켜기</option><option value="false">끄기</option></select>')}
+                    ${cell('<input type="text" placeholder="비우면 기본 설정">')}
+                    ${cell('<input type="text" placeholder="비우면 기본 설정">')}
+                    ${Array.from({ length: 7 }, () => cell(daySelect)).join('')}
+                    <div><button>-</button></div>
+                </div>
+            </div>
+        `;
+        const stop = enhanceSchedulePickers(window);
+        await Promise.resolve();
+        const list = document.querySelector('.g7-custom-effects-mouse-schedule-list') as HTMLElement;
+        const inputs = ([...list.querySelectorAll('input')] as HTMLInputElement[])
+            .filter((input) => /YYYY-MM-DD|HH:MM/.test(input.placeholder));
+        expect(inputs.map((input) => input.type)).toEqual(['date', 'time', 'date', 'time']);
+        expect(inputs[1].step).toBe('60');
+        expect(list.querySelectorAll('input.g7-custom-effects-schedule-day')).toHaveLength(7);
+        expect(list.querySelectorAll('input.g7-custom-effects-schedule-enabled')).toHaveLength(1);
+        const dayLabels = [...list.querySelectorAll('.g7-custom-effects-schedule-day-select')]
+            .map((select) => select.parentElement?.querySelector('label')?.textContent?.trim());
+        expect(dayLabels).toEqual(['일', '월', '화', '수', '목', '금', '토']);
+
+        const row = list.querySelector('.g7-custom-effects-mouse-schedule-row') as HTMLElement;
+        fillEmptyMouseScheduleRow(row, window);
+        expect(inputs[0].value).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+        expect(inputs[1].value).toMatch(/^\d{2}:\d{2}$/);
+        expect(inputs[2].value).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+        expect(inputs[3].value).toMatch(/^\d{2}:\d{2}$/);
+        const selects = row.querySelectorAll('select');
+        expect(selects[1].value).toBe('hearts');
+
+        // Effect-specific fields are toggled by the row's chosen effect.
+        expect(row.dataset.mouseEffect).toBe('hearts');
+        selects[1].value = '';
+        selects[1].dispatchEvent(new Event('change', { bubbles: true }));
+        expect(row.dataset.mouseEffect).toBe('');
+        stop();
     });
 });
 

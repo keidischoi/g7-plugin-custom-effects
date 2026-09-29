@@ -1,4 +1,9 @@
-import { readMouseConfig, resolveMouseConfig, type MouseConfig } from './mouse-config';
+import {
+    mouseVisualSignature,
+    readMouseConfig,
+    resolveMouseConfig,
+    type MouseConfig,
+} from './mouse-config';
 import { MouseEffectsEngine } from './mouse-engine';
 import {
     MOUSE_PREFERENCE_EVENT,
@@ -57,7 +62,7 @@ export function startMouseEffects(
             return;
         }
 
-        const signature = `${resolved.effect}:${resolved.color}`;
+        const signature = mouseVisualSignature(resolved);
         if (engine && signature !== runningSignature) {
             engine.stop();
             engine = null;

@@ -1,5 +1,5 @@
 {
-    "version": "1.1.0",
+    "version": "1.1.1",
     "layout_name": "plugin_settings",
     "permissions": [
         "core.plugins.update"
@@ -860,9 +860,25 @@
                                                         "type": "basic",
                                                         "name": "Option",
                                                         "props": {
+                                                            "value": "bubble_pop"
+                                                        },
+                                                        "text": "거품 팝"
+                                                    },
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "Option",
+                                                        "props": {
                                                             "value": "text_trail"
                                                         },
                                                         "text": "글자 꼬리"
+                                                    },
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "Option",
+                                                        "props": {
+                                                            "value": "gold_dust"
+                                                        },
+                                                        "text": "금가루"
                                                     },
                                                     {
                                                         "type": "basic",
@@ -884,9 +900,25 @@
                                                         "type": "basic",
                                                         "name": "Option",
                                                         "props": {
+                                                            "value": "autumn_leaves"
+                                                        },
+                                                        "text": "낙엽 (단풍)"
+                                                    },
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "Option",
+                                                        "props": {
                                                             "value": "neon_line"
                                                         },
                                                         "text": "네온 선"
+                                                    },
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "Option",
+                                                        "props": {
+                                                            "value": "clovers"
+                                                        },
+                                                        "text": "네잎클로버"
                                                     },
                                                     {
                                                         "type": "basic",
@@ -903,6 +935,14 @@
                                                             "value": "ring_cursor"
                                                         },
                                                         "text": "링 커서 (지연 원)"
+                                                    },
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "Option",
+                                                        "props": {
+                                                            "value": "magic_runes"
+                                                        },
+                                                        "text": "마법 가루 (원형 룬)"
                                                     },
                                                     {
                                                         "type": "basic",
@@ -940,6 +980,22 @@
                                                         "type": "basic",
                                                         "name": "Option",
                                                         "props": {
+                                                            "value": "lightning"
+                                                        },
+                                                        "text": "번개"
+                                                    },
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "Option",
+                                                        "props": {
+                                                            "value": "shooting_stars"
+                                                        },
+                                                        "text": "별똥별"
+                                                    },
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "Option",
+                                                        "props": {
                                                             "value": "embers"
                                                         },
                                                         "text": "불꽃 (불씨)"
@@ -972,6 +1028,22 @@
                                                         "type": "basic",
                                                         "name": "Option",
                                                         "props": {
+                                                            "value": "smoke"
+                                                        },
+                                                        "text": "연기"
+                                                    },
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "Option",
+                                                        "props": {
+                                                            "value": "music_notes"
+                                                        },
+                                                        "text": "음표"
+                                                    },
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "Option",
+                                                        "props": {
                                                             "value": "emoji"
                                                         },
                                                         "text": "이모지"
@@ -991,6 +1063,22 @@
                                                             "value": "click_fireworks"
                                                         },
                                                         "text": "클릭 폭죽"
+                                                    },
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "Option",
+                                                        "props": {
+                                                            "value": "balloons"
+                                                        },
+                                                        "text": "풍선"
+                                                    },
+                                                    {
+                                                        "type": "basic",
+                                                        "name": "Option",
+                                                        "props": {
+                                                            "value": "pixel_dots"
+                                                        },
+                                                        "text": "픽셀 도트"
                                                     },
                                                     {
                                                         "type": "basic",
@@ -1907,7 +1995,7 @@
                                                         "props": {
                                                             "className": "form-hint"
                                                         },
-                                                        "text": "켜면 아래 마우스 효과 예약 중 현재 시각에 맞는 첫 번째 줄의 마우스 효과만 표시합니다. 맞는 줄이 없으면 마우스 효과를 표시하지 않습니다. 화면 효과 예약과 따로 동작하며, 위쪽 '마우스 효과 사용'이 켜져 있어야 합니다."
+                                                        "text": "켜면 아래 마우스 효과 예약 중 현재 시각에 맞는 첫 번째 줄의 효과와 세부 설정(색상·입자 양·크기·클릭 시 터짐·이모지 목록·꼬리 글자)을 씁니다. 줄에서 비워 두거나 '선택하세요'로 둔 항목은 위쪽 '마우스 따라다니는 효과' 기본 설정을 씁니다. 이모지 목록은 이모지 효과, 꼬리 글자는 글자 꼬리 효과를 고른 줄에서만 보입니다. 맞는 줄이 없으면 마우스 효과를 표시하지 않습니다. 화면 효과 예약과 따로 동작하며, 위쪽 '마우스 효과 사용'이 켜져 있어야 합니다."
                                                     }
                                                 ]
                                             },
@@ -1925,7 +2013,7 @@
                                         "type": "basic",
                                         "name": "Div",
                                         "props": {
-                                            "className": "g7-custom-effects-schedule-full g7-custom-effects-mouse-schedule-list"
+                                            "className": "g7-custom-effects-schedule-full g7-custom-effects-schedule-list g7-custom-effects-mouse-schedule-list"
                                         },
                                         "children": [
                                             {
@@ -1938,7 +2026,7 @@
                                                     "emptyMessage": "마우스 효과 예약이 없습니다. 예약을 추가하세요.",
                                                     "enableDrag": true,
                                                     "showIndex": false,
-                                                    "rowClassName": "g7-custom-effects-mouse-schedule-row",
+                                                    "rowClassName": "g7-custom-effects-schedule-dfl-row g7-custom-effects-mouse-schedule-row",
                                                     "minItems": 0,
                                                     "maxItems": 20,
                                                     "columns": [
@@ -1955,7 +2043,8 @@
                                                                     "value": "false",
                                                                     "label": "중지"
                                                                 }
-                                                            ]
+                                                            ],
+                                                            "className": "g7-custom-effects-schedule-enabled-select"
                                                         },
                                                         {
                                                             "key": "mouse_effect",
@@ -1963,8 +2052,16 @@
                                                             "label": "마우스 효과",
                                                             "options": [
                                                                 {
+                                                                    "value": "bubble_pop",
+                                                                    "label": "거품 팝"
+                                                                },
+                                                                {
                                                                     "value": "text_trail",
                                                                     "label": "글자 꼬리"
+                                                                },
+                                                                {
+                                                                    "value": "gold_dust",
+                                                                    "label": "금가루"
                                                                 },
                                                                 {
                                                                     "value": "petals",
@@ -1975,8 +2072,16 @@
                                                                     "label": "나비"
                                                                 },
                                                                 {
+                                                                    "value": "autumn_leaves",
+                                                                    "label": "낙엽 (단풍)"
+                                                                },
+                                                                {
                                                                     "value": "neon_line",
                                                                     "label": "네온 선"
+                                                                },
+                                                                {
+                                                                    "value": "clovers",
+                                                                    "label": "네잎클로버"
                                                                 },
                                                                 {
                                                                     "value": "snowflakes",
@@ -1985,6 +2090,10 @@
                                                                 {
                                                                     "value": "ring_cursor",
                                                                     "label": "링 커서 (지연 원)"
+                                                                },
+                                                                {
+                                                                    "value": "magic_runes",
+                                                                    "label": "마법 가루 (원형 룬)"
                                                                 },
                                                                 {
                                                                     "value": "rainbow_tail",
@@ -2003,6 +2112,14 @@
                                                                     "label": "반짝이 별"
                                                                 },
                                                                 {
+                                                                    "value": "lightning",
+                                                                    "label": "번개"
+                                                                },
+                                                                {
+                                                                    "value": "shooting_stars",
+                                                                    "label": "별똥별"
+                                                                },
+                                                                {
                                                                     "value": "embers",
                                                                     "label": "불꽃 (불씨)"
                                                                 },
@@ -2019,6 +2136,14 @@
                                                                     "label": "스포트라이트"
                                                                 },
                                                                 {
+                                                                    "value": "smoke",
+                                                                    "label": "연기"
+                                                                },
+                                                                {
+                                                                    "value": "music_notes",
+                                                                    "label": "음표"
+                                                                },
+                                                                {
                                                                     "value": "emoji",
                                                                     "label": "이모지"
                                                                 },
@@ -2029,6 +2154,14 @@
                                                                 {
                                                                     "value": "click_fireworks",
                                                                     "label": "클릭 폭죽"
+                                                                },
+                                                                {
+                                                                    "value": "balloons",
+                                                                    "label": "풍선"
+                                                                },
+                                                                {
+                                                                    "value": "pixel_dots",
+                                                                    "label": "픽셀 도트"
                                                                 },
                                                                 {
                                                                     "value": "hearts",
@@ -2064,25 +2197,6 @@
                                                             "type": "input",
                                                             "label": "종료 시간",
                                                             "placeholder": "HH:MM"
-                                                        },
-                                                        {
-                                                            "key": "days",
-                                                            "type": "select",
-                                                            "label": "요일",
-                                                            "options": [
-                                                                {
-                                                                    "value": "all",
-                                                                    "label": "매일"
-                                                                },
-                                                                {
-                                                                    "value": "weekdays",
-                                                                    "label": "평일"
-                                                                },
-                                                                {
-                                                                    "value": "weekends",
-                                                                    "label": "주말"
-                                                                }
-                                                            ]
                                                         },
                                                         {
                                                             "key": "mouse_color",
@@ -2130,8 +2244,175 @@
                                                                     "label": "빨간색 (#f87171)"
                                                                 }
                                                             ]
+                                                        },
+                                                        {
+                                                            "key": "mouse_custom_color",
+                                                            "type": "input",
+                                                            "label": "직접 입력 색상",
+                                                            "placeholder": "#ff66cc",
+                                                            "className": "g7-custom-effects-mouse-schedule-custom-color"
+                                                        },
+                                                        {
+                                                            "key": "mouse_amount",
+                                                            "type": "number",
+                                                            "label": "입자 양 (%)",
+                                                            "min": 10,
+                                                            "max": 200,
+                                                            "step": 10,
+                                                            "placeholder": "기본"
+                                                        },
+                                                        {
+                                                            "key": "mouse_size",
+                                                            "type": "number",
+                                                            "label": "효과 크기 (%)",
+                                                            "min": 50,
+                                                            "max": 200,
+                                                            "step": 10,
+                                                            "placeholder": "기본"
+                                                        },
+                                                        {
+                                                            "key": "mouse_click_burst",
+                                                            "type": "select",
+                                                            "label": "클릭 시 터짐",
+                                                            "options": [
+                                                                {
+                                                                    "value": "true",
+                                                                    "label": "켜기"
+                                                                },
+                                                                {
+                                                                    "value": "false",
+                                                                    "label": "끄기"
+                                                                }
+                                                            ]
+                                                        },
+                                                        {
+                                                            "key": "mouse_emojis",
+                                                            "type": "input",
+                                                            "label": "이모지 목록",
+                                                            "placeholder": "비우면 기본 설정",
+                                                            "className": "g7-custom-effects-mouse-schedule-emojis"
+                                                        },
+                                                        {
+                                                            "key": "mouse_text",
+                                                            "type": "input",
+                                                            "label": "꼬리 글자",
+                                                            "placeholder": "비우면 기본 설정",
+                                                            "className": "g7-custom-effects-mouse-schedule-text"
+                                                        },
+                                                        {
+                                                            "key": "sun",
+                                                            "type": "select",
+                                                            "className": "g7-custom-effects-schedule-day-select",
+                                                            "label": "일",
+                                                            "options": [
+                                                                {
+                                                                    "value": "true",
+                                                                    "label": "적용"
+                                                                },
+                                                                {
+                                                                    "value": "false",
+                                                                    "label": "제외"
+                                                                }
+                                                            ]
+                                                        },
+                                                        {
+                                                            "key": "mon",
+                                                            "type": "select",
+                                                            "className": "g7-custom-effects-schedule-day-select",
+                                                            "label": "월",
+                                                            "options": [
+                                                                {
+                                                                    "value": "true",
+                                                                    "label": "적용"
+                                                                },
+                                                                {
+                                                                    "value": "false",
+                                                                    "label": "제외"
+                                                                }
+                                                            ]
+                                                        },
+                                                        {
+                                                            "key": "tue",
+                                                            "type": "select",
+                                                            "className": "g7-custom-effects-schedule-day-select",
+                                                            "label": "화",
+                                                            "options": [
+                                                                {
+                                                                    "value": "true",
+                                                                    "label": "적용"
+                                                                },
+                                                                {
+                                                                    "value": "false",
+                                                                    "label": "제외"
+                                                                }
+                                                            ]
+                                                        },
+                                                        {
+                                                            "key": "wed",
+                                                            "type": "select",
+                                                            "className": "g7-custom-effects-schedule-day-select",
+                                                            "label": "수",
+                                                            "options": [
+                                                                {
+                                                                    "value": "true",
+                                                                    "label": "적용"
+                                                                },
+                                                                {
+                                                                    "value": "false",
+                                                                    "label": "제외"
+                                                                }
+                                                            ]
+                                                        },
+                                                        {
+                                                            "key": "thu",
+                                                            "type": "select",
+                                                            "className": "g7-custom-effects-schedule-day-select",
+                                                            "label": "목",
+                                                            "options": [
+                                                                {
+                                                                    "value": "true",
+                                                                    "label": "적용"
+                                                                },
+                                                                {
+                                                                    "value": "false",
+                                                                    "label": "제외"
+                                                                }
+                                                            ]
+                                                        },
+                                                        {
+                                                            "key": "fri",
+                                                            "type": "select",
+                                                            "className": "g7-custom-effects-schedule-day-select",
+                                                            "label": "금",
+                                                            "options": [
+                                                                {
+                                                                    "value": "true",
+                                                                    "label": "적용"
+                                                                },
+                                                                {
+                                                                    "value": "false",
+                                                                    "label": "제외"
+                                                                }
+                                                            ]
+                                                        },
+                                                        {
+                                                            "key": "sat",
+                                                            "type": "select",
+                                                            "className": "g7-custom-effects-schedule-day-select",
+                                                            "label": "토",
+                                                            "options": [
+                                                                {
+                                                                    "value": "true",
+                                                                    "label": "적용"
+                                                                },
+                                                                {
+                                                                    "value": "false",
+                                                                    "label": "제외"
+                                                                }
+                                                            ]
                                                         }
-                                                    ]
+                                                    ],
+                                                    "headerClassName": "g7-custom-effects-schedule-dfl-header"
                                                 },
                                                 "actions": [
                                                     {
@@ -2575,23 +2856,34 @@
         "mouse_effect": {
             "type": "enum",
             "options": [
+                "bubble_pop",
                 "text_trail",
+                "gold_dust",
                 "petals",
                 "butterflies",
+                "autumn_leaves",
                 "neon_line",
+                "clovers",
                 "snowflakes",
                 "ring_cursor",
+                "magic_runes",
                 "rainbow_tail",
                 "ripple",
                 "fireflies",
                 "sparkle_stars",
+                "lightning",
+                "shooting_stars",
                 "embers",
                 "bubbles",
                 "confetti",
                 "spotlight",
+                "smoke",
+                "music_notes",
                 "emoji",
                 "dot_follow",
                 "click_fireworks",
+                "balloons",
+                "pixel_dots",
                 "hearts",
                 "comet"
             ],

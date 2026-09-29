@@ -223,8 +223,8 @@ export function fillEmptyScheduleRow(row: HTMLElement, target: Window = window):
 interface G7CoreLike {
     dispatch?: (action: { handler: string; params: Record<string, unknown> }) => unknown;
     state?: {
-        getLocal?: () => { form?: { schedules?: unknown } };
-        get?: () => { _local?: { form?: { schedules?: unknown } } };
+        getLocal?: () => { form?: { schedules?: unknown; mouse_schedules?: unknown } };
+        get?: () => { _local?: { form?: { schedules?: unknown; mouse_schedules?: unknown } } };
     };
 }
 
@@ -232,11 +232,15 @@ function g7Core(target: Window): G7CoreLike | undefined {
     return (target as Window & { G7Core?: G7CoreLike }).G7Core;
 }
 
-function currentSchedules(target: Window): Record<string, unknown>[] | null {
-    const form = g7Core(target)?.state?.getLocal?.()?.form
-        ?? g7Core(target)?.state?.get?.()?._local?.form;
-    return Array.isArray(form?.schedules)
-        ? form.schedules as Record<string, unknown>[]
+function currentSchedules(
+    target: Window,
+    key: 'schedules' | 'mouse_schedules' = 'schedules',
+): Record<string, unknown>[] | null {
+    const form = (g7Core(target)?.state?.getLocal?.()?.form
+        ?? g7Core(target)?.state?.get?.()?._local?.form) as Record<string, unknown> | undefined;
+    const list = form?.[key];
+    return Array.isArray(list)
+        ? list as Record<string, unknown>[]
         : null;
 }
 
@@ -304,12 +308,137 @@ function isAddScheduleButton(button: Element): boolean {
     return /예약 추가|Add schedule/i.test(label);
 }
 
+export const SCHEDULE_LIST_SELECTOR = '.g7-custom-effects-schedule-list:not(.g7-custom-effects-mouse-schedule-list)';
+export const MOUSE_SCHEDULE_LIST_SELECTOR = '.g7-custom-effects-mouse-schedule-list';
+const ROW_SELECTOR = '.g7-custom-effects-schedule-dfl-row';
+
+function dateTimeInputs(row: HTMLElement): { dates: HTMLInputElement[]; times: HTMLInputElement[] } {
+    const dates: HTMLInputElement[] = [];
+    const times: HTMLInputElement[] = [];
+    [...row.querySelectorAll('input')].forEach((input) => {
+        if (!(input instanceof HTMLInputElement)) return;
+        const placeholder = input.getAttribute('placeholder') ?? '';
+        if (input.type === 'date' || placeholder.includes('YYYY-MM-DD')) dates.push(input);
+        if (input.type === 'time' || placeholder.includes('HH:MM')) times.push(input);
+    });
+    return { dates, times };
+}
+
+function mouseRowSelects(row: HTMLElement): { effect: HTMLSelectElement | null; color: HTMLSelectElement | null } {
+    const effect = row.children[2]?.querySelector('select');
+    const extra = effect instanceof HTMLSelectElement
+        ? [...row.querySelectorAll('select')].filter((select) => (
+            select !== effect
+            && !select.classList.contains('g7-custom-effects-schedule-enabled-select')
+            && !select.classList.contains('g7-custom-effects-schedule-day-select')
+        ))
+        : [];
+    return {
+        effect: effect instanceof HTMLSelectElement ? effect : null,
+        color: extra[0] ?? null,
+    };
+}
+
+/**
+ * Pre-fills a newly added mouse schedule row the same way as screen-effect
+ * rows: start = now, end = one hour later, effect/color from the settings above.
+ */
+export function fillEmptyMouseScheduleRow(row: HTMLElement, target: Window = window): void {
+    const clock = getZonedClock(new Date(), readSiteTimezone(target));
+    const { effect, color } = mouseRowSelects(row);
+    if (effect && !effect.value) assignValue(effect, formValue(target, 'mouse_effect') || 'sparkle_stars', true);
+    if (color && !color.value) assignValue(color, formValue(target, 'mouse_color') || 'default', true);
+
+    const { dates, times } = dateTimeInputs(row);
+    if (dates[0]) assignValue(dates[0], clock.date);
+    if (times[0]) assignValue(times[0], clock.time);
+    const end = shiftClock({
+        date: dates[0]?.value || clock.date,
+        time: times[0]?.value || clock.time,
+    }, 1);
+    if (dates[1]) assignValue(dates[1], end.date);
+    if (times[1]) assignValue(times[1], end.time);
+}
+
+function mouseValuesFromRow(row: HTMLElement): Record<string, unknown> {
+    const next: Record<string, unknown> = {};
+    const { effect, color } = mouseRowSelects(row);
+    const { dates, times } = dateTimeInputs(row);
+    if (effect?.value) next.mouse_effect = effect.value;
+    if (color?.value) next.mouse_color = color.value;
+    if (dates[0]?.value) next.start_date = dates[0].value;
+    if (dates[1]?.value) next.end_date = dates[1].value;
+    if (times[0]?.value) next.start_time = times[0].value;
+    if (times[1]?.value) next.end_time = times[1].value;
+    return next;
+}
+
+function fillAndCommitNewMouseScheduleRow(
+    row: HTMLElement,
+    target: Window,
+    expectedCount: number,
+): void {
+    fillEmptyMouseScheduleRow(row, target);
+    const core = g7Core(target);
+    const schedules = currentSchedules(target, 'mouse_schedules');
+    if (!core?.dispatch || !schedules || schedules.length !== expectedCount) return;
+    const last = schedules[schedules.length - 1];
+    if (!last || typeof last !== 'object') return;
+    core.dispatch({
+        handler: 'setState',
+        params: {
+            target: 'local',
+            'form.mouse_schedules': [...schedules.slice(0, -1), { ...last, ...mouseValuesFromRow(row) }],
+        },
+    });
+}
+
+interface ScheduleListSpec {
+    selector: string;
+    onNewRow: (row: HTMLElement, target: Window, expectedCount: number) => void;
+    decorateRow?: (row: HTMLElement) => void;
+}
+
+/**
+ * Marks a mouse schedule row with its chosen effect so CSS can show the
+ * emoji list only for 이모지 and the trail text only for 글자 꼬리.
+ */
+export function decorateMouseScheduleRow(row: HTMLElement): void {
+    const { effect } = mouseRowSelects(row);
+    const value = effect?.value ?? '';
+    if (row.dataset.mouseEffect !== value) row.dataset.mouseEffect = value;
+}
+
+/**
+ * Screen-effect and mouse-effect schedule lists share the same pickers:
+ * YYYY-MM-DD inputs become native date pickers, HH:MM inputs become native
+ * time pickers (1-minute steps), and the enabled/weekday selects become checkboxes.
+ */
 export function enhanceSchedulePickers(target: Window = window): () => void {
+    const stops = [
+        enhanceScheduleList(target, {
+            selector: SCHEDULE_LIST_SELECTOR,
+            onNewRow: fillAndCommitNewScheduleRow,
+        }),
+        enhanceScheduleList(target, {
+            selector: MOUSE_SCHEDULE_LIST_SELECTOR,
+            onNewRow: fillAndCommitNewMouseScheduleRow,
+            decorateRow: decorateMouseScheduleRow,
+        }),
+    ];
+    return () => stops.forEach((stop) => stop());
+}
+
+function enhanceScheduleList(target: Window, spec: ScheduleListSpec): () => void {
     let observer: MutationObserver | null = null;
 
     const apply = (): void => {
-        const root = target.document.querySelector('.g7-custom-effects-schedule-list');
+        const root = target.document.querySelector(spec.selector);
         if (!root) return;
+
+        if (spec.decorateRow) {
+            root.querySelectorAll<HTMLElement>(ROW_SELECTOR).forEach((row) => spec.decorateRow?.(row));
+        }
 
         root.querySelectorAll('input').forEach((element) => {
             if (!(element instanceof HTMLInputElement)) return;
@@ -367,6 +496,13 @@ export function enhanceSchedulePickers(target: Window = window): () => void {
         });
         observe();
         root.addEventListener('click', onAddClick, true);
+        root.addEventListener('change', onFieldChange, true);
+    };
+
+    const onFieldChange = (event: Event): void => {
+        if (!spec.decorateRow || !(event.target instanceof Element)) return;
+        const row = event.target.closest(ROW_SELECTOR);
+        if (row instanceof HTMLElement) spec.decorateRow(row);
     };
 
     const onAddClick = (event: Event): void => {
@@ -374,15 +510,15 @@ export function enhanceSchedulePickers(target: Window = window): () => void {
         if (!(clicked instanceof Element)) return;
         const button = clicked.closest('button');
         if (!button || !isAddScheduleButton(button)) return;
-        const list = target.document.querySelector('.g7-custom-effects-schedule-list');
-        const before = list?.querySelectorAll('.g7-custom-effects-schedule-dfl-row').length ?? 0;
+        const list = target.document.querySelector(spec.selector);
+        const before = list?.querySelectorAll(ROW_SELECTOR).length ?? 0;
         const fillNew = (): void => {
-            const current = target.document.querySelector('.g7-custom-effects-schedule-list');
-            const rows = current?.querySelectorAll('.g7-custom-effects-schedule-dfl-row');
+            const current = target.document.querySelector(spec.selector);
+            const rows = current?.querySelectorAll(ROW_SELECTOR);
             if (!rows || rows.length !== before + 1) return;
             const last = rows[rows.length - 1];
             if (last instanceof HTMLElement) {
-                fillAndCommitNewScheduleRow(last, target, before + 1);
+                spec.onNewRow(last, target, before + 1);
             }
         };
         target.setTimeout(fillNew, 0);
@@ -391,13 +527,13 @@ export function enhanceSchedulePickers(target: Window = window): () => void {
     };
 
     const finder = new MutationObserver(() => {
-        const root = target.document.querySelector('.g7-custom-effects-schedule-list');
+        const root = target.document.querySelector(spec.selector);
         if (!root) return;
         finder.disconnect();
         watch(root);
     });
 
-    const existing = target.document.querySelector('.g7-custom-effects-schedule-list');
+    const existing = target.document.querySelector(spec.selector);
     if (existing) {
         watch(existing);
     } else {
@@ -407,42 +543,9 @@ export function enhanceSchedulePickers(target: Window = window): () => void {
     return () => {
         finder.disconnect();
         observer?.disconnect();
-        target.document.querySelector('.g7-custom-effects-schedule-list')
+        target.document.querySelector(spec.selector)
             ?.removeEventListener('click', onAddClick, true);
+        target.document.querySelector(spec.selector)
+            ?.removeEventListener('change', onFieldChange, true);
     };
-}
-
-export const MOUSE_SCHEDULE_LIST_SELECTOR = '.g7-custom-effects-mouse-schedule-list';
-
-/** Turns the mouse-schedule date/time text inputs into native pickers. */
-export function enhanceMouseSchedulePickers(target: Window = window): () => void {
-    const apply = (): void => {
-        const root = target.document.querySelector(MOUSE_SCHEDULE_LIST_SELECTOR);
-        if (!root) return;
-        root.querySelectorAll('input').forEach((element) => {
-            if (!(element instanceof HTMLInputElement)) return;
-            const placeholder = element.getAttribute('placeholder') ?? '';
-            if (placeholder.includes('YYYY-MM-DD') && element.type !== 'date') {
-                element.type = 'date';
-            }
-            if (placeholder.includes('HH:MM') && element.type !== 'time') {
-                element.type = 'time';
-                element.step = '60';
-            }
-        });
-    };
-
-    let scheduled = false;
-    const observer = new MutationObserver(() => {
-        if (scheduled) return;
-        scheduled = true;
-        target.setTimeout(() => {
-            scheduled = false;
-            apply();
-        }, 0);
-    });
-    apply();
-    observer.observe(target.document.documentElement, { childList: true, subtree: true });
-
-    return () => observer.disconnect();
 }

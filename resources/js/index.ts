@@ -8,7 +8,7 @@ import {
 } from './preference';
 import { mouseSignature, readMouseConfig } from './mouse-config';
 import { startMouseEffects } from './mouse-runtime';
-import { enhanceMouseSchedulePickers, enhanceSchedulePickers } from './schedule-fields';
+import { enhanceSchedulePickers } from './schedule-fields';
 import { activeScheduledEffect, resolveActiveConfig, SCHEDULE_SYNC_MS } from './schedule';
 import {
     SETTINGS_POLL_MS,
@@ -142,9 +142,6 @@ function boot(): void {
     const stopSchedulePickers = !isUserPage && isPluginSettingsPage
         ? enhanceSchedulePickers(window)
         : () => {};
-    const stopMouseSchedulePickers = !isUserPage && isPluginSettingsPage
-        ? enhanceMouseSchedulePickers(window)
-        : () => {};
 
     mobileQuery.addEventListener('change', sync);
     reducedMotionQuery.addEventListener('change', sync);
@@ -191,7 +188,6 @@ function boot(): void {
             headerToggle?.stop();
             mouseRuntime.stop();
             stopSchedulePickers();
-            stopMouseSchedulePickers();
             engine?.stop();
             engine = null;
         },

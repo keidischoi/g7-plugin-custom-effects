@@ -187,7 +187,15 @@
             },
             "mouse_schedules": {
                 "add": "Add mouse schedule",
-                "empty": "No mouse schedules yet."
+                "empty": "No mouse schedules yet.",
+                "color": "Color",
+                "custom_color": "Custom color",
+                "amount": "Amount (%)",
+                "size": "Size (%)",
+                "click_burst": "Burst on click",
+                "emojis": "Emoji list",
+                "text": "Trail text",
+                "inherit": "Blank = main setting"
             }
         },
         "mouse_options": {
@@ -211,7 +219,18 @@
             "hearts": "Hearts",
             "comet": "Comet tail",
             "color_default": "Effect default",
-            "color_rainbow": "Rainbow"
+            "color_rainbow": "Rainbow",
+            "music_notes": "Music notes",
+            "shooting_stars": "Shooting stars",
+            "lightning": "Lightning",
+            "smoke": "Smoke",
+            "bubble_pop": "Popping bubbles",
+            "autumn_leaves": "Autumn leaves",
+            "gold_dust": "Gold dust",
+            "balloons": "Balloons",
+            "clovers": "Four-leaf clovers",
+            "magic_runes": "Magic dust (rune circle)",
+            "pixel_dots": "Pixel dots"
         }
     },
     "mouse_toggle": {

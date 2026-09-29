@@ -24,6 +24,8 @@ interface Particle {
     glyph: string;
     gravity: number;
     drag: number;
+    /** Polyline for lightning bolts: [x0, y0, x1, y1, ...] relative to x/y. */
+    points?: number[];
 }
 
 interface TrailPoint {
@@ -61,6 +63,46 @@ const PALETTES: Record<MouseEffectKind, readonly string[]> = {
     spotlight: ['#000000'],
     confetti: ['#f87171', '#fbbf24', '#34d399', '#60a5fa', '#a78bfa', '#f472b6'],
     comet: ['#a78bfa'],
+    music_notes: ['#6366f1', '#ec4899', '#14b8a6', '#f59e0b'],
+    shooting_stars: ['#f59e0b', '#fbbf24', '#60a5fa', '#a78bfa'],
+    lightning: ['#a5f3fc', '#e0e7ff', '#fde047'],
+    smoke: ['#9ca3af', '#d1d5db', '#6b7280'],
+    bubble_pop: ['#7dd3fc', '#a5b4fc', '#f0abfc'],
+    autumn_leaves: ['#ea580c', '#dc2626', '#f59e0b', '#b45309'],
+    gold_dust: ['#eab308', '#ca8a04', '#facc15', '#d97706'],
+    balloons: ['#f87171', '#60a5fa', '#34d399', '#fbbf24', '#a78bfa', '#f472b6'],
+    clovers: ['#22c55e', '#16a34a', '#4ade80'],
+    magic_runes: ['#8b5cf6', '#7c3aed', '#0891b2'],
+    pixel_dots: ['#f87171', '#fbbf24', '#34d399', '#60a5fa', '#a78bfa', '#f472b6'],
+};
+
+const MUSIC_GLYPHS = ['♪', '♫', '♩', '♬'];
+
+/** Effects that drift side to side while falling or rising. */
+const SWAY_EFFECTS = new Set<MouseEffectKind>([
+    'petals',
+    'snowflakes',
+    'autumn_leaves',
+    'clovers',
+    'music_notes',
+    'balloons',
+    'smoke',
+]);
+
+/** Pointer distance (px) between spawns for effects that should stay sparse. */
+const SPARSE_SPACING: Partial<Record<MouseEffectKind, number>> = {
+    fireflies: 42,
+    butterflies: 42,
+    balloons: 60,
+    magic_runes: 70,
+    shooting_stars: 36,
+    music_notes: 30,
+    clovers: 30,
+    autumn_leaves: 26,
+    bubble_pop: 28,
+    smoke: 18,
+    gold_dust: 8,
+    pixel_dots: 10,
 };
 
 /** Effects drawn from a trail of pointer positions instead of particles. */
@@ -79,6 +121,16 @@ const PARTICLE_EFFECTS = new Set<MouseEffectKind>([
     'fireflies',
     'butterflies',
     'confetti',
+    'music_notes',
+    'shooting_stars',
+    'smoke',
+    'bubble_pop',
+    'autumn_leaves',
+    'gold_dust',
+    'balloons',
+    'clovers',
+    'magic_runes',
+    'pixel_dots',
 ]);
 
 function random(min: number, max: number): number {
@@ -292,6 +344,15 @@ export class MouseEffectsEngine {
             return;
         }
 
+        if (effect === 'lightning') {
+            if (distance > 56) {
+                this.spawnBolt(this.lastSpawnX, this.lastSpawnY, this.pointerX, this.pointerY);
+                this.lastSpawnX = this.pointerX;
+                this.lastSpawnY = this.pointerY;
+            }
+            return;
+        }
+
         if (effect === 'text_trail') {
             const glyphs = Array.from(this.config.text);
             const spacing = 16 * this.scale;
@@ -328,7 +389,7 @@ export class MouseEffectsEngine {
             return;
         }
 
-        const spacing = effect === 'fireflies' || effect === 'butterflies' ? 42 : 14;
+        const spacing = SPARSE_SPACING[effect] ?? 14;
         const perStep = this.amountFactor();
         const steps = Math.min(4, distance / spacing);
         if (steps < 1) return;
@@ -365,6 +426,36 @@ export class MouseEffectsEngine {
             glyph: '',
             gravity: 0,
             drag: 1,
+        });
+    }
+
+    private spawnBolt(fromX: number, fromY: number, toX: number, toY: number): void {
+        const points: number[] = [];
+        const segments = 7;
+        const dx = toX - fromX;
+        const dy = toY - fromY;
+        const length = Math.hypot(dx, dy) || 1;
+        const normalX = -dy / length;
+        const normalY = dx / length;
+        for (let index = 0; index <= segments; index += 1) {
+            const t = index / segments;
+            const jitter = index === 0 || index === segments ? 0 : random(-14, 14) * this.scale;
+            points.push(dx * t + normalX * jitter, dy * t + normalY * jitter);
+        }
+        this.add({
+            x: fromX,
+            y: fromY,
+            vx: 0,
+            vy: 0,
+            maxLife: 0.3,
+            size: 2 * this.scale,
+            rotation: 0,
+            spin: 0,
+            color: this.color(),
+            glyph: 'bolt',
+            gravity: 0,
+            drag: 1,
+            points,
         });
     }
 
@@ -412,6 +503,39 @@ export class MouseEffectsEngine {
                 break;
             case 'confetti':
                 this.add({ ...base, vx: random(-60, 60), vy: random(-90, -30), maxLife: random(0.9, 1.4), size: random(4, 7) * s, spin: random(-8, 8), gravity: 220, drag: 0.97 });
+                break;
+            case 'music_notes':
+                this.add({ ...base, vx: random(-20, 20), vy: random(-60, -30), maxLife: random(1, 1.4), size: random(14, 20) * s, rotation: random(-0.3, 0.3), spin: random(-0.8, 0.8), glyph: pick(MUSIC_GLYPHS) });
+                break;
+            case 'shooting_stars': {
+                const angle = Math.atan2(dirY, dirX) + Math.PI + random(-0.5, 0.5);
+                const speed = random(160, 280) * s;
+                this.add({ ...base, vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed + 40, maxLife: random(0.4, 0.7), size: random(1.5, 2.5) * s, drag: 0.97 });
+                break;
+            }
+            case 'smoke':
+                this.add({ ...base, vx: random(-10, 10), vy: random(-35, -15), maxLife: random(1.1, 1.8), size: random(6, 10) * s, spin: random(-0.5, 0.5), drag: 0.98 });
+                break;
+            case 'bubble_pop':
+                this.add({ ...base, vx: random(-12, 12), vy: random(-35, -15), maxLife: random(0.7, 1), size: random(6, 11) * s });
+                break;
+            case 'autumn_leaves':
+                this.add({ ...base, vx: random(-30, 30), vy: random(5, 30), maxLife: random(1.2, 1.8), size: random(7, 11) * s, spin: random(-3, 3), gravity: 40 });
+                break;
+            case 'gold_dust':
+                this.add({ ...base, x: x + random(-8, 8), y: y + random(-8, 8), vx: random(-12, 12), vy: random(-10, 10), maxLife: random(0.8, 1.4), size: random(0.8, 1.8) * s, gravity: 35, drag: 0.97 });
+                break;
+            case 'balloons':
+                this.add({ ...base, vx: random(-10, 10), vy: random(-70, -45), maxLife: random(1.8, 2.4), size: random(9, 13) * s, rotation: random(-0.2, 0.2), spin: 0, drag: 0.995 });
+                break;
+            case 'clovers':
+                this.add({ ...base, vx: random(-25, 25), vy: random(5, 35), maxLife: random(1.1, 1.6), size: random(6, 9) * s, spin: random(-2, 2), gravity: 25 });
+                break;
+            case 'magic_runes':
+                this.add({ ...base, vx: 0, vy: 0, maxLife: 1.1, size: random(16, 22) * s, spin: random(1.2, 2) * (Math.random() < 0.5 ? -1 : 1), drag: 1 });
+                break;
+            case 'pixel_dots':
+                this.add({ ...base, vx: random(-40, 40), vy: random(-60, -10), maxLife: random(0.6, 1), size: Math.round(random(3, 5) * s), rotation: 0, spin: 0, gravity: 180, drag: 0.97 });
                 break;
             default:
                 break;
@@ -481,7 +605,7 @@ export class MouseEffectsEngine {
             if (this.config.effect === 'fireflies' || this.config.effect === 'butterflies') {
                 item.vx += Math.cos(item.phase + item.life * 3) * 30 * dt;
             }
-            if (this.config.effect === 'petals' || this.config.effect === 'snowflakes') {
+            if (SWAY_EFFECTS.has(this.config.effect)) {
                 item.vx += Math.sin(item.phase + item.life * 4) * 20 * dt;
             }
             item.x += item.vx * dt;
@@ -538,6 +662,28 @@ export class MouseEffectsEngine {
             ctx.save();
             ctx.translate(item.x, item.y);
             ctx.rotate(item.rotation);
+            if (item.glyph === 'bolt' && item.points) {
+                ctx.rotate(-item.rotation);
+                ctx.globalCompositeOperation = 'lighter';
+                ctx.lineCap = 'round';
+                ctx.lineJoin = 'round';
+                const flicker = Math.random() < 0.2 ? 0.5 : 1;
+                for (const [width, strength, color] of [
+                    [item.size * 4, 0.25, item.color],
+                    [item.size, 1, item.color],
+                    [Math.max(1, item.size * 0.4), 1, '#ffffff'],
+                ] as const) {
+                    ctx.strokeStyle = withAlpha(color, alpha * strength * flicker);
+                    ctx.lineWidth = width;
+                    ctx.beginPath();
+                    for (let point = 0; point < item.points.length; point += 2) {
+                        ctx.lineTo(item.points[point], item.points[point + 1]);
+                    }
+                    ctx.stroke();
+                }
+                ctx.restore();
+                continue;
+            }
             if (item.glyph === 'spark') {
                 ctx.globalCompositeOperation = 'lighter';
                 ctx.strokeStyle = withAlpha(item.color, alpha);
@@ -707,6 +853,189 @@ export class MouseEffectsEngine {
                 ctx.fillStyle = withAlpha(item.color, alpha);
                 ctx.scale(1, Math.cos(item.phase + item.life * 10));
                 ctx.fillRect(-size / 2, -size / 4, size, size / 2);
+                break;
+            }
+            case 'music_notes': {
+                ctx.globalAlpha = alpha;
+                ctx.fillStyle = item.color;
+                ctx.font = `${Math.round(size)}px "Segoe UI Symbol", "Noto Sans Symbols", "Apple Symbols", sans-serif`;
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(item.glyph, 0, 0);
+                break;
+            }
+            case 'shooting_stars': {
+                ctx.rotate(Math.atan2(item.vy, item.vx) - item.rotation);
+                const tail = Math.min(40, Math.hypot(item.vx, item.vy) * 0.12) * this.scale;
+                const gradient = ctx.createLinearGradient(-tail, 0, 0, 0);
+                gradient.addColorStop(0, withAlpha(item.color, 0));
+                gradient.addColorStop(1, withAlpha(item.color, alpha));
+                ctx.strokeStyle = gradient;
+                ctx.lineWidth = size;
+                ctx.lineCap = 'round';
+                ctx.beginPath();
+                ctx.moveTo(-tail, 0);
+                ctx.lineTo(0, 0);
+                ctx.stroke();
+                ctx.fillStyle = withAlpha(item.color, alpha);
+                ctx.beginPath();
+                ctx.arc(0, 0, size * 1.2, 0, TWO_PI);
+                ctx.fill();
+                break;
+            }
+            case 'smoke': {
+                const r = size * (1 + progress * 2.2);
+                ctx.fillStyle = withAlpha(item.color, alpha * 0.28);
+                ctx.beginPath();
+                ctx.arc(0, 0, r, 0, TWO_PI);
+                ctx.arc(r * 0.6, r * 0.2, r * 0.7, 0, TWO_PI);
+                ctx.fill();
+                break;
+            }
+            case 'bubble_pop': {
+                if (progress < 0.75) {
+                    const r = size * (0.6 + progress * 0.6);
+                    ctx.strokeStyle = withAlpha(item.color, 0.85);
+                    ctx.lineWidth = 1.2;
+                    ctx.fillStyle = withAlpha(item.color, 0.12);
+                    ctx.beginPath();
+                    ctx.arc(0, 0, r, 0, TWO_PI);
+                    ctx.fill();
+                    ctx.stroke();
+                    ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+                    ctx.beginPath();
+                    ctx.arc(-r * 0.35, -r * 0.35, r * 0.2, 0, TWO_PI);
+                    ctx.fill();
+                } else {
+                    const pop = (progress - 0.75) / 0.25;
+                    const inner = size * (0.9 + pop * 0.8);
+                    ctx.strokeStyle = withAlpha(item.color, 1 - pop);
+                    ctx.lineWidth = 1.5;
+                    ctx.lineCap = 'round';
+                    ctx.beginPath();
+                    for (let ray = 0; ray < 8; ray += 1) {
+                        const angle = (ray / 8) * TWO_PI;
+                        ctx.moveTo(Math.cos(angle) * inner, Math.sin(angle) * inner);
+                        ctx.lineTo(Math.cos(angle) * inner * 1.45, Math.sin(angle) * inner * 1.45);
+                    }
+                    ctx.stroke();
+                }
+                break;
+            }
+            case 'autumn_leaves': {
+                ctx.fillStyle = withAlpha(item.color, alpha);
+                ctx.beginPath();
+                ctx.moveTo(0, -size);
+                ctx.quadraticCurveTo(size * 0.9, -size * 0.2, 0, size);
+                ctx.quadraticCurveTo(-size * 0.9, -size * 0.2, 0, -size);
+                ctx.fill();
+                ctx.strokeStyle = `rgba(120, 53, 15, ${alpha * 0.6})`;
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.moveTo(0, -size * 0.8);
+                ctx.lineTo(0, size * 1.25);
+                ctx.stroke();
+                break;
+            }
+            case 'gold_dust': {
+                const glitter = 0.5 + 0.5 * Math.sin(item.phase + seconds * 25);
+                ctx.fillStyle = withAlpha(item.color, alpha * glitter);
+                ctx.beginPath();
+                ctx.arc(0, 0, size, 0, TWO_PI);
+                ctx.fill();
+                if (glitter > 0.85) {
+                    ctx.strokeStyle = withAlpha(item.color, alpha * 0.8);
+                    ctx.lineWidth = 0.8;
+                    ctx.beginPath();
+                    ctx.moveTo(-size * 3, 0);
+                    ctx.lineTo(size * 3, 0);
+                    ctx.moveTo(0, -size * 3);
+                    ctx.lineTo(0, size * 3);
+                    ctx.stroke();
+                }
+                break;
+            }
+            case 'balloons': {
+                ctx.strokeStyle = `rgba(107, 114, 128, ${alpha * 0.7})`;
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.moveTo(0, size * 1.2);
+                ctx.quadraticCurveTo(size * 0.4, size * 1.9, 0, size * 2.6);
+                ctx.stroke();
+                ctx.fillStyle = withAlpha(item.color, alpha * 0.9);
+                ctx.beginPath();
+                ctx.ellipse(0, 0, size * 0.85, size * 1.1, 0, 0, TWO_PI);
+                ctx.fill();
+                ctx.beginPath();
+                ctx.moveTo(-size * 0.15, size * 1.05);
+                ctx.lineTo(size * 0.15, size * 1.05);
+                ctx.lineTo(0, size * 1.25);
+                ctx.fill();
+                ctx.fillStyle = `rgba(255, 255, 255, ${alpha * 0.55})`;
+                ctx.beginPath();
+                ctx.ellipse(-size * 0.3, -size * 0.4, size * 0.16, size * 0.28, -0.4, 0, TWO_PI);
+                ctx.fill();
+                break;
+            }
+            case 'clovers': {
+                ctx.fillStyle = withAlpha(item.color, alpha);
+                for (let leaf = 0; leaf < 4; leaf += 1) {
+                    ctx.save();
+                    ctx.rotate((leaf / 4) * TWO_PI);
+                    ctx.beginPath();
+                    ctx.arc(-size * 0.28, -size * 0.55, size * 0.33, 0, TWO_PI);
+                    ctx.arc(size * 0.28, -size * 0.55, size * 0.33, 0, TWO_PI);
+                    ctx.moveTo(-size * 0.58, -size * 0.45);
+                    ctx.lineTo(0, 0);
+                    ctx.lineTo(size * 0.58, -size * 0.45);
+                    ctx.fill();
+                    ctx.restore();
+                }
+                ctx.strokeStyle = withAlpha('#15803d', alpha);
+                ctx.lineWidth = Math.max(1, size * 0.12);
+                ctx.beginPath();
+                ctx.moveTo(0, 0);
+                ctx.quadraticCurveTo(size * 0.3, size * 0.7, size * 0.1, size * 1.2);
+                ctx.stroke();
+                break;
+            }
+            case 'magic_runes': {
+                const r = size * (0.6 + progress * 0.6);
+                const fade = Math.min(1, item.life * 5) * (1 - progress * progress);
+                ctx.strokeStyle = withAlpha(item.color, fade);
+                ctx.lineWidth = 1.6;
+                ctx.beginPath();
+                ctx.arc(0, 0, r, 0, TWO_PI);
+                ctx.stroke();
+                ctx.beginPath();
+                ctx.arc(0, 0, r * 0.72, 0, TWO_PI);
+                ctx.stroke();
+                ctx.beginPath();
+                for (let point = 0; point <= 6; point += 1) {
+                    const angle = (point * 2 / 6) * TWO_PI;
+                    ctx.lineTo(Math.cos(angle) * r * 0.72, Math.sin(angle) * r * 0.72);
+                }
+                ctx.stroke();
+                ctx.beginPath();
+                for (let point = 0; point <= 6; point += 1) {
+                    const angle = ((point * 2 + 1) / 6) * TWO_PI;
+                    ctx.lineTo(Math.cos(angle) * r * 0.72, Math.sin(angle) * r * 0.72);
+                }
+                ctx.stroke();
+                ctx.fillStyle = withAlpha(item.color, fade);
+                for (let tick = 0; tick < 12; tick += 1) {
+                    const angle = (tick / 12) * TWO_PI;
+                    ctx.fillRect(Math.cos(angle) * r * 0.86 - 1, Math.sin(angle) * r * 0.86 - 1, 2, 2);
+                }
+                break;
+            }
+            case 'pixel_dots': {
+                ctx.rotate(-item.rotation);
+                ctx.fillStyle = withAlpha(item.color, alpha > 0.5 ? 1 : alpha * 2);
+                const cell = Math.max(2, Math.round(size));
+                const px = Math.round(item.x / cell) * cell - item.x;
+                const py = Math.round(item.y / cell) * cell - item.y;
+                ctx.fillRect(px, py, cell, cell);
                 break;
             }
             default:

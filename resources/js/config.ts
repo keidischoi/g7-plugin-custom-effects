@@ -189,7 +189,7 @@ function dateValue(value: unknown): string {
         : formatted;
 }
 
-function weekdayFlags(value: Record<string, unknown>): readonly number[] {
+export function weekdayFlags(value: Record<string, unknown>): readonly number[] {
     if (Array.isArray(value.days)) {
         return [...new Set(
             value.days

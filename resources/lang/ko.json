@@ -187,7 +187,15 @@
             },
             "mouse_schedules": {
                 "add": "마우스 효과 예약 추가",
-                "empty": "마우스 효과 예약이 없습니다. 예약을 추가하세요."
+                "empty": "마우스 효과 예약이 없습니다. 예약을 추가하세요.",
+                "color": "색상",
+                "custom_color": "직접 입력 색상",
+                "amount": "입자 양 (%)",
+                "size": "효과 크기 (%)",
+                "click_burst": "클릭 시 터짐",
+                "emojis": "이모지 목록",
+                "text": "꼬리 글자",
+                "inherit": "비우면 기본 설정"
             }
         },
         "mouse_options": {
@@ -211,7 +219,18 @@
             "hearts": "하트",
             "comet": "혜성 꼬리",
             "color_default": "효과 기본색",
-            "color_rainbow": "무지개 (여러 색)"
+            "color_rainbow": "무지개 (여러 색)",
+            "music_notes": "음표",
+            "shooting_stars": "별똥별",
+            "lightning": "번개",
+            "smoke": "연기",
+            "bubble_pop": "거품 팝",
+            "autumn_leaves": "낙엽 (단풍)",
+            "gold_dust": "금가루",
+            "balloons": "풍선",
+            "clovers": "네잎클로버",
+            "magic_runes": "마법 가루 (원형 룬)",
+            "pixel_dots": "픽셀 도트"
         }
     },
     "mouse_toggle": {

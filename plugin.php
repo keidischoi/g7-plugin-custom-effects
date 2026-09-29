@@ -5,7 +5,7 @@ namespace Plugins\Custom\Effects;
 use App\Extension\AbstractPlugin;
 
 /**
- * 사용자 화면에 날씨 및 장식 효과를 추가하는 플러그인입니다.
+ * 사용자 화면에 날씨·장식 효과와 마우스 따라다니는 효과를 추가하는 플러그인입니다.
  */
 class Plugin extends AbstractPlugin
 {
@@ -209,6 +209,125 @@ class Plugin extends AbstractPlugin
                 ],
                 'required' => true,
             ],
+            'mouse_enabled' => [
+                'type' => 'boolean',
+                'default' => false,
+                'label' => ['ko' => '마우스 효과 사용', 'en' => 'Enable mouse effects'],
+                'hint' => [
+                    'ko' => '방문자 화면에서 마우스 커서를 따라다니는 효과를 표시합니다. 터치 화면에서는 표시하지 않습니다.',
+                    'en' => 'Shows an effect that follows the mouse cursor. Not shown on touch screens.',
+                ],
+                'required' => false,
+            ],
+            'mouse_effect' => [
+                'type' => 'enum',
+                'options' => [
+                    'text_trail',
+                    'petals',
+                    'butterflies',
+                    'neon_line',
+                    'snowflakes',
+                    'ring_cursor',
+                    'rainbow_tail',
+                    'ripple',
+                    'fireflies',
+                    'sparkle_stars',
+                    'embers',
+                    'bubbles',
+                    'confetti',
+                    'spotlight',
+                    'emoji',
+                    'dot_follow',
+                    'click_fireworks',
+                    'hearts',
+                    'comet',
+                ],
+                'default' => 'sparkle_stars',
+                'label' => ['ko' => '마우스 효과 종류', 'en' => 'Mouse effect'],
+                'required' => true,
+            ],
+            'mouse_color' => [
+                'type' => 'enum',
+                'options' => [
+                    'default',
+                    'rainbow',
+                    '#ffffff',
+                    '#bae6fd',
+                    '#f9a8d4',
+                    '#fde047',
+                    '#86efac',
+                    '#c4b5fd',
+                    '#fb923c',
+                    '#f87171',
+                ],
+                'default' => 'default',
+                'label' => ['ko' => '마우스 효과 색상', 'en' => 'Mouse effect color'],
+                'required' => true,
+            ],
+            'mouse_custom_color' => [
+                'type' => 'string',
+                'default' => '',
+                'label' => ['ko' => '직접 입력 색상', 'en' => 'Custom color'],
+                'hint' => [
+                    'ko' => '#ff66cc 형식의 HEX 색상. 비워 두면 선택한 색상을 씁니다.',
+                    'en' => 'HEX color such as #ff66cc. Leave empty to use the selected color.',
+                ],
+                'required' => false,
+            ],
+            'mouse_amount' => [
+                'type' => 'integer',
+                'min' => 10,
+                'max' => 200,
+                'default' => 100,
+                'label' => ['ko' => '입자 양 (%)', 'en' => 'Particle amount (%)'],
+                'required' => true,
+            ],
+            'mouse_size' => [
+                'type' => 'integer',
+                'min' => 50,
+                'max' => 200,
+                'default' => 100,
+                'label' => ['ko' => '효과 크기 (%)', 'en' => 'Effect size (%)'],
+                'required' => true,
+            ],
+            'mouse_emojis' => [
+                'type' => 'string',
+                'default' => '✨,💖,🌸,⭐,🎉',
+                'label' => ['ko' => '이모지 목록', 'en' => 'Emoji list'],
+                'hint' => [
+                    'ko' => '쉼표나 공백으로 구분합니다.',
+                    'en' => 'Separate with commas or spaces.',
+                ],
+                'required' => false,
+            ],
+            'mouse_text' => [
+                'type' => 'string',
+                'default' => 'Hello G7',
+                'label' => ['ko' => '꼬리 글자', 'en' => 'Trail text'],
+                'required' => false,
+            ],
+            'mouse_click_burst' => [
+                'type' => 'boolean',
+                'default' => false,
+                'label' => ['ko' => '클릭하면 터지기', 'en' => 'Burst on click'],
+                'required' => false,
+            ],
+            'mouse_schedule_enabled' => [
+                'type' => 'boolean',
+                'default' => false,
+                'label' => ['ko' => '마우스 효과 예약 사용', 'en' => 'Enable mouse effect scheduling'],
+                'hint' => [
+                    'ko' => '켜면 현재 시각에 맞는 마우스 효과 예약의 효과만 표시합니다.',
+                    'en' => 'When on, only a matching mouse schedule effect is shown.',
+                ],
+                'required' => false,
+            ],
+            'mouse_schedules' => [
+                'type' => 'array',
+                'default' => [],
+                'label' => ['ko' => '마우스 효과 예약 목록', 'en' => 'Mouse effect schedules'],
+                'required' => false,
+            ],
             'mobile_enabled' => [
                 'type' => 'boolean',
                 'default' => false,
@@ -267,6 +386,17 @@ class Plugin extends AbstractPlugin
             'schedule_end_time' => '',
             'schedule_days' => 'all',
             'schedule_timezone' => 'Asia/Seoul',
+            'mouse_enabled' => false,
+            'mouse_effect' => 'sparkle_stars',
+            'mouse_color' => 'default',
+            'mouse_custom_color' => '',
+            'mouse_amount' => 100,
+            'mouse_size' => 100,
+            'mouse_emojis' => '✨,💖,🌸,⭐,🎉',
+            'mouse_text' => 'Hello G7',
+            'mouse_click_burst' => false,
+            'mouse_schedule_enabled' => false,
+            'mouse_schedules' => [],
         ];
     }
 
@@ -278,7 +408,7 @@ class Plugin extends AbstractPlugin
         return [
             'author' => 'keidischoi',
             'license' => 'MIT',
-            'keywords' => ['effects', 'snow', 'rain', 'canvas', 'cheese', 'coins'],
+            'keywords' => ['effects', 'snow', 'rain', 'canvas', 'cheese', 'coins', 'mouse', 'cursor'],
         ];
     }
 }

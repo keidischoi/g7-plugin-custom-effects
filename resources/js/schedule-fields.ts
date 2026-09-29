@@ -411,3 +411,38 @@ export function enhanceSchedulePickers(target: Window = window): () => void {
             ?.removeEventListener('click', onAddClick, true);
     };
 }
+
+export const MOUSE_SCHEDULE_LIST_SELECTOR = '.g7-custom-effects-mouse-schedule-list';
+
+/** Turns the mouse-schedule date/time text inputs into native pickers. */
+export function enhanceMouseSchedulePickers(target: Window = window): () => void {
+    const apply = (): void => {
+        const root = target.document.querySelector(MOUSE_SCHEDULE_LIST_SELECTOR);
+        if (!root) return;
+        root.querySelectorAll('input').forEach((element) => {
+            if (!(element instanceof HTMLInputElement)) return;
+            const placeholder = element.getAttribute('placeholder') ?? '';
+            if (placeholder.includes('YYYY-MM-DD') && element.type !== 'date') {
+                element.type = 'date';
+            }
+            if (placeholder.includes('HH:MM') && element.type !== 'time') {
+                element.type = 'time';
+                element.step = '60';
+            }
+        });
+    };
+
+    let scheduled = false;
+    const observer = new MutationObserver(() => {
+        if (scheduled) return;
+        scheduled = true;
+        target.setTimeout(() => {
+            scheduled = false;
+            apply();
+        }, 0);
+    });
+    apply();
+    observer.observe(target.document.documentElement, { childList: true, subtree: true });
+
+    return () => observer.disconnect();
+}

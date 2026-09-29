@@ -6,7 +6,9 @@ import {
     readEffectsPreference,
     writeEffectsPreference,
 } from './preference';
-import { enhanceSchedulePickers } from './schedule-fields';
+import { mouseSignature, readMouseConfig } from './mouse-config';
+import { startMouseEffects } from './mouse-runtime';
+import { enhanceMouseSchedulePickers, enhanceSchedulePickers } from './schedule-fields';
 import { activeScheduledEffect, resolveActiveConfig, SCHEDULE_SYNC_MS } from './schedule';
 import {
     SETTINGS_POLL_MS,
@@ -35,12 +37,16 @@ declare global {
 let bootGeneration = 0;
 let lastSettingsSignature = '';
 
+function combinedSignature(config: EffectConfig): string {
+    return `${settingsSignature(config)}|${mouseSignature(readMouseConfig(window))}`;
+}
+
 function boot(): void {
     const generation = ++bootGeneration;
     window.__g7CustomEffects?.stop();
 
     const config = readInlineConfig(window);
-    lastSettingsSignature = settingsSignature(config);
+    lastSettingsSignature = combinedSignature(config);
     const mobileQuery = window.matchMedia('(max-width: 768px), (pointer: coarse)');
     const reducedMotionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
     let userEnabled = readEffectsPreference(window.localStorage);
@@ -132,8 +138,12 @@ function boot(): void {
         )
         : null;
     headerToggle?.start();
+    const mouseRuntime = startMouseEffects(window, { userPage: isUserPage });
     const stopSchedulePickers = !isUserPage && isPluginSettingsPage
         ? enhanceSchedulePickers(window)
+        : () => {};
+    const stopMouseSchedulePickers = !isUserPage && isPluginSettingsPage
+        ? enhanceMouseSchedulePickers(window)
         : () => {};
 
     mobileQuery.addEventListener('change', sync);
@@ -148,7 +158,7 @@ function boot(): void {
         if (generation !== bootGeneration) return;
         const next = await pullRemoteConfig(window);
         if (!next || generation !== bootGeneration) return;
-        const signature = settingsSignature(next);
+        const signature = combinedSignature(next);
         if (signature === lastSettingsSignature) return;
         lastSettingsSignature = signature;
         boot();
@@ -179,7 +189,9 @@ function boot(): void {
             stopAdminSaveWatch();
             unregisterToggleAction();
             headerToggle?.stop();
+            mouseRuntime.stop();
             stopSchedulePickers();
+            stopMouseSchedulePickers();
             engine?.stop();
             engine = null;
         },

@@ -1,7 +1,7 @@
 {
     "_meta": {
-        "version": "1.0.2",
-        "description": "날씨 및 장식 화면 효과 플러그인 기본값과 프론트엔드 공개 설정"
+        "version": "1.1.0",
+        "description": "날씨·장식 화면 효과와 마우스 효과 플러그인 기본값과 프론트엔드 공개 설정"
     },
     "defaults": {
         "enabled": true,
@@ -22,7 +22,18 @@
         "schedule_start_time": "",
         "schedule_end_time": "",
         "schedule_days": "all",
-        "schedule_timezone": "Asia/Seoul"
+        "schedule_timezone": "Asia/Seoul",
+        "mouse_enabled": false,
+        "mouse_effect": "sparkle_stars",
+        "mouse_color": "default",
+        "mouse_custom_color": "",
+        "mouse_amount": 100,
+        "mouse_size": 100,
+        "mouse_emojis": "✨,💖,🌸,⭐,🎉",
+        "mouse_text": "Hello G7",
+        "mouse_click_burst": false,
+        "mouse_schedule_enabled": false,
+        "mouse_schedules": []
     },
     "frontend_schema": {
         "enabled": { "type": "boolean", "expose": true },
@@ -43,6 +54,17 @@
         "schedule_start_time": { "type": "string", "expose": true },
         "schedule_end_time": { "type": "string", "expose": true },
         "schedule_days": { "type": "string", "expose": true },
-        "schedule_timezone": { "type": "string", "expose": true }
+        "schedule_timezone": { "type": "string", "expose": true },
+        "mouse_enabled": { "type": "boolean", "expose": true },
+        "mouse_effect": { "type": "string", "expose": true },
+        "mouse_color": { "type": "string", "expose": true },
+        "mouse_custom_color": { "type": "string", "expose": true },
+        "mouse_amount": { "type": "integer", "expose": true },
+        "mouse_size": { "type": "integer", "expose": true },
+        "mouse_emojis": { "type": "string", "expose": true },
+        "mouse_text": { "type": "string", "expose": true },
+        "mouse_click_burst": { "type": "boolean", "expose": true },
+        "mouse_schedule_enabled": { "type": "boolean", "expose": true },
+        "mouse_schedules": { "type": "array", "expose": true }
     }
 }

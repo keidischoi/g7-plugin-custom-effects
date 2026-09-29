@@ -183,7 +183,11 @@ export class HeaderToggleMount {
                 this.target,
                 this.getActive(),
             );
-            host.insertBefore(button, themeWrapper);
+            // Keep the screen-effect button first when the mouse-effect button is already there.
+            const mouseButton = Array.from(host.children).find((child) => (
+                child.matches('[data-g7-custom-mouse-toggle="true"]')
+            ));
+            host.insertBefore(button, mouseButton ?? themeWrapper);
         });
     }
 }

@@ -5,7 +5,13 @@ import {
     type EffectConfig,
 } from './config';
 
-export const SETTINGS_POLL_MS = 3_000;
+/**
+ * 1.1.2: 3초 → 60초. 보이는 탭에서만 확인하고, 같은 탭에서 20초 안에는 다시 묻지 않습니다.
+ * 설정을 바꾼 브라우저의 다른 탭은 storage/BroadcastChannel 신호로 바로 받습니다(force).
+ * 처음 화면은 페이지에 실린 설정(G7Config)으로 그리고, 서버에 따로 묻지 않습니다.
+ */
+export const SETTINGS_POLL_MS = 60_000;
+export const SETTINGS_MIN_GAP_MS = 20_000;
 export const SETTINGS_REVISION_KEY = 'custom-effects:settings-revision';
 export const SETTINGS_CHANNEL = 'custom-effects:settings';
 
@@ -154,4 +160,54 @@ export function listenForSettingsRevision(
         target.removeEventListener('storage', handleStorage);
         channel?.close();
     };
+}
+
+export interface SettingsPuller {
+    /** force=true 면 간격·탭 숨김과 상관없이 (설정 저장 신호) */
+    pull: (force?: boolean) => Promise<EffectConfig | null>;
+    /** 마지막으로 물은 시각 (없으면 0) */
+    lastAt: () => number;
+}
+
+/**
+ * 설정 확인을 한 곳에서: 같은 때 여러 번 불러도 요청은 하나(진행 중이면 그 결과를 같이 씀),
+ * 숨긴 탭에서는 묻지 않고, 마지막 확인 뒤 minGap 안이면 건너뜁니다.
+ */
+export function createSettingsPuller(
+    target: Window = window,
+    minGap: number = SETTINGS_MIN_GAP_MS,
+    now: () => number = () => Date.now(),
+): SettingsPuller {
+    let inflight: Promise<EffectConfig | null> | null = null;
+    let last = 0;
+    const hidden = (): boolean => {
+        try {
+            return !!(target.document && target.document.hidden);
+        } catch {
+            return false;
+        }
+    };
+
+    return {
+        pull(force = false) {
+            if (inflight) return inflight;
+            if (!force && (hidden() || (last > 0 && now() - last < minGap))) {
+                return Promise.resolve(null);
+            }
+            last = now();
+            inflight = pullRemoteConfig(target).finally(() => {
+                inflight = null;
+            });
+            return inflight;
+        },
+        lastAt: () => last,
+    };
+}
+
+/** 페이지에 설정이 실려 왔는지 (G7Config.plugins['custom-effects']) — 있으면 처음 한 번 묻지 않아도 됨 */
+export function hasInlineSettings(target: Window = window): boolean {
+    const plugins = (target as Window & { G7Config?: { plugins?: Record<string, unknown> } }).G7Config?.plugins;
+    const raw = plugins ? plugins[PLUGIN_IDENTIFIER] : undefined;
+
+    return !!raw && typeof raw === 'object' && Object.keys(raw as Record<string, unknown>).length > 0;
 }

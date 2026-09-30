@@ -12,9 +12,10 @@ import { enhanceSchedulePickers } from './schedule-fields';
 import { activeScheduledEffect, resolveActiveConfig, SCHEDULE_SYNC_MS } from './schedule';
 import {
     SETTINGS_POLL_MS,
+    createSettingsPuller,
+    hasInlineSettings,
     listenForSettingsRevision,
     pingSettingsRevision,
-    pullRemoteConfig,
     settingsSignature,
     watchAdminSettingsSave,
 } from './live-settings';
@@ -36,6 +37,9 @@ declare global {
 
 let bootGeneration = 0;
 let lastSettingsSignature = '';
+// 1.1.2: 다시 부팅(설정 바뀜)해도 확인 간격·진행 중 요청을 이어 씀 → 부팅마다 새로 묻지 않음
+const settingsPuller = createSettingsPuller(window);
+const INITIAL_CHECK_DELAY_MS = 10_000;
 
 function combinedSignature(config: EffectConfig): string {
     return `${settingsSignature(config)}|${mouseSignature(readMouseConfig(window))}`;
@@ -151,9 +155,9 @@ function boot(): void {
     document.addEventListener('visibilitychange', sync);
     const scheduleTimer = window.setInterval(sync, SCHEDULE_SYNC_MS);
 
-    const pullSettings = async (): Promise<void> => {
+    const pullSettings = async (force = false): Promise<void> => {
         if (generation !== bootGeneration) return;
-        const next = await pullRemoteConfig(window);
+        const next = await settingsPuller.pull(force);
         if (!next || generation !== bootGeneration) return;
         const signature = combinedSignature(next);
         if (signature === lastSettingsSignature) return;
@@ -161,14 +165,19 @@ function boot(): void {
         boot();
     };
 
-    const settingsTimer = window.setInterval(pullSettings, SETTINGS_POLL_MS);
+    const settingsTimer = window.setInterval(() => { void pullSettings(); }, SETTINGS_POLL_MS);
+    // 탭으로 돌아오면 (마지막 확인이 오래됐을 때만) 한 번
+    const onVisible = (): void => {
+        if (!document.hidden) void pullSettings();
+    };
+    document.addEventListener('visibilitychange', onVisible);
     const stopRevisionListener = listenForSettingsRevision(window, () => {
-        void pullSettings();
+        void pullSettings(true);
     });
     const stopAdminSaveWatch = isPluginSettingsPage
         ? watchAdminSettingsSave(window, () => {
             pingSettingsRevision(window);
-            void pullSettings();
+            void pullSettings(true);
         })
         : () => {};
 
@@ -182,6 +191,7 @@ function boot(): void {
             document.removeEventListener('visibilitychange', sync);
             window.clearInterval(scheduleTimer);
             window.clearInterval(settingsTimer);
+            document.removeEventListener('visibilitychange', onVisible);
             stopRevisionListener();
             stopAdminSaveWatch();
             unregisterToggleAction();
@@ -194,7 +204,12 @@ function boot(): void {
     };
 
     sync();
-    void pullSettings();
+    // 페이지에 실린 설정(G7Config)으로 바로 그리고, 첫 화면이 다 뜬 뒤(10초)에 한 번만 확인 — 첫 화면 요청을 늘리지 않음.
+    // 실린 설정이 없을 때만 바로 한 번.
+    if (settingsPuller.lastAt() === 0) {
+        if (!hasInlineSettings(window)) void pullSettings(true);
+        else window.setTimeout(() => { void pullSettings(); }, INITIAL_CHECK_DELAY_MS);
+    }
 }
 
 if (document.readyState === 'loading') {

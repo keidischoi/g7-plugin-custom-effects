@@ -2,6 +2,8 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { PLUGIN_IDENTIFIER, normalizeConfig } from './config';
 import {
     SETTINGS_REVISION_KEY,
+    createSettingsPuller,
+    hasInlineSettings,
     fetchPublicSettings,
     pingSettingsRevision,
     publicSettingsUrl,
@@ -86,5 +88,41 @@ describe('live settings', () => {
         pingSettingsRevision(target);
         expect(stored[SETTINGS_REVISION_KEY]).toBeTruthy();
         stop();
+    });
+
+    it('shares one in-flight request and skips pulls inside the minimum gap', async () => {
+        let resolveFetch: (value: unknown) => void = () => {};
+        const fetch = vi.fn().mockImplementation(() => new Promise((resolve) => { resolveFetch = resolve; }));
+        let clock = 1_000;
+        const target = { fetch, document: { hidden: false }, G7Config: {} } as unknown as Window;
+        const puller = createSettingsPuller(target, 20_000, () => clock);
+        const a = puller.pull();
+        const b = puller.pull();
+        expect(fetch).toHaveBeenCalledTimes(1);
+        resolveFetch({ ok: true, json: async () => ({ data: { effect: 'rain' } }) });
+        await a;
+        await b;
+        clock += 5_000;
+        await puller.pull();
+        expect(fetch).toHaveBeenCalledTimes(1);
+        fetch.mockResolvedValue({ ok: true, json: async () => ({ data: { effect: 'snow' } }) });
+        await puller.pull(true);
+        expect(fetch).toHaveBeenCalledTimes(2);
+    });
+
+    it('does not pull from a hidden tab unless forced', async () => {
+        const fetch = vi.fn().mockResolvedValue({ ok: true, json: async () => ({ data: {} }) });
+        const target = { fetch, document: { hidden: true }, G7Config: {} } as unknown as Window;
+        const puller = createSettingsPuller(target, 0);
+        await puller.pull();
+        expect(fetch).not.toHaveBeenCalled();
+        await puller.pull(true);
+        expect(fetch).toHaveBeenCalledTimes(1);
+    });
+
+    it('detects settings that came with the page', () => {
+        expect(hasInlineSettings({ G7Config: { plugins: { [PLUGIN_IDENTIFIER]: { effect: 'snow' } } } } as unknown as Window)).toBe(true);
+        expect(hasInlineSettings({ G7Config: { plugins: {} } } as unknown as Window)).toBe(false);
+        expect(hasInlineSettings({} as Window)).toBe(false);
     });
 });
